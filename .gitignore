@@ -9,9 +9,10 @@
 # Claude Code config
 .claude/
 
-# Original assets (copies already in OpenJarvis-main/assets/)
-logo.png
-openEidon_header_for_readme_and_ad.png
+# Original assets in root (copies are in assets/)
+/logo.png
+/openEidon_header_for_readme_and_ad.png
+/Скрин_главного_экрана.png
 
 # Personal projects and notes
 His-projects/
