@@ -20,6 +20,12 @@
 
 ---
 
+<div align="center">
+  <img alt="OpenEidon interface" src="assets/screenshot_main.png" width="780">
+</div>
+
+---
+
 OpenEidon is a product-focused AI platform built on top of OpenJarvis. It keeps the local-first foundation, composable backend, and agent infrastructure, then pushes the experience toward something easier to use, easier to package, and easier to present as a real personal AI product.
 
 ## Why OpenEidon
