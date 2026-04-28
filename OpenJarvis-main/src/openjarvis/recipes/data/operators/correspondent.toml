@@ -1,0 +1,14 @@
+[operator]
+name = "correspondent"
+version = "0.1.0"
+description = "Messaging triage agent — classifies incoming messages by urgency, drafts responses, and produces periodic digests"
+
+[operator.agent]
+max_turns = 15
+temperature = 0.4
+tools = ["memory_store", "memory_search", "think", "llm_call"]
+system_prompt_path = "correspondent_prompt.md"
+
+[operator.schedule]
+type = "interval"
+value = "300"

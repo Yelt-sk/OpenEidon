@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenJarvis API Server
+After=network.target
+
+[Service]
+Type=simple
+User=openjarvis
+WorkingDirectory=/opt/openjarvis
+ExecStart=/opt/openjarvis/.venv/bin/jarvis serve --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=5
+Environment=HOME=/opt/openjarvis
+
+[Install]
+WantedBy=multi-user.target

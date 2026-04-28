@@ -1,0 +1,24 @@
+[recipe]
+name = "research_assistant"
+description = "Deep research with orchestrator agent and web search"
+version = "0.1.0"
+
+[intelligence]
+model = "qwen3:8b"
+
+[engine]
+key = "ollama"
+
+[agent]
+type = "orchestrator"
+max_turns = 15
+temperature = 0.5
+tools = ["web_search", "http_request", "memory_store", "memory_search", "think", "file_write"]
+system_prompt = "You are a research assistant. Investigate topics thoroughly using web search and memory. Store important findings and synthesize comprehensive answers."
+
+[learning]
+routing = "grpo"
+agent = "icl_updater"
+
+[eval]
+suites = ["reasoning"]

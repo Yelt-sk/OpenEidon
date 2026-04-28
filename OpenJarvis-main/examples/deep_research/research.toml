@@ -1,0 +1,23 @@
+[recipe]
+name = "deep_research"
+description = "Multi-source deep research with memory-augmented orchestrator"
+version = "0.1.0"
+
+[intelligence]
+model = "qwen3:8b"
+
+[engine]
+key = "ollama"
+
+[agent]
+type = "orchestrator"
+max_turns = 15
+temperature = 0.5
+tools = ["web_search", "think", "file_write", "memory_store", "memory_search"]
+system_prompt = """You are a deep research assistant. When given a topic:
+1. Search the web for recent, authoritative sources
+2. Store key findings in memory for cross-referencing
+3. Synthesize a comprehensive report with citations
+4. Save the final report to a file
+
+Always cite your sources and distinguish between established facts and emerging claims."""

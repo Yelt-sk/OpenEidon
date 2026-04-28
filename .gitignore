@@ -1,0 +1,41 @@
+# Logs
+*.log
+
+# Personal user data
+.jarvis-reminders.json
+.jarvis-checkin.json
+.jarvis-file-roots.json
+
+# Claude Code config
+.claude/
+
+# Original assets (copies already in OpenJarvis-main/assets/)
+logo.png
+openEidon_header_for_readme_and_ad.png
+
+# Personal projects and notes
+His-projects/
+markdown/
+jarvis_temp/
+
+# Planning/scratch files
+far_plan.md
+next.md
+problems.md
+Eidon App.html
+New Workflow Modal.html
+
+# Windows scripts
+*.bat
+
+# Frontend build output and deps
+OpenJarvis-main/frontend/node_modules/
+OpenJarvis-main/src/openjarvis/server/static/
+
+# Playwright browser binaries
+OpenJarvis-main/.playwright-browsers/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/

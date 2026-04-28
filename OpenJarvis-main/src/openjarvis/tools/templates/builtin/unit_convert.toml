@@ -1,0 +1,17 @@
+[tool]
+name = "unit_convert"
+description = "Convert between common units."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.value]
+type = "number"
+description = "Value to convert."
+[tool.parameters.properties.from_unit]
+type = "string"
+description = "Source unit."
+[tool.parameters.properties.to_unit]
+type = "string"
+description = "Target unit."
+[tool.action]
+type = "python"
+expression = "str(float(value))"

@@ -1,0 +1,25 @@
+[recipe]
+name = "messaging_hub"
+description = "Smart inbox with message triage and auto-replies"
+version = "0.1.0"
+
+[intelligence]
+model = "qwen3:8b"
+
+[engine]
+key = "ollama"
+
+[agent]
+type = "orchestrator"
+max_turns = 5
+temperature = 0.3
+tools = ["think", "memory_store", "memory_search"]
+system_prompt = """You are a smart inbox assistant. For each message:
+1. Classify as: URGENT, ACTION_REQUIRED, FYI, or SPAM
+2. Draft a concise reply if needed
+3. Store key information in memory for end-of-day summary
+
+Be professional and concise in your replies."""
+
+[channel]
+default = "slack"

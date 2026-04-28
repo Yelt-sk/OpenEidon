@@ -1,0 +1,25 @@
+[recipe]
+name = "monitor_assistant"
+description = "Evidence-driven monitoring with code execution, causality tracking, and cross-session memory"
+version = "0.1.0"
+
+[intelligence]
+model = "qwen3:32b"
+
+[engine]
+key = "vllm"
+
+[agent]
+type = "monitor"
+max_turns = 25
+temperature = 0.3
+tools = [
+    "think", "file_read", "shell_exec", "code_interpreter",
+    "memory_store", "memory_search", "memory_index",
+    "kg_add_entity", "kg_add_relation", "kg_query", "kg_neighbors",
+    "database_query", "http_request", "web_search",
+]
+
+[learning]
+routing = "grpo"
+agent = "icl_updater"

@@ -1,0 +1,11 @@
+[tool]
+name = "text_length"
+description = "Count the length of a text string."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "Text to measure."
+[tool.action]
+type = "transform"
+transform = "length"

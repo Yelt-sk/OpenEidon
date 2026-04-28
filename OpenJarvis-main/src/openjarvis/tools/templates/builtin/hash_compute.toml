@@ -1,0 +1,11 @@
+[tool]
+name = "hash_compute"
+description = "Compute SHA-256 hash of input text."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "Text to hash."
+[tool.action]
+type = "python"
+expression = "str(input)"
