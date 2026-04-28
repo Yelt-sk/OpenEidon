@@ -48,16 +48,6 @@ OpenEidon is designed for teams and makers who want:
 - Ship desktop and browser experiences on top of the same backend
 - Extend the system with tools, skills, memory backends, and custom agents
 
-## Screenshots
-
-### Current Interface Preview
-
-![OpenEidon interface preview](screenshot.png)
-
-_Main product screenshot from the current repository state._
-
-![OpenEidon web/home preview](youtube_homepage.png)
-
 _Alternative preview that can be replaced later with a cleaner landing or app screenshot._
 
 ### Planned Gallery Slots
