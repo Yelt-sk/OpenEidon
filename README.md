@@ -50,14 +50,7 @@ OpenEidon is designed for teams and makers who want:
 
 _Alternative preview that can be replaced later with a cleaner landing or app screenshot._
 
-### Planned Gallery Slots
 
-Replace these with your final marketing visuals when ready:
-
-- `docs/assets/openeidon-hero.png` - main hero screenshot for the README first screen
-- `docs/assets/openeidon-chat.png` - core assistant/chat UI
-- `docs/assets/openeidon-workflow.png` - workflow or automation screen
-- `docs/assets/openeidon-desktop.png` - desktop app window or system integration view
 
 ## Quick Start
 
