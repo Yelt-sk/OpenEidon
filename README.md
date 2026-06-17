@@ -1,3 +1,9 @@
+!!!!THIS BRANCH IS FOR MAKING V2- OPTIMIZED VERSION, BETTER USER STORY AND WITHOUT UNNEEDED SH*T!!!!!!!!!
+
+
+STATUS: NOT READY YET LUL
+
+
 <div align="center">
   <img alt="OpenEidon" src="assets/openEidon_header_for_readme_and_ad.png" width="420">
 
@@ -27,6 +33,7 @@
 ---
 
 OpenEidon is a product-focused AI platform built on top of OpenJarvis. It keeps the local-first foundation, composable backend, and agent infrastructure, then pushes the experience toward something easier to use, easier to package, and easier to present as a real personal AI product.
+
 
 ## Why OpenEidon
 
