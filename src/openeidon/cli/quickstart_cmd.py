@@ -143,7 +143,7 @@ def quickstart(force: bool) -> None:
     if not _check_model_available(active_engine):
         console.print("  [yellow]No models found.[/yellow]")
         console.print(
-            "  Pull a model first (e.g. [bold]ollama pull qwen3.5:2b[/bold])."
+            "  Pull a model first (e.g. [bold]ollama pull qwen3:4b[/bold])."
         )
         raise SystemExit(1)
     console.print("  [green]Models available.[/green]")

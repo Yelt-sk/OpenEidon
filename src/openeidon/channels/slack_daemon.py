@@ -40,7 +40,7 @@ def _to_slack_fmt(text: str) -> str:
 def run_slack_daemon(
     bot_token: str,
     app_token: str,
-    model: str = "qwen3.5:9b",
+    model: str = "",
 ) -> None:
     """Run the Slack daemon (blocking). Handles DMs with DeepResearch."""
     import threading
@@ -136,7 +136,7 @@ def run_slack_daemon(
 def start_slack_daemon(
     bot_token: str,
     app_token: str,
-    model: str = "qwen3.5:9b",
+    model: str = "",
 ) -> int:
     """Spawn the Slack daemon as a background subprocess.
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--bot-token", required=True)
     parser.add_argument("--app-token", required=True)
-    parser.add_argument("--model", default="qwen3.5:9b")
+    parser.add_argument("--model", default="")
     args = parser.parse_args()
 
     run_slack_daemon(

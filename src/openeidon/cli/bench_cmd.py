@@ -396,9 +396,9 @@ def run(
 @click.option(
     "--model",
     "-m",
-    default="qwen3.5:9b",
-    show_default=True,
-    help="Model identifier.",
+    default="",
+    show_default=False,
+    help="Model identifier. Defaults to the configured/installed model.",
 )
 @click.option(
     "--engine",

@@ -1406,6 +1406,10 @@ def create_agent_manager_router(
                     stop_slack()
 
                     # Spawn as subprocess (reliable)
+                    from openeidon.intelligence.model_resolver import (
+                        resolve_model_for_app,
+                    )
+
                     srv_model = (
                         getattr(
                             getattr(
@@ -1414,9 +1418,9 @@ def create_agent_manager_router(
                                 None,
                             ),
                             "_model",
-                            "qwen3.5:9b",
+                            "",
                         )
-                        or "qwen3.5:9b"
+                        or resolve_model_for_app(request.app.state)
                     )
                     pid = start_slack_daemon(
                         bot_token=bot_token,

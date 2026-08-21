@@ -103,6 +103,7 @@ def imessage_start(
         )
         from openeidon.connectors.store import KnowledgeStore
         from openeidon.engine.ollama import OllamaEngine
+        from openeidon.intelligence.model_resolver import resolve_model
         from openeidon.tools.knowledge_search import (
             KnowledgeSearchTool,
         )
@@ -113,6 +114,7 @@ def imessage_start(
         from openeidon.tools.think import ThinkTool
 
         engine = OllamaEngine()
+        research_model = resolve_model(engine)
         store = KnowledgeStore()
         retriever = TwoStageRetriever(store)
         tools = [
@@ -121,13 +123,13 @@ def imessage_start(
             ScanChunksTool(
                 store=store,
                 engine=engine,
-                model="qwen3.5:4b",
+                model=research_model,
             ),
             ThinkTool(),
         ]
         agent = DeepResearchAgent(
             engine=engine,
-            model="qwen3.5:4b",
+            model=research_model,
             tools=tools,
         )
 

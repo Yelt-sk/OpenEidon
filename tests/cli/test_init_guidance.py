@@ -53,12 +53,15 @@ class TestNextStepsOllama:
         assert "eidon doctor" in text
 
     def test_next_steps_ollama_with_model(self) -> None:
-        text = _next_steps_text("ollama", "qwen3.5:27b")
-        assert "ollama pull qwen3.5:27b" in text
+        text = _next_steps_text("ollama", "qwen3:30b")
+        assert "ollama pull qwen3:30b" in text
 
     def test_next_steps_ollama_default_model(self) -> None:
+        """The guidance must name a model that can actually be pulled; it
+        used to print `qwen3.5:2b`, from a family that does not exist."""
         text = _next_steps_text("ollama")
-        assert "ollama pull qwen3.5:2b" in text
+        assert "ollama pull qwen3:4b" in text
+        assert "qwen3.5" not in text
 
 
 class TestNextStepsVllm:

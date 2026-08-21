@@ -75,10 +75,10 @@ class IntentClassifyRequest(BaseModel):
 
 
 def _default_model(request: Request) -> str:
-    """Model for internal helper calls: configured default, else the server's."""
-    config = getattr(request.app.state, "config", None)
-    configured = getattr(getattr(config, "intelligence", None), "default_model", "")
-    return configured or getattr(request.app.state, "model", "") or ""
+    """Model for internal helper calls; see intelligence.model_resolver."""
+    from openeidon.intelligence.model_resolver import resolve_model_for_app
+
+    return resolve_model_for_app(request.app.state)
 
 
 def _to_messages(chat_messages) -> list[Message]:

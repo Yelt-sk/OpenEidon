@@ -8,6 +8,7 @@ found in the TOML file.
 from __future__ import annotations
 
 import functools
+import logging
 import os
 import platform
 import shutil
@@ -173,18 +174,48 @@ def _detect_cpu_brand() -> str:
     return platform.processor() or "unknown"
 
 
+def _windows_ram_gb() -> float:
+    """Total physical memory on Windows via GlobalMemoryStatusEx."""
+    import ctypes
+
+    class _MemoryStatusEx(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+    status = _MemoryStatusEx()
+    status.dwLength = ctypes.sizeof(_MemoryStatusEx)
+    if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+        return 0.0
+    return round(status.ullTotalPhys / (1024**3), 1)
+
+
 def _total_ram_gb() -> float:
+    """Total physical RAM in GB, or 0.0 when it cannot be determined."""
+    system = platform.system()
     try:
-        if platform.system() == "Darwin":
+        if system == "Darwin":
             raw = _run_cmd(["sysctl", "-n", "hw.memsize"])
             return round(int(raw) / (1024**3), 1) if raw else 0.0
+        if system == "Windows":
+            # /proc/meminfo does not exist here; without this branch the
+            # hardware-aware setup sized the machine off VRAM alone.
+            return _windows_ram_gb()
         meminfo = Path("/proc/meminfo")
         if meminfo.exists():
             for line in meminfo.read_text().splitlines():
                 if line.startswith("MemTotal"):
                     kb = int(line.split()[1])
                     return round(kb / (1024**2), 1)
-    except (OSError, ValueError):
+    except (OSError, ValueError, AttributeError):
         pass
     return 0.0
 
@@ -240,29 +271,91 @@ def _available_memory_gb(hw: HardwareInfo) -> float:
 
 # Explicit tier table: (max_ram_gb, model_id).
 # Walked in order — first tier where available_gb <= max_ram is chosen.
-# Uses Qwen3.5 MoE models — better quality per GB than dense models since
-# only a fraction of parameters are active per token.
+# These must be model ids that actually exist in the registries we pull from;
+# the table previously named a "qwen3.5" family that does not, so `init` on a
+# fresh machine configured a model nothing could pull.
 _MODEL_TIERS = [
-    (8, "qwen3.5:2b"),
-    (16, "qwen3.5:4b"),
-    (32, "qwen3.5:9b"),
-    (64, "qwen3.5:27b"),
+    (8, "qwen3:1.7b"),
+    (16, "qwen3:4b"),
+    (32, "qwen3:8b"),
+    (64, "qwen3:14b"),
 ]
-_MODEL_TIER_FALLBACK = "qwen3.5:27b"
+_MODEL_TIER_FALLBACK = "qwen3:30b"
+
+
+def installed_models(engine_name: str) -> list[str]:
+    """Return model ids the engine already has locally, newest-API first.
+
+    Discovery beats guessing: whatever is actually installed is a better
+    recommendation than any built-in table, and it costs one call.
+    """
+    try:
+        import openeidon.engine  # noqa: F401 -- triggers engine registration
+        from openeidon.core.registry import EngineRegistry
+
+        if not EngineRegistry.contains(engine_name):
+            return []
+        engine = EngineRegistry.create(engine_name)
+        models = engine.list_models() or []
+    except Exception as exc:  # engine not running, not installed, misconfigured
+        logging.getLogger(__name__).debug(
+            "Could not list installed models for %s: %s", engine_name, exc
+        )
+        return []
+
+    ids: list[str] = []
+    for item in models:
+        if isinstance(item, dict):
+            value = item.get("id") or item.get("name") or ""
+        else:
+            value = str(item)
+        if value:
+            ids.append(value)
+    return ids
+
+
+def _best_installed(installed: list[str], available_gb: float) -> str:
+    """Pick the largest installed model that plausibly fits in memory."""
+    import re
+
+    from openeidon.intelligence.model_catalog import BUILTIN_MODELS
+
+    catalog = {spec.model_id: spec for spec in BUILTIN_MODELS}
+    sized: list[tuple[float, str]] = []
+    for model_id in installed:
+        spec = catalog.get(model_id)
+        if spec is not None:
+            size_gb = spec.parameter_count_b * 0.5 * 1.1
+        else:
+            # Unknown to the catalog (custom or tagged build): read the
+            # parameter count out of the name, e.g. "qwen3-4b-32k" -> 4B.
+            match = re.search(r"(\d+(?:\.\d+)?)\s*b\b", model_id.lower())
+            if match is None:
+                continue
+            size_gb = float(match.group(1)) * 0.5 * 1.1
+        if size_gb <= available_gb:
+            sized.append((size_gb, model_id))
+    if not sized:
+        return ""
+    sized.sort(reverse=True)
+    return sized[0][1]
 
 
 def recommend_model(hw: HardwareInfo, engine: str) -> str:
-    """Suggest the best Qwen3.5 model that fits the detected hardware.
+    """Recommend a model for *engine* on the detected hardware.
 
-    Uses an explicit tier table mapping available memory to model size.
-    Falls back to scanning the full catalog if the tiered model is not
-    compatible with the selected engine.
+    Prefers what is already installed; the built-in tier table is only a
+    suggestion of what to pull when the machine has nothing yet.
     """
     from openeidon.intelligence.model_catalog import BUILTIN_MODELS
 
     available_gb = _available_memory_gb(hw)
     if available_gb <= 0:
         return ""
+
+    already_here = _best_installed(installed_models(engine), available_gb)
+    if already_here:
+        return already_here
 
     # Build a lookup for quick engine-compatibility checks
     catalog = {spec.model_id: spec for spec in BUILTIN_MODELS}
@@ -278,12 +371,12 @@ def recommend_model(hw: HardwareInfo, engine: str) -> str:
     if spec and engine in spec.supported_engines:
         return model_id
 
-    # Fallback: scan all Qwen3.5 models for engine compatibility
+    # Fallback: scan the Qwen3 catalog for engine compatibility
     candidates = [
         s
         for s in BUILTIN_MODELS
         if s.provider == "alibaba"
-        and s.model_id.startswith("qwen3.5:")
+        and s.model_id.startswith("qwen3:")
         and engine in s.supported_engines
     ]
     candidates.sort(key=lambda s: s.parameter_count_b, reverse=True)
@@ -1925,6 +2018,7 @@ __all__ = [
     "generate_minimal_toml",
     "load_config",
     "recommend_engine",
+    "installed_models",
     "recommend_model",
     "validate_config_key",
 ]

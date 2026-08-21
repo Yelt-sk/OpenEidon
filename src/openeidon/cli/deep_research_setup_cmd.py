@@ -35,7 +35,8 @@ _DEFAULT_NOTES_DB = (
 
 _DEFAULT_IMESSAGE_DB = Path.home() / "Library" / "Messages" / "chat.db"
 
-_OLLAMA_MODEL = "qwen3.5:4b"
+#: Empty means "resolve at call time"; see intelligence.model_resolver.
+_OLLAMA_MODEL = ""
 
 # ---------------------------------------------------------------------------
 # Detection
