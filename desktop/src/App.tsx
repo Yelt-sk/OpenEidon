@@ -35,7 +35,7 @@ export function App() {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <h1 style={styles.title}>OpenJarvis Desktop</h1>
+        <h1 style={styles.title}>OpenEidon Desktop</h1>
         <nav style={styles.nav}>
           {TABS.map((tab) => (
             <button

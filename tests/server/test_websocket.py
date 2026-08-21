@@ -11,7 +11,7 @@ fastapi = pytest.importorskip("fastapi")
 from fastapi import FastAPI  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from openjarvis.server.api_routes import include_all_routes  # noqa: E402
+from openeidon.server.api_routes import include_all_routes  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Helpers

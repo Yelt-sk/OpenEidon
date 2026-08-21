@@ -12,8 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.connectors._stubs import Document
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.connectors._stubs import Document
+from openeidon.core.registry import ConnectorRegistry
 
 # ---------------------------------------------------------------------------
 # Helpers — fake API payloads
@@ -75,7 +75,7 @@ def _make_credentials(tmp_path: Path) -> Path:
 @pytest.fixture()
 def connector(tmp_path: Path):
     """GmailConnector pointing at a tmp credentials path (no file yet)."""
-    from openjarvis.connectors.gmail import GmailConnector  # noqa: PLC0415
+    from openeidon.connectors.gmail import GmailConnector  # noqa: PLC0415
 
     creds_path = str(tmp_path / "gmail.json")
     return GmailConnector(credentials_path=creds_path)
@@ -119,8 +119,8 @@ def test_auth_url_returns_string(connector) -> None:
 # ---------------------------------------------------------------------------
 
 
-@patch("openjarvis.connectors.gmail._gmail_api_list_messages")
-@patch("openjarvis.connectors.gmail._gmail_api_get_message")
+@patch("openeidon.connectors.gmail._gmail_api_list_messages")
+@patch("openeidon.connectors.gmail._gmail_api_get_message")
 def test_sync_yields_documents(
     mock_get,
     mock_list,
@@ -199,8 +199,8 @@ def test_mcp_tools(connector) -> None:
 # ---------------------------------------------------------------------------
 
 
-@patch("openjarvis.connectors.gmail._gmail_api_list_messages")
-@patch("openjarvis.connectors.gmail._gmail_api_get_message")
+@patch("openeidon.connectors.gmail._gmail_api_list_messages")
+@patch("openeidon.connectors.gmail._gmail_api_get_message")
 def test_sync_passes_since_as_query(
     mock_get,
     mock_list,
@@ -233,8 +233,8 @@ def test_sync_passes_since_as_query(
 # ---------------------------------------------------------------------------
 
 
-@patch("openjarvis.connectors.gmail._gmail_api_list_messages")
-@patch("openjarvis.connectors.gmail._gmail_api_get_message")
+@patch("openeidon.connectors.gmail._gmail_api_list_messages")
+@patch("openeidon.connectors.gmail._gmail_api_get_message")
 def test_sync_without_since_passes_empty_query(
     mock_get,
     mock_list,
@@ -261,7 +261,7 @@ def test_sync_without_since_passes_empty_query(
 
 def test_registry() -> None:
     """GmailConnector can be registered and retrieved via ConnectorRegistry."""
-    from openjarvis.connectors.gmail import GmailConnector  # noqa: PLC0415
+    from openeidon.connectors.gmail import GmailConnector  # noqa: PLC0415
 
     # The registry is cleared before each test by the autouse conftest fixture,
     # so we imperatively re-register here (same pattern as test_obsidian.py).

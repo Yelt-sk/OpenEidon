@@ -7,10 +7,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.channels.twitter import TwitterChannel
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.channels.twitter import TwitterChannel
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)
@@ -48,9 +48,9 @@ def test_twitter_send_tweet():
     ch._client = mock_client
     ch._status = ChannelStatus.CONNECTED
 
-    result = ch.send("timeline", "Hello from Jarvis!")
+    result = ch.send("timeline", "Hello from Eidon!")
     assert result is True
-    mock_client.create_tweet.assert_called_once_with(text="Hello from Jarvis!")
+    mock_client.create_tweet.assert_called_once_with(text="Hello from Eidon!")
 
 
 def test_twitter_send_dm_when_channel_is_numeric():

@@ -13,9 +13,9 @@ try:
 except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore[no-redef]
 
-from openjarvis.core.types import StepType, Trace, TraceStep
-from openjarvis.learning.agents.agent_evolver import AgentConfigEvolver
-from openjarvis.traces.store import TraceStore
+from openeidon.core.types import StepType, Trace, TraceStep
+from openeidon.learning.agents.agent_evolver import AgentConfigEvolver
+from openeidon.traces.store import TraceStore
 
 # ---------------------------------------------------------------------------
 # Helpers

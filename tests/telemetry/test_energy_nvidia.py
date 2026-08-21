@@ -61,7 +61,7 @@ class TestAvailable:
         fake_pynvml = _make_fake_pynvml(device_count=1)
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -74,7 +74,7 @@ class TestAvailable:
                 mod._PYNVML_AVAILABLE = orig
 
     def test_available_false_when_pynvml_not_importable(self):
-        import openjarvis.telemetry.energy_nvidia as mod
+        import openeidon.telemetry.energy_nvidia as mod
 
         orig = mod._PYNVML_AVAILABLE
         mod._PYNVML_AVAILABLE = False
@@ -97,7 +97,7 @@ class TestHwCounterProbe:
         fake_pynvml.nvmlDeviceGetTotalEnergyConsumption.return_value = 1000.0
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -116,7 +116,7 @@ class TestHwCounterProbe:
         )
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -138,7 +138,7 @@ class TestEnergyMethod:
         fake_pynvml = _make_fake_pynvml(device_count=1)
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -156,7 +156,7 @@ class TestEnergyMethod:
         )
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -190,7 +190,7 @@ class TestSampleHwCounters:
         fake_pynvml.nvmlDeviceGetTotalEnergyConsumption.side_effect = get_energy
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -239,7 +239,7 @@ class TestSamplePolling:
         )
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -287,7 +287,7 @@ class TestSampleMultiGpu:
         )
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True
@@ -314,7 +314,7 @@ class TestSampleMultiGpu:
 class TestSampleNoDevices:
     def test_no_devices_empty_result(self):
         """When no GPUs are present, sample yields empty result."""
-        from openjarvis.telemetry.energy_nvidia import NvidiaEnergyMonitor
+        from openeidon.telemetry.energy_nvidia import NvidiaEnergyMonitor
 
         monitor = NvidiaEnergyMonitor.__new__(NvidiaEnergyMonitor)
         monitor._poll_interval_s = 0.05
@@ -342,7 +342,7 @@ class TestClose:
         fake_pynvml = _make_fake_pynvml(device_count=1)
 
         with patch.dict(sys.modules, {"pynvml": fake_pynvml}):
-            import openjarvis.telemetry.energy_nvidia as mod
+            import openeidon.telemetry.energy_nvidia as mod
 
             orig = mod._PYNVML_AVAILABLE
             mod._PYNVML_AVAILABLE = True

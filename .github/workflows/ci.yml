@@ -60,7 +60,7 @@ jobs:
         run: uv sync --extra dev
 
       - name: Build Rust extension
-        run: uv run maturin develop --manifest-path rust/crates/openjarvis-python/Cargo.toml
+        run: uv run maturin develop --manifest-path rust/crates/openeidon-python/Cargo.toml
 
       - name: Run tests
         run: uv run pytest tests/ -v --tb=short -m "not live and not cloud"

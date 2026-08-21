@@ -7,7 +7,7 @@ use tauri_plugin_autostart::MacosLauncher;
 use tokio::sync::Mutex;
 
 const OLLAMA_PORT: u16 = 11434;
-const JARVIS_PORT: u16 = 8000;
+const EIDON_PORT: u16 = 8000;
 
 /// Small, fast model pulled at startup so the app opens quickly.
 const STARTUP_MODEL: &str = "qwen3.5:4b";
@@ -191,12 +191,12 @@ fn resolve_bin(name: &str) -> String {
     name.to_string()
 }
 
-/// Find the OpenJarvis project root (contains pyproject.toml).
-/// Checks OPENJARVIS_ROOT env var, walks up from the executable, then
+/// Find the OpenEidon project root (contains pyproject.toml).
+/// Checks OPENEIDON_ROOT env var, walks up from the executable, then
 /// probes common clone locations.
 fn find_project_root() -> Option<std::path::PathBuf> {
     // 1. Explicit env var override
-    if let Ok(root) = std::env::var("OPENJARVIS_ROOT") {
+    if let Ok(root) = std::env::var("OPENEIDON_ROOT") {
         let path = std::path::PathBuf::from(&root);
         if path.join("pyproject.toml").exists() {
             return Some(path);
@@ -219,18 +219,18 @@ fn find_project_root() -> Option<std::path::PathBuf> {
     // 3. Fallback: well-known direct paths
     let home = home_dir();
     let direct = [
-        format!("{home}/OpenJarvis"),
-        format!("{home}/projects/hazy/OpenJarvis"),
-        format!("{home}/projects/OpenJarvis"),
-        format!("{home}/src/OpenJarvis"),
-        format!("{home}/Documents/OpenJarvis"),
-        format!("{home}/Desktop/OpenJarvis"),
-        format!("{home}/Developer/OpenJarvis"),
-        format!("{home}/dev/OpenJarvis"),
-        format!("{home}/Code/OpenJarvis"),
-        format!("{home}/code/OpenJarvis"),
-        format!("{home}/repos/OpenJarvis"),
-        format!("{home}/github/OpenJarvis"),
+        format!("{home}/OpenEidon"),
+        format!("{home}/projects/hazy/OpenEidon"),
+        format!("{home}/projects/OpenEidon"),
+        format!("{home}/src/OpenEidon"),
+        format!("{home}/Documents/OpenEidon"),
+        format!("{home}/Desktop/OpenEidon"),
+        format!("{home}/Developer/OpenEidon"),
+        format!("{home}/dev/OpenEidon"),
+        format!("{home}/Code/OpenEidon"),
+        format!("{home}/code/OpenEidon"),
+        format!("{home}/repos/OpenEidon"),
+        format!("{home}/github/OpenEidon"),
     ];
     for p in &direct {
         let path = std::path::PathBuf::from(p);
@@ -239,8 +239,8 @@ fn find_project_root() -> Option<std::path::PathBuf> {
         }
     }
 
-    // 4. Shallow scan: look for OpenJarvis one level inside common parent dirs.
-    //    This catches clones like ~/Documents/my-stuff/OpenJarvis without
+    // 4. Shallow scan: look for OpenEidon one level inside common parent dirs.
+    //    This catches clones like ~/Documents/my-stuff/OpenEidon without
     //    needing to enumerate every possible intermediate folder.
     let scan_parents = [
         format!("{home}/Documents"),
@@ -258,13 +258,13 @@ fn find_project_root() -> Option<std::path::PathBuf> {
         let parent_path = std::path::PathBuf::from(parent);
         if let Ok(entries) = std::fs::read_dir(&parent_path) {
             for entry in entries.flatten() {
-                let candidate = entry.path().join("OpenJarvis");
+                let candidate = entry.path().join("OpenEidon");
                 if candidate.join("pyproject.toml").exists() {
                     return Some(candidate);
                 }
-                // Also check if the entry itself is OpenJarvis (case-insensitive match)
+                // Also check if the entry itself is OpenEidon (case-insensitive match)
                 if let Some(name) = entry.file_name().to_str() {
-                    if name.eq_ignore_ascii_case("openjarvis")
+                    if name.eq_ignore_ascii_case("openeidon")
                         && entry.path().join("pyproject.toml").exists()
                     {
                         return Some(entry.path());
@@ -278,7 +278,7 @@ fn find_project_root() -> Option<std::path::PathBuf> {
 }
 
 // ---------------------------------------------------------------------------
-// BackendManager — owns the Ollama + Jarvis server child processes
+// BackendManager — owns the Ollama + Eidon server child processes
 // ---------------------------------------------------------------------------
 
 struct ChildHandle {
@@ -294,15 +294,15 @@ impl ChildHandle {
 #[derive(Default)]
 struct BackendManager {
     ollama: Option<ChildHandle>,
-    jarvis: Option<ChildHandle>,
+    eidon: Option<ChildHandle>,
 }
 
 impl BackendManager {
     async fn stop_all(&mut self) {
-        if let Some(ref mut h) = self.jarvis {
+        if let Some(ref mut h) = self.eidon {
             h.kill().await;
         }
-        self.jarvis = None;
+        self.eidon = None;
         if let Some(ref mut h) = self.ollama {
             h.kill().await;
         }
@@ -486,7 +486,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
         s.detail = "Model ready.".into();
     }
 
-    // Phase 3: Start jarvis serve
+    // Phase 3: Start eidon serve
     {
         let mut s = status.lock().await;
         s.phase = "server".into();
@@ -523,15 +523,15 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
             return;
         }
 
-        let target_path = std::path::PathBuf::from(home_dir()).join("OpenJarvis");
+        let target_path = std::path::PathBuf::from(home_dir()).join("OpenEidon");
         let clone_target = target_path.display().to_string();
 
         // If the directory exists but is not a valid project, don't overwrite
         if target_path.exists() && !target_path.join("pyproject.toml").exists() {
             let mut s = status.lock().await;
             s.error = Some(format!(
-                "{} exists but is not a valid OpenJarvis project. \
-                 Remove it and relaunch, or set OPENJARVIS_ROOT to the correct path.",
+                "{} exists but is not a valid OpenEidon project. \
+                 Remove it and relaunch, or set OPENEIDON_ROOT to the correct path.",
                 clone_target,
             ));
             return;
@@ -539,7 +539,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
 
         {
             let mut s = status.lock().await;
-            s.detail = "Downloading OpenJarvis (first launch)...".into();
+            s.detail = "Downloading OpenEidon (first launch)...".into();
         }
 
         let clone_result = tokio::process::Command::new(&git_bin)
@@ -547,7 +547,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
                 "clone",
                 "--depth",
                 "1",
-                "https://github.com/open-jarvis/OpenJarvis.git",
+                "https://github.com/Yelt-sk/OpenEidon.git",
                 &clone_target,
             ])
             .stdout(std::process::Stdio::null())
@@ -563,8 +563,8 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
                     let stderr = String::from_utf8_lossy(&output.stderr);
                     let mut s = status.lock().await;
                     s.error = Some(format!(
-                        "Failed to download OpenJarvis: {}. \
-                         Clone manually: git clone https://github.com/open-jarvis/OpenJarvis.git {}",
+                        "Failed to download OpenEidon: {}. \
+                         Clone manually: git clone https://github.com/Yelt-sk/OpenEidon.git {}",
                         stderr.trim(),
                         clone_target,
                     ));
@@ -573,8 +573,8 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
                 Err(e) => {
                     let mut s = status.lock().await;
                     s.error = Some(format!(
-                        "Failed to download OpenJarvis: {}. \
-                         Clone manually: git clone https://github.com/open-jarvis/OpenJarvis.git {}",
+                        "Failed to download OpenEidon: {}. \
+                         Clone manually: git clone https://github.com/Yelt-sk/OpenEidon.git {}",
                         e, clone_target,
                     ));
                     return;
@@ -599,7 +599,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
             .build()
             .unwrap();
         if client
-            .get(format!("http://127.0.0.1:{}/health", JARVIS_PORT))
+            .get(format!("http://127.0.0.1:{}/health", EIDON_PORT))
             .send()
             .await
             .is_ok()
@@ -608,7 +608,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
             #[cfg(unix)]
             {
                 let _ = tokio::process::Command::new("fuser")
-                    .args(["-k", &format!("{}/tcp", JARVIS_PORT)])
+                    .args(["-k", &format!("{}/tcp", EIDON_PORT)])
                     .output()
                     .await;
                 tokio::time::sleep(Duration::from_secs(2)).await;
@@ -619,7 +619,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
                 if let Ok(output) = tokio::process::Command::new("cmd")
                     .args(["/C", &format!(
                         "for /f \"tokens=5\" %a in ('netstat -ano ^| findstr :{port} ^| findstr LISTENING') do taskkill /PID %a /F",
-                        port = JARVIS_PORT,
+                        port = EIDON_PORT,
                     )])
                     .output()
                     .await
@@ -673,10 +673,10 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
     let mut cmd = tokio::process::Command::new(&uv_bin);
     cmd.args([
         "run",
-        "jarvis",
+        "eidon",
         "serve",
         "--port",
-        &JARVIS_PORT.to_string(),
+        &EIDON_PORT.to_string(),
         "--model",
         startup_model,
         "--agent",
@@ -686,21 +686,21 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
     .stderr(std::process::Stdio::piped())
     .current_dir(root);
 
-    // Inject cloud API keys from ~/.openjarvis/cloud-keys.env
+    // Inject cloud API keys from ~/.openeidon/cloud-keys.env
     for (key, value) in read_cloud_keys() {
         cmd.env(&key, &value);
     }
-    let jarvis_child = cmd.spawn();
+    let eidon_child = cmd.spawn();
 
-    match jarvis_child {
+    match eidon_child {
         Ok(child) => {
-            backend.lock().await.jarvis = Some(ChildHandle { child });
+            backend.lock().await.eidon = Some(ChildHandle { child });
         }
         Err(e) => {
             let mut s = status.lock().await;
             s.error = Some(format!(
-                "Could not start jarvis server: {}. \
-                 Make sure uv is installed (https://astral.sh/uv) and the OpenJarvis repo is cloned at {}",
+                "Could not start eidon server: {}. \
+                 Make sure uv is installed (https://astral.sh/uv) and the OpenEidon repo is cloned at {}",
                 e,
                 root.display(),
             ));
@@ -708,7 +708,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
         }
     }
 
-    let server_url = format!("http://127.0.0.1:{}/health", JARVIS_PORT);
+    let server_url = format!("http://127.0.0.1:{}/health", EIDON_PORT);
     let server_ok = wait_for_url(&server_url, Duration::from_secs(600)).await;
 
     if !server_ok {
@@ -716,7 +716,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
         let mut stderr_msg = String::new();
         {
             let mut mgr = backend.lock().await;
-            if let Some(ref mut h) = mgr.jarvis {
+            if let Some(ref mut h) = mgr.eidon {
                 if let Some(ref mut stderr) = h.child.stderr.take() {
                     use tokio::io::AsyncReadExt;
                     let mut buf = vec![0u8; 4096];
@@ -728,9 +728,9 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
         }
         let detail = if stderr_msg.is_empty() {
             format!(
-                "Jarvis server did not start. Check that:\n\
+                "Eidon server did not start. Check that:\n\
                  1. uv is installed ({})\n\
-                 2. The OpenJarvis repo is at {}\n\
+                 2. The OpenEidon repo is at {}\n\
                  3. Run 'uv sync' in that directory",
                 uv_bin,
                 root.display(),
@@ -770,7 +770,7 @@ async fn boot_backend(backend: SharedBackend, status: SharedStatus) {
 // ---------------------------------------------------------------------------
 
 fn api_base() -> String {
-    format!("http://127.0.0.1:{}", JARVIS_PORT)
+    format!("http://127.0.0.1:{}", EIDON_PORT)
 }
 
 #[tauri::command]
@@ -977,15 +977,15 @@ async fn fetch_models(api_url: String) -> Result<serde_json::Value, String> {
 }
 
 #[tauri::command]
-async fn run_jarvis_command(args: Vec<String>) -> Result<String, String> {
-    let mut cmd_args = vec!["run".to_string(), "jarvis".to_string()];
+async fn run_eidon_command(args: Vec<String>) -> Result<String, String> {
+    let mut cmd_args = vec!["run".to_string(), "eidon".to_string()];
     cmd_args.extend(args);
     let uv_bin = resolve_bin("uv");
     let output = tokio::process::Command::new(&uv_bin)
         .args(&cmd_args)
         .output()
         .await
-        .map_err(|e| format!("Failed to launch jarvis: {}", e))?;
+        .map_err(|e| format!("Failed to launch eidon: {}", e))?;
 
     if output.status.success() {
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
@@ -1070,11 +1070,11 @@ async fn submit_savings(
 // Cloud API key management
 // ---------------------------------------------------------------------------
 
-/// Path to the cloud keys file (~/.openjarvis/cloud-keys.env).
+/// Path to the cloud keys file (~/.openeidon/cloud-keys.env).
 fn cloud_keys_path() -> std::path::PathBuf {
     let home = home_dir();
     std::path::PathBuf::from(home)
-        .join(".openjarvis")
+        .join(".openeidon")
         .join("cloud-keys.env")
 }
 
@@ -1131,7 +1131,7 @@ async fn save_cloud_key(key_name: String, key_value: String) -> Result<(), Strin
 
     // Tell the running server to hot-reload its cloud engine so the user
     // doesn't need to restart the app after entering an API key.
-    let reload_url = format!("http://127.0.0.1:{}/v1/cloud/reload", JARVIS_PORT);
+    let reload_url = format!("http://127.0.0.1:{}/v1/cloud/reload", EIDON_PORT);
     let _ = reqwest::Client::new()
         .post(&reload_url)
         .timeout(std::time::Duration::from_secs(10))
@@ -1230,7 +1230,7 @@ pub fn run() {
             let health = MenuItemBuilder::with_id("health", "Health: starting...")
                 .enabled(false)
                 .build(app)?;
-            let quit = MenuItemBuilder::with_id("quit", "Quit OpenJarvis").build(app)?;
+            let quit = MenuItemBuilder::with_id("quit", "Quit OpenEidon").build(app)?;
 
             let menu = MenuBuilder::new(app)
                 .item(&show)
@@ -1242,7 +1242,7 @@ pub fn run() {
 
             let _tray = TrayIconBuilder::with_id("main")
                 .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("OpenJarvis")
+                .tooltip("OpenEidon")
                 .menu(&menu)
                 .on_menu_event(move |app, event| match event.id().as_ref() {
                     "show" => {
@@ -1283,7 +1283,7 @@ pub fn run() {
             search_memory,
             fetch_agents,
             fetch_models,
-            run_jarvis_command,
+            run_eidon_command,
             fetch_savings,
             submit_savings,
             transcribe_audio,
@@ -1294,7 +1294,7 @@ pub fn run() {
             get_cloud_key_status,
         ])
         .build(tauri::generate_context!())
-        .expect("error while building OpenJarvis Desktop")
+        .expect("error while building OpenEidon Desktop")
         .run(move |_app, event| {
             if let tauri::RunEvent::ExitRequested { .. } = event {
                 let b = backend.clone();

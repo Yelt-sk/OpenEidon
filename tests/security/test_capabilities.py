@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.security.capabilities import (
+from openeidon.security.capabilities import (
     DEFAULT_TOOL_CAPABILITIES,
     Capability,
     CapabilityPolicy,

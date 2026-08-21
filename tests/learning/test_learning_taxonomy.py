@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.learning._stubs import (
+from openeidon.learning._stubs import (
     AgentLearningPolicy,
     IntelligenceLearningPolicy,
     LearningPolicy,

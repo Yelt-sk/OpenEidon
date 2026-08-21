@@ -5,7 +5,7 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-from openjarvis.core.config import ChannelConfig, JarvisConfig, load_config
+from openeidon.core.config import ChannelConfig, EidonConfig, load_config
 
 
 class TestChannelConfigDefaults:
@@ -23,14 +23,14 @@ class TestChannelConfigDefaults:
         assert cfg.default_agent == "orchestrator"
 
 
-class TestChannelConfigInJarvisConfig:
-    def test_channel_config_in_jarvis_config(self) -> None:
-        cfg = JarvisConfig()
+class TestChannelConfigInEidonConfig:
+    def test_channel_config_in_eidon_config(self) -> None:
+        cfg = EidonConfig()
         assert hasattr(cfg, "channel")
         assert isinstance(cfg.channel, ChannelConfig)
 
-    def test_jarvis_config_channel_defaults(self) -> None:
-        cfg = JarvisConfig()
+    def test_eidon_config_channel_defaults(self) -> None:
+        cfg = EidonConfig()
         assert cfg.channel.enabled is False
         assert cfg.channel.default_channel == ""
 

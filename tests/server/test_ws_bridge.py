@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from openjarvis.core.events import EventBus, EventType
+from openeidon.core.events import EventBus, EventType
 
 try:
     from fastapi import FastAPI
@@ -26,7 +26,7 @@ def event_bus():
 
 @pytest.fixture
 def app(event_bus):
-    from openjarvis.server.ws_bridge import create_ws_router
+    from openeidon.server.ws_bridge import create_ws_router
 
     app = FastAPI()
     router = create_ws_router(event_bus)

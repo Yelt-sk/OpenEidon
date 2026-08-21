@@ -8,10 +8,10 @@ import httpx
 import pytest
 import respx
 
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._base import EngineConnectionError
-from openjarvis.engine.openai_compat_engines import VLLMEngine
+from openeidon.core.registry import EngineRegistry
+from openeidon.core.types import Message, Role
+from openeidon.engine._base import EngineConnectionError
+from openeidon.engine.openai_compat_engines import VLLMEngine
 
 VLLM_HOST = "http://testhost:8000"
 NEW_MODELS = ["gpt-oss:120b", "qwen3:8b", "glm-4.7-flash", "trinity-mini"]

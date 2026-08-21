@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from openjarvis.core.types import ToolResult
-from openjarvis.skills.executor import SkillExecutor
-from openjarvis.skills.tool_adapter import SkillTool
-from openjarvis.skills.types import SkillManifest, SkillStep
-from openjarvis.tools._stubs import BaseTool, ToolExecutor, ToolSpec
+from openeidon.core.types import ToolResult
+from openeidon.skills.executor import SkillExecutor
+from openeidon.skills.tool_adapter import SkillTool
+from openeidon.skills.types import SkillManifest, SkillStep
+from openeidon.tools._stubs import BaseTool, ToolExecutor, ToolSpec
 
 
 class EchoTool(BaseTool):

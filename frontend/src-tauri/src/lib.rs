@@ -35,7 +35,7 @@ fn ensure_overlay_window(app: &tauri::AppHandle) -> tauri::Result<()> {
         "overlay",
         WebviewUrl::App("/?overlay=1".into()),
     )
-    .title("Jarvis Overlay")
+    .title("Eidon Overlay")
     .inner_size(width, height)
     .min_inner_size(360.0, 220.0)
     .position(x, y)
@@ -126,7 +126,7 @@ async fn get_setup_status() -> Result<serde_json::Value, String> {
     }))
 }
 
-/// Fetch health status from the OpenJarvis API server.
+/// Fetch health status from the OpenEidon API server.
 #[tauri::command]
 async fn check_health(api_url: String) -> Result<serde_json::Value, String> {
     let url = format!("{}/health", api_url);
@@ -332,14 +332,14 @@ async fn api_json_request(
     serde_json::from_str(&text).map_err(|e| format!("Invalid JSON: {}", e))
 }
 
-/// Launch the `jarvis` CLI command via shell.
+/// Launch the `eidon` CLI command via shell.
 #[tauri::command]
-async fn run_jarvis_command(args: Vec<String>) -> Result<String, String> {
-    let output = tokio::process::Command::new("jarvis")
+async fn run_eidon_command(args: Vec<String>) -> Result<String, String> {
+    let output = tokio::process::Command::new("eidon")
         .args(&args)
         .output()
         .await
-        .map_err(|e| format!("Failed to launch jarvis: {}", e))?;
+        .map_err(|e| format!("Failed to launch eidon: {}", e))?;
 
     if output.status.success() {
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
@@ -374,7 +374,7 @@ pub fn run() {
             let health = MenuItemBuilder::with_id("health", "Health: checking...")
                 .enabled(false)
                 .build(app)?;
-            let quit = MenuItemBuilder::with_id("quit", "Quit OpenJarvis")
+            let quit = MenuItemBuilder::with_id("quit", "Quit OpenEidon")
                 .build(app)?;
 
             let menu = MenuBuilder::new(app)
@@ -388,7 +388,7 @@ pub fn run() {
 
             let _tray = TrayIconBuilder::with_id("main")
                 .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("OpenJarvis")
+                .tooltip("OpenEidon")
                 .menu(&menu)
                 .on_menu_event(move |app, event| {
                     match event.id().as_ref() {
@@ -432,8 +432,8 @@ pub fn run() {
             fetch_agents,
             chat_completion,
             api_json_request,
-            run_jarvis_command,
+            run_eidon_command,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running OpenJarvis Desktop");
+        .expect("error while running OpenEidon Desktop");
 }

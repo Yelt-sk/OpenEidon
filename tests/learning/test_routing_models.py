@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.intelligence.model_catalog import register_builtin_models
-from openjarvis.learning._stubs import RoutingContext
-from openjarvis.learning.routing.router import (
+from openeidon.intelligence.model_catalog import register_builtin_models
+from openeidon.learning._stubs import RoutingContext
+from openeidon.learning.routing.router import (
     HeuristicRouter,
     build_routing_context,
 )

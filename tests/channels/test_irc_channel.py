@@ -7,10 +7,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.channels.irc_channel import IRCChannel
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.channels.irc_channel import IRCChannel
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)
@@ -25,7 +25,7 @@ class TestRegistration:
         assert ChannelRegistry.contains("irc")
 
     def test_channel_id(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
         assert ch.channel_id == "irc"
 
 
@@ -39,9 +39,9 @@ class TestInit:
         assert ch._status == ChannelStatus.DISCONNECTED
 
     def test_constructor_params(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
         assert ch._server == "irc.example.com"
-        assert ch._nick == "jarvis"
+        assert ch._nick == "eidon"
         assert ch._password == "pass123"
 
     def test_env_var_fallback(self):
@@ -81,7 +81,7 @@ class TestInit:
 
 class TestSend:
     def test_send_success(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
 
         mock_sock = MagicMock()
         with patch("socket.socket", return_value=mock_sock):
@@ -91,7 +91,7 @@ class TestSend:
             mock_sock.sendall.assert_called()
 
     def test_send_failure_exception(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
 
         mock_sock = MagicMock()
         mock_sock.connect.side_effect = ConnectionError("refused")
@@ -108,7 +108,7 @@ class TestSend:
         bus = EventBus(record_history=True)
         ch = IRCChannel(
             server="irc.example.com",
-            nick="jarvis",
+            nick="eidon",
             password="pass123",
             bus=bus,
         )
@@ -123,13 +123,13 @@ class TestSend:
 
 class TestListChannels:
     def test_list_channels(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
         assert ch.list_channels() == ["irc"]
 
 
 class TestStatus:
     def test_disconnected_initially(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
         assert ch.status() == ChannelStatus.DISCONNECTED
 
     def test_no_server_connect_error(self):
@@ -140,7 +140,7 @@ class TestStatus:
 
 class TestOnMessage:
     def test_on_message(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
         handler = MagicMock()
         ch.on_message(handler)
         assert handler in ch._handlers
@@ -148,7 +148,7 @@ class TestOnMessage:
 
 class TestDisconnect:
     def test_disconnect(self):
-        ch = IRCChannel(server="irc.example.com", nick="jarvis", password="pass123")
+        ch = IRCChannel(server="irc.example.com", nick="eidon", password="pass123")
         ch._status = ChannelStatus.CONNECTED
         ch.disconnect()
         assert ch.status() == ChannelStatus.DISCONNECTED

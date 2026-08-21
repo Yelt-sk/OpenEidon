@@ -7,13 +7,13 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.telemetry.energy_rapl import (
+from openeidon.telemetry.energy_rapl import (
     RaplEnergyMonitor,
     _discover_domains,
 )
 
-_PLAT = "openjarvis.telemetry.energy_rapl.platform.system"
-_BASE = "openjarvis.telemetry.energy_rapl._RAPL_BASE"
+_PLAT = "openeidon.telemetry.energy_rapl.platform.system"
+_BASE = "openeidon.telemetry.energy_rapl._RAPL_BASE"
 
 
 # ---------------------------------------------------------------------------

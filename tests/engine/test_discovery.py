@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from unittest import mock
 
-from openjarvis.core.config import JarvisConfig
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.engine._base import InferenceEngine
-from openjarvis.engine._discovery import (
+from openeidon.core.config import EidonConfig
+from openeidon.core.registry import EngineRegistry
+from openeidon.engine._base import InferenceEngine
+from openeidon.engine._discovery import (
     discover_engines,
     discover_models,
     get_engine,
@@ -51,9 +51,9 @@ class TestDiscoverEngines:
         _reg("healthy", "healthy")
         _reg("sick", "sick")
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         with mock.patch(
-            "openjarvis.engine._discovery._make_engine",
+            "openeidon.engine._discovery._make_engine",
             side_effect=lambda k, c: _FakeEngine(healthy=(k == "healthy")),
         ):
             result = discover_engines(cfg)
@@ -64,10 +64,10 @@ class TestDiscoverEngines:
         _reg("a", "a")
         _reg("b", "b")
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         cfg.engine.default = "b"
         with mock.patch(
-            "openjarvis.engine._discovery._make_engine",
+            "openeidon.engine._discovery._make_engine",
             side_effect=lambda k, c: _FakeEngine(healthy=True),
         ):
             result = discover_engines(cfg)
@@ -87,14 +87,14 @@ class TestGetEngine:
         _reg("bad", "bad")
         _reg("good", "good")
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         cfg.engine.default = "bad"
 
         def _make(k, c):  # noqa: ANN001
             return _FakeEngine(healthy=(k == "good"))
 
         with mock.patch(
-            "openjarvis.engine._discovery._make_engine",
+            "openeidon.engine._discovery._make_engine",
             side_effect=_make,
         ):
             result = get_engine(cfg)
@@ -110,14 +110,14 @@ class TestGetEngine:
         _reg("requested", "requested")
         _reg("running", "running")
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         cfg.engine.default = "requested"
 
         def _make(k, c):  # noqa: ANN001
             return _FakeEngine(healthy=(k == "running"))
 
         with mock.patch(
-            "openjarvis.engine._discovery._make_engine",
+            "openeidon.engine._discovery._make_engine",
             side_effect=_make,
         ):
             # Explicit key "requested" is unhealthy, but "running" is healthy

@@ -12,7 +12,7 @@ import pytest
 
 @pytest.fixture
 def manager():
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.manager import AgentManager
 
     with tempfile.TemporaryDirectory() as tmpdir:
         mgr = AgentManager(db_path=str(Path(tmpdir) / "agents.db"))
@@ -22,14 +22,14 @@ def manager():
 
 class TestSchedulerBasic:
     def test_create_scheduler(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(manager=manager, executor=executor)
         assert scheduler is not None
 
     def test_register_agent_with_interval(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(manager=manager, executor=executor)
@@ -43,7 +43,7 @@ class TestSchedulerBasic:
         assert agent["id"] in scheduler.registered_agents
 
     def test_register_agent_with_cron(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(manager=manager, executor=executor)
@@ -57,7 +57,7 @@ class TestSchedulerBasic:
         assert agent["id"] in scheduler.registered_agents
 
     def test_deregister_agent(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(manager=manager, executor=executor)
@@ -72,7 +72,7 @@ class TestSchedulerBasic:
         assert agent["id"] not in scheduler.registered_agents
 
     def test_manual_schedule_not_auto_registered(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(manager=manager, executor=executor)
@@ -87,7 +87,7 @@ class TestSchedulerBasic:
         assert agent["id"] in scheduler.registered_agents
 
     def test_start_stop(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(manager=manager, executor=executor)
@@ -97,7 +97,7 @@ class TestSchedulerBasic:
         assert not scheduler.is_running
 
     def test_tick_fires_executor(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(
@@ -118,7 +118,7 @@ class TestSchedulerBasic:
         executor.execute_tick.assert_called_with(agent["id"])
 
     def test_skips_paused_agents(self, manager):
-        from openjarvis.agents.scheduler import AgentScheduler
+        from openeidon.agents.scheduler import AgentScheduler
 
         executor = MagicMock()
         scheduler = AgentScheduler(

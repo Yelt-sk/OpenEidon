@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.telemetry.phase_metrics import compute_phase_metrics, split_at_ttft
-from openjarvis.telemetry.session import TelemetrySample, TelemetrySession
+from openeidon.telemetry.phase_metrics import compute_phase_metrics, split_at_ttft
+from openeidon.telemetry.session import TelemetrySample, TelemetrySession
 
 
 class TestComputePhaseMetrics:

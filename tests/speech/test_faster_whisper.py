@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.core.registry import SpeechRegistry
-from openjarvis.speech.faster_whisper import FasterWhisperBackend
+from openeidon.core.registry import SpeechRegistry
+from openeidon.speech.faster_whisper import FasterWhisperBackend
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +22,7 @@ def test_faster_whisper_backend_registers():
 
 def test_faster_whisper_transcribe():
     """Transcribe returns a TranscriptionResult."""
-    from openjarvis.speech._stubs import TranscriptionResult
+    from openeidon.speech._stubs import TranscriptionResult
 
     mock_model = MagicMock()
     mock_segment = MagicMock()
@@ -39,10 +39,10 @@ def test_faster_whisper_transcribe():
     mock_model.transcribe.return_value = ([mock_segment], mock_info)
 
     with patch(
-        "openjarvis.speech.faster_whisper.WhisperModel",
+        "openeidon.speech.faster_whisper.WhisperModel",
         return_value=mock_model,
     ):
-        from openjarvis.speech.faster_whisper import FasterWhisperBackend
+        from openeidon.speech.faster_whisper import FasterWhisperBackend
 
         backend = FasterWhisperBackend(model_size="base", device="cpu")
         result = backend.transcribe(b"fake audio bytes")
@@ -56,10 +56,10 @@ def test_faster_whisper_transcribe():
 def test_faster_whisper_health_no_model():
     """Health returns False before model is loaded."""
     with patch(
-        "openjarvis.speech.faster_whisper.WhisperModel",
+        "openeidon.speech.faster_whisper.WhisperModel",
         new=None,
     ):
-        from openjarvis.speech.faster_whisper import FasterWhisperBackend
+        from openeidon.speech.faster_whisper import FasterWhisperBackend
 
         backend = FasterWhisperBackend.__new__(FasterWhisperBackend)
         backend._model = None
@@ -68,8 +68,8 @@ def test_faster_whisper_health_no_model():
 
 def test_faster_whisper_supported_formats():
     """Backend supports standard audio formats."""
-    with patch("openjarvis.speech.faster_whisper.WhisperModel"):
-        from openjarvis.speech.faster_whisper import FasterWhisperBackend
+    with patch("openeidon.speech.faster_whisper.WhisperModel"):
+        from openeidon.speech.faster_whisper import FasterWhisperBackend
 
         backend = FasterWhisperBackend.__new__(FasterWhisperBackend)
         formats = backend.supported_formats()

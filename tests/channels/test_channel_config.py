@@ -5,7 +5,7 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-from openjarvis.core.config import (
+from openeidon.core.config import (
     ChannelConfig,
     DiscordChannelConfig,
     EmailChannelConfig,

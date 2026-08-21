@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
-from openjarvis.cli.digest_cmd import digest
+from openeidon.cli.digest_cmd import digest
 
 # ---------------------------------------------------------------------------
 # CLI tests
@@ -15,7 +15,7 @@ from openjarvis.cli.digest_cmd import digest
 
 
 class TestDigestScheduleCLI:
-    """Tests for the ``jarvis digest --schedule`` flag."""
+    """Tests for the ``eidon digest --schedule`` flag."""
 
     def test_schedule_show_status(self):
         """``--schedule ""`` shows the current schedule from config."""
@@ -25,7 +25,7 @@ class TestDigestScheduleCLI:
         mock_cfg.digest.timezone = "America/Los_Angeles"
 
         runner = CliRunner()
-        with patch("openjarvis.cli.digest_cmd.load_config", return_value=mock_cfg):
+        with patch("openeidon.cli.digest_cmd.load_config", return_value=mock_cfg):
             result = runner.invoke(digest, ["--schedule", ""])
 
         assert result.exit_code == 0
@@ -45,15 +45,15 @@ class TestDigestScheduleCLI:
         runner = CliRunner()
         with (
             patch(
-                "openjarvis.cli.digest_cmd.load_config",
+                "openeidon.cli.digest_cmd.load_config",
                 return_value=mock_cfg,
             ),
             patch(
-                "openjarvis.cli.digest_cmd.DEFAULT_CONFIG_PATH",
+                "openeidon.cli.digest_cmd.DEFAULT_CONFIG_PATH",
                 config_path,
             ),
             patch(
-                "openjarvis.cli.digest_cmd._create_scheduler_task",
+                "openeidon.cli.digest_cmd._create_scheduler_task",
                 return_value="abc123",
             ) as mock_create,
         ):
@@ -79,12 +79,12 @@ class TestDigestScheduleCLI:
         runner = CliRunner()
         with (
             patch(
-                "openjarvis.cli.digest_cmd.load_config",
+                "openeidon.cli.digest_cmd.load_config",
                 return_value=mock_cfg,
             ),
-            patch("openjarvis.cli.digest_cmd._save_digest_schedule") as mock_save,
+            patch("openeidon.cli.digest_cmd._save_digest_schedule") as mock_save,
             patch(
-                "openjarvis.cli.digest_cmd._cancel_scheduler_tasks",
+                "openeidon.cli.digest_cmd._cancel_scheduler_tasks",
                 return_value=1,
             ),
         ):
@@ -111,7 +111,7 @@ class TestDigestScheduleEndpoints:
         from fastapi import FastAPI
         from fastapi.testclient import TestClient
 
-        from openjarvis.server.digest_routes import create_digest_router
+        from openeidon.server.digest_routes import create_digest_router
 
         app = FastAPI()
         app.include_router(create_digest_router())
@@ -124,7 +124,7 @@ class TestDigestScheduleEndpoints:
         mock_cfg.digest.schedule = "0 6 * * *"
 
         with patch(
-            "openjarvis.server.digest_routes.load_config",
+            "openeidon.server.digest_routes.load_config",
             return_value=mock_cfg,
         ):
             resp = client.get("/api/digest/schedule")
@@ -142,12 +142,12 @@ class TestDigestScheduleEndpoints:
 
         with (
             patch(
-                "openjarvis.server.digest_routes.load_config",
+                "openeidon.server.digest_routes.load_config",
                 return_value=mock_cfg,
             ),
-            patch("openjarvis.server.digest_routes._save_digest_schedule") as mock_save,
+            patch("openeidon.server.digest_routes._save_digest_schedule") as mock_save,
             patch(
-                "openjarvis.server.digest_routes._create_scheduler_task",
+                "openeidon.server.digest_routes._create_scheduler_task",
                 return_value="task123",
             ) as mock_create,
         ):
@@ -171,12 +171,12 @@ class TestDigestScheduleEndpoints:
 
         with (
             patch(
-                "openjarvis.server.digest_routes.load_config",
+                "openeidon.server.digest_routes.load_config",
                 return_value=mock_cfg,
             ),
-            patch("openjarvis.server.digest_routes._save_digest_schedule") as mock_save,
+            patch("openeidon.server.digest_routes._save_digest_schedule") as mock_save,
             patch(
-                "openjarvis.server.digest_routes._cancel_scheduler_tasks",
+                "openeidon.server.digest_routes._cancel_scheduler_tasks",
                 return_value=1,
             ) as mock_cancel,
         ):

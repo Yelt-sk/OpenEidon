@@ -1,7 +1,7 @@
 """Backward-compat tests: ensure old import paths still work.
 
 The canonical tests are in test_native_react.py.  This file verifies
-that ``from openjarvis.agents.react import ReActAgent`` still works
+that ``from openeidon.agents.react import ReActAgent`` still works
 and produces a working agent.
 """
 
@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from openjarvis.agents.native_react import NativeReActAgent
-from openjarvis.agents.react import ReActAgent
+from openeidon.agents.native_react import NativeReActAgent
+from openeidon.agents.react import ReActAgent
 
 
 def _engine_response(content):

@@ -10,18 +10,18 @@ from unittest.mock import MagicMock
 
 import pytest
 
-pytest.importorskip("fastapi", reason="openjarvis[server] not installed")
+pytest.importorskip("fastapi", reason="openeidon[server] not installed")
 
 from fastapi import FastAPI  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from openjarvis.core.registry import ChannelRegistry  # noqa: E402
+from openeidon.core.registry import ChannelRegistry  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
 def _register_sendblue():
     if not ChannelRegistry.contains("sendblue"):
-        from openjarvis.channels.sendblue import SendBlueChannel
+        from openeidon.channels.sendblue import SendBlueChannel
 
         ChannelRegistry.register_value("sendblue", SendBlueChannel)
 
@@ -35,7 +35,7 @@ def mock_bridge():
 
 @pytest.fixture
 def sendblue_channel():
-    from openjarvis.channels.sendblue import SendBlueChannel
+    from openeidon.channels.sendblue import SendBlueChannel
 
     ch = SendBlueChannel(
         api_key_id="test_key",
@@ -48,7 +48,7 @@ def sendblue_channel():
 
 @pytest.fixture
 def webhook_app(mock_bridge, sendblue_channel):
-    from openjarvis.server.webhook_routes import create_webhook_router
+    from openeidon.server.webhook_routes import create_webhook_router
 
     app = FastAPI()
     router = create_webhook_router(
@@ -76,7 +76,7 @@ class TestSendBlueWebhook:
             json={
                 "from_number": "+19127130720",
                 "to_number": "+15551234567",
-                "content": "Hello Jarvis",
+                "content": "Hello Eidon",
                 "message_handle": "msg-001",
                 "is_outbound": False,
                 "status": "RECEIVED",
@@ -122,8 +122,8 @@ class TestSendBlueWebhook:
 
     def test_webhook_secret_validation(self, mock_bridge):
         """When a webhook secret is set, reject requests without it."""
-        from openjarvis.channels.sendblue import SendBlueChannel
-        from openjarvis.server.webhook_routes import create_webhook_router
+        from openeidon.channels.sendblue import SendBlueChannel
+        from openeidon.server.webhook_routes import create_webhook_router
 
         ch = SendBlueChannel(
             api_key_id="k",
@@ -164,7 +164,7 @@ class TestSendBlueWebhook:
 
     def test_no_bridge_returns_200(self, sendblue_channel):
         """When no bridge exists, webhook should not crash."""
-        from openjarvis.server.webhook_routes import create_webhook_router
+        from openeidon.server.webhook_routes import create_webhook_router
 
         app = FastAPI()
         router = create_webhook_router(bridge=None, sendblue_channel=sendblue_channel)
@@ -195,7 +195,7 @@ class TestSendBlueHealth:
         app.state.channel_bridge = MagicMock()
         app.state.channel_bridge._channels = {"sendblue": sendblue_channel}
 
-        from openjarvis.server.agent_manager_routes import (
+        from openeidon.server.agent_manager_routes import (
             create_agent_manager_router,
         )
 
@@ -219,7 +219,7 @@ class TestSendBlueHealth:
         app = FastAPI()
         # No sendblue_channel or bridge on state
 
-        from openjarvis.server.agent_manager_routes import (
+        from openeidon.server.agent_manager_routes import (
             create_agent_manager_router,
         )
 

@@ -12,8 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.connectors._stubs import Document
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.connectors._stubs import Document
+from openeidon.core.registry import ConnectorRegistry
 
 # ---------------------------------------------------------------------------
 # Fake API payloads
@@ -60,7 +60,7 @@ _USERS_RESPONSE = {
 @pytest.fixture()
 def connector(tmp_path: Path):
     """SlackConnector pointing at a tmp credentials path (no file yet)."""
-    from openjarvis.connectors.slack_connector import SlackConnector  # noqa: PLC0415
+    from openeidon.connectors.slack_connector import SlackConnector  # noqa: PLC0415
 
     creds_path = str(tmp_path / "slack.json")
     return SlackConnector(credentials_path=creds_path)
@@ -104,9 +104,9 @@ def test_auth_url(connector) -> None:
 # ---------------------------------------------------------------------------
 
 
-@patch("openjarvis.connectors.slack_connector._slack_api_conversations_list")
-@patch("openjarvis.connectors.slack_connector._slack_api_conversations_history")
-@patch("openjarvis.connectors.slack_connector._slack_api_users_list")
+@patch("openeidon.connectors.slack_connector._slack_api_conversations_list")
+@patch("openeidon.connectors.slack_connector._slack_api_conversations_history")
+@patch("openeidon.connectors.slack_connector._slack_api_users_list")
 def test_sync_yields_documents(
     mock_users,
     mock_history,
@@ -205,7 +205,7 @@ def test_mcp_tools(connector) -> None:
 
 def test_registry() -> None:
     """SlackConnector can be registered and retrieved via ConnectorRegistry."""
-    from openjarvis.connectors.slack_connector import SlackConnector  # noqa: PLC0415
+    from openeidon.connectors.slack_connector import SlackConnector  # noqa: PLC0415
 
     # The registry is cleared before each test by the autouse conftest fixture,
     # so we imperatively re-register here (same pattern as test_gmail.py).

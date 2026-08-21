@@ -1,12 +1,12 @@
-"""Tests for LearningConfig and its integration into JarvisConfig."""
+"""Tests for LearningConfig and its integration into EidonConfig."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from openjarvis.core.config import (
+from openeidon.core.config import (
+    EidonConfig,
     HardwareInfo,
-    JarvisConfig,
     LearningConfig,
     generate_default_toml,
     load_config,
@@ -35,8 +35,8 @@ class TestLearningConfig:
         assert cfg.metrics.cost_weight == 0.3
         assert cfg.metrics.efficiency_weight == 0.3
 
-    def test_jarvis_config_has_learning(self) -> None:
-        cfg = JarvisConfig()
+    def test_eidon_config_has_learning(self) -> None:
+        cfg = EidonConfig()
         assert hasattr(cfg, "learning")
         assert isinstance(cfg.learning, LearningConfig)
         assert cfg.learning.routing.policy == "heuristic"

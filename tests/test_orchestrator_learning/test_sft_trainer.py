@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from openjarvis.learning.intelligence.orchestrator.sft_trainer import (
+from openeidon.learning.intelligence.orchestrator.sft_trainer import (
     OrchestratorSFTConfig,
     OrchestratorSFTDataset,
 )
@@ -126,7 +126,7 @@ class TestOrchestratorSFTDataset:
 class TestSFTRegistration:
     def test_registered_in_learning_registry(self):
         # Import to trigger registration
-        import openjarvis.learning.intelligence.orchestrator.sft_trainer  # noqa: F401
-        from openjarvis.core.registry import LearningRegistry
+        import openeidon.learning.intelligence.orchestrator.sft_trainer  # noqa: F401
+        from openeidon.core.registry import LearningRegistry
 
         assert LearningRegistry.contains("orchestrator_sft")

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.learning.routing.complexity import (
+from openeidon.learning.routing.complexity import (
     ComplexityQueryAnalyzer,
     ComplexityResult,
     adjust_tokens_for_model,

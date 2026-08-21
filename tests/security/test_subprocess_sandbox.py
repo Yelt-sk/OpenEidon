@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import tempfile
 
-from openjarvis.security.subprocess_sandbox import (
+from openeidon.security.subprocess_sandbox import (
     build_safe_env,
     kill_process_tree,
     run_sandboxed,

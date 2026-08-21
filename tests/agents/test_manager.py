@@ -11,7 +11,7 @@ import pytest
 @pytest.fixture
 def manager():
     """Create an AgentManager with a temp database."""
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.manager import AgentManager
 
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "agents.db"
@@ -248,7 +248,7 @@ def test_update_agent_budget_fields(tmp_path):
     """update_agent() accepts budget and stall kwargs."""
     import time
 
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.manager import AgentManager
 
     mgr = AgentManager(str(tmp_path / "test.db"))
     agent = mgr.create_agent("budget-test")
@@ -281,7 +281,7 @@ def test_update_agent_budget_fields(tmp_path):
 
 def test_learning_log_crud(tmp_path):
     """AgentManager can write and read learning log entries."""
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.manager import AgentManager
 
     mgr = AgentManager(str(tmp_path / "test.db"))
     agent = mgr.create_agent("learner")

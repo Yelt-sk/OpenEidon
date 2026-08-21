@@ -6,12 +6,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.agents._stubs import AgentResult
-from openjarvis.agents.native_openhands import NativeOpenHandsAgent
-from openjarvis.agents.native_react import NativeReActAgent
-from openjarvis.agents.orchestrator import OrchestratorAgent
-from openjarvis.agents.simple import SimpleAgent
-from openjarvis.core.events import EventBus, EventType
+from openeidon.agents._stubs import AgentResult
+from openeidon.agents.native_openhands import NativeOpenHandsAgent
+from openeidon.agents.native_react import NativeReActAgent
+from openeidon.agents.orchestrator import OrchestratorAgent
+from openeidon.agents.simple import SimpleAgent
+from openeidon.core.events import EventBus, EventType
 
 # ---------------------------------------------------------------------------
 # Helpers

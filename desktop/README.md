@@ -1,6 +1,6 @@
-# OpenJarvis Desktop
+# OpenEidon Desktop
 
-Tauri 2.0 native desktop application for OpenJarvis with auto-updates, energy monitoring, trace debugging, and learning visualization.
+Tauri 2.0 native desktop application for OpenEidon with auto-updates, energy monitoring, trace debugging, and learning visualization.
 
 ## Development Setup
 
@@ -69,7 +69,7 @@ CI creates a versioned GitHub Release (e.g., `desktop-v1.0.1`) with full install
 Generate a key pair for signing update manifests:
 
 ```bash
-cargo tauri signer generate -w ~/.tauri/openjarvis.key
+cargo tauri signer generate -w ~/.tauri/openeidon.key
 ```
 
 Set the public key in `src-tauri/tauri.conf.json` under `plugins.updater.pubkey`, then add these GitHub Secrets:
@@ -81,7 +81,7 @@ Set the public key in `src-tauri/tauri.conf.json` under `plugins.updater.pubkey`
 
 ### macOS Code Signing & Notarization (Required for Distribution)
 
-Without these secrets, macOS users will see *"OpenJarvis is damaged and can't be opened"* due to Gatekeeper. The CI workflow will **fail release builds** (tag pushes) if signing secrets are missing.
+Without these secrets, macOS users will see *"OpenEidon is damaged and can't be opened"* due to Gatekeeper. The CI workflow will **fail release builds** (tag pushes) if signing secrets are missing.
 
 **Prerequisites:** Apple Developer Program membership ($99/year) — [developer.apple.com/programs](https://developer.apple.com/programs/)
 
@@ -89,7 +89,7 @@ Without these secrets, macOS users will see *"OpenJarvis is damaged and can't be
 |--------|---------------|
 | `APPLE_CERTIFICATE` | In Keychain Access, export your **Developer ID Application** certificate as `.p12`. Then: `base64 -i cert.p12 \| pbcopy` |
 | `APPLE_CERTIFICATE_PASSWORD` | The password you set during the `.p12` export |
-| `APPLE_SIGNING_IDENTITY` | Full CN string from the certificate, e.g. `"Developer ID Application: Open Jarvis Inc (XXXXXXXXXX)"` |
+| `APPLE_SIGNING_IDENTITY` | Full CN string from the certificate, e.g. `"Developer ID Application: Open Eidon Inc (XXXXXXXXXX)"` |
 | `APPLE_ID` | The Apple ID email associated with your Developer account |
 | `APPLE_PASSWORD` | An **app-specific password** generated at [appleid.apple.com](https://appleid.apple.com) (not your account password) |
 | `APPLE_TEAM_ID` | 10-character team ID from [developer.apple.com/account](https://developer.apple.com/account) |

@@ -8,16 +8,16 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.core.types import Trace
-from openjarvis.evals.core.types import EvalRecord
-from openjarvis.optimize.personal.dataset import PersonalBenchmarkDataset
-from openjarvis.optimize.personal.scorer import PersonalBenchmarkScorer
-from openjarvis.optimize.personal.synthesizer import (
+from openeidon.core.types import Trace
+from openeidon.evals.core.types import EvalRecord
+from openeidon.optimize.personal.dataset import PersonalBenchmarkDataset
+from openeidon.optimize.personal.scorer import PersonalBenchmarkScorer
+from openeidon.optimize.personal.synthesizer import (
     PersonalBenchmark,
     PersonalBenchmarkSample,
     PersonalBenchmarkSynthesizer,
 )
-from openjarvis.traces.store import TraceStore
+from openeidon.traces.store import TraceStore
 
 # ---------------------------------------------------------------------------
 # Helpers

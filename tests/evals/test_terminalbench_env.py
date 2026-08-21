@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.evals.execution.terminalbench_env import TerminalBenchTaskEnv
+from openeidon.evals.execution.terminalbench_env import TerminalBenchTaskEnv
 
 # terminal_bench is an optional dep — skip all tests if unavailable
 terminal_bench = pytest.importorskip(

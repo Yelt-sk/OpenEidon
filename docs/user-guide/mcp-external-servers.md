@@ -1,17 +1,17 @@
 # External MCP Server Integration
 
-OpenJarvis can extend agent capabilities by connecting to external [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. This allows agents to use tools provided by services like Home Assistant, databases, custom APIs, or any MCP-compatible server -- without writing custom tool code.
+OpenEidon can extend agent capabilities by connecting to external [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. This allows agents to use tools provided by services like Home Assistant, databases, custom APIs, or any MCP-compatible server -- without writing custom tool code.
 
 ## How It Works
 
-When OpenJarvis starts, it reads the `[tools.mcp]` section in `config.toml`. For each configured server, it:
+When OpenEidon starts, it reads the `[tools.mcp]` section in `config.toml`. For each configured server, it:
 
 1. Opens a connection using the appropriate transport (Streamable HTTP or stdio).
 2. Performs the MCP initialize handshake (protocol version negotiation and `initialized` notification).
 3. Discovers available tools via `tools/list`.
 4. Wraps each discovered tool as a standard `BaseTool` so agents can call them like any built-in tool.
 
-If a server is unreachable or returns an error, OpenJarvis logs a warning and continues loading the remaining servers. One broken server does not prevent other tools from being available.
+If a server is unreachable or returns an error, OpenEidon logs a warning and continues loading the remaining servers. One broken server does not prevent other tools from being available.
 
 ## Configuration
 
@@ -69,7 +69,7 @@ enabled = true
 servers = '[{"name": "myserver", "command": "python", "args": ["-m", "my_mcp_server"]}]'
 ```
 
-OpenJarvis starts the process automatically, communicates via JSON-RPC over stdin/stdout, and terminates it on shutdown.
+OpenEidon starts the process automatically, communicates via JSON-RPC over stdin/stdout, and terminates it on shutdown.
 
 ### Multiple Servers
 
@@ -112,7 +112,7 @@ Used when the `url` field is set. The transport sends JSON-RPC requests as HTTP 
 
 ### Stdio
 
-Used when the `command` field is set. OpenJarvis spawns the command as a subprocess and communicates via JSON-RPC lines on stdin/stdout.
+Used when the `command` field is set. OpenEidon spawns the command as a subprocess and communicates via JSON-RPC lines on stdin/stdout.
 
 **When to use:** Local MCP servers distributed as CLI tools, development/testing, servers that require filesystem access on the same machine.
 
@@ -121,7 +121,7 @@ Used when the `command` field is set. OpenJarvis spawns the command as a subproc
 
 ## Error Handling
 
-OpenJarvis handles MCP server failures gracefully:
+OpenEidon handles MCP server failures gracefully:
 
 - **Server unreachable:** A warning is logged and the server is skipped. All other servers and built-in tools continue to load normally.
 - **Timeout:** HTTP requests time out after 60 seconds. The server is skipped with a warning.
@@ -129,7 +129,7 @@ OpenJarvis handles MCP server failures gracefully:
 - **Tool discovery failure:** If `tools/list` fails on a server, the error is caught and the server is skipped.
 - **Runtime tool call failure:** If a tool call to an external MCP server fails at runtime, it returns a `ToolResult` with `success=False` and the error message.
 
-No single server failure causes OpenJarvis to crash or prevents other tools from working.
+No single server failure causes OpenEidon to crash or prevents other tools from working.
 
 ## Troubleshooting
 
@@ -137,12 +137,12 @@ No single server failure causes OpenJarvis to crash or prevents other tools from
 
 1. Check that `[tools.mcp]` has `enabled = true`.
 2. Verify the `servers` JSON is valid. A common mistake is using TOML arrays instead of a JSON string.
-3. Check the OpenJarvis logs for warnings like `Failed to discover external MCP tools`.
+3. Check the OpenEidon logs for warnings like `Failed to discover external MCP tools`.
 
 ### Connection refused / timeout
 
-1. Verify the server is running and reachable from the OpenJarvis host: `curl -v http://host:port/`.
-2. Check firewall rules between the OpenJarvis container and the MCP server.
+1. Verify the server is running and reachable from the OpenEidon host: `curl -v http://host:port/`.
+2. Check firewall rules between the OpenEidon container and the MCP server.
 3. For Docker deployments, ensure both containers are on the same network or use host IPs.
 
 ### Tools not appearing
@@ -154,5 +154,5 @@ No single server failure causes OpenJarvis to crash or prevents other tools from
 ### Stdio server crashes immediately
 
 1. Test the command manually: `python -m my_mcp_server` should start and wait for input on stdin.
-2. Check stderr output in the OpenJarvis logs for error messages from the subprocess.
+2. Check stderr output in the OpenEidon logs for error messages from the subprocess.
 3. Ensure all dependencies for the MCP server are installed in the same environment.

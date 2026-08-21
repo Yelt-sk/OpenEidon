@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from openjarvis.core.events import EventBus
-from openjarvis.core.types import ToolResult
-from openjarvis.skills.manager import SkillManager
-from openjarvis.tools._stubs import BaseTool, ToolExecutor, ToolSpec  # noqa: F401
+from openeidon.core.events import EventBus
+from openeidon.core.types import ToolResult
+from openeidon.skills.manager import SkillManager
+from openeidon.tools._stubs import BaseTool, ToolExecutor, ToolSpec  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -297,8 +297,8 @@ class TestSkillManagerResolve:
 class TestSkillManagerSourcedLayout:
     def test_discovers_skills_under_source_subdirs(self, tmp_path: Path):
         """SkillManager.discover() finds skills in <source>/<name>/ layout."""
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
 
         # Build hermes/<name>/ and openclaw/<name>/ subdirs
         for source, name in [("hermes", "apple-notes"), ("openclaw", "etherscan")]:
@@ -316,8 +316,8 @@ class TestSkillManagerSourcedLayout:
 
     def test_flat_and_sourced_layout_coexist(self, tmp_path: Path):
         """Both flat ./<name>/ and ./<source>/<name>/ are discovered."""
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
 
         # Flat layout
         flat = tmp_path / "my-flat-skill"
@@ -344,9 +344,9 @@ class TestSkillManagerOverlayLoading:
     def test_overlay_description_overrides_manifest(self, tmp_path: Path):
         """When an overlay exists, the optimized description replaces
         the manifest's description after discover()."""
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
-        from openjarvis.skills.overlay import SkillOverlay, write_overlay
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
+        from openeidon.skills.overlay import SkillOverlay, write_overlay
 
         skill_dir = tmp_path / "skills" / "research-skill"
         skill_dir.mkdir(parents=True)
@@ -373,9 +373,9 @@ class TestSkillManagerOverlayLoading:
         assert manifest.description == "A much better optimized description"
 
     def test_overlay_few_shot_stored_in_metadata(self, tmp_path: Path):
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
-        from openjarvis.skills.overlay import SkillOverlay, write_overlay
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
+        from openeidon.skills.overlay import SkillOverlay, write_overlay
 
         skill_dir = tmp_path / "skills" / "test-skill"
         skill_dir.mkdir(parents=True)
@@ -403,14 +403,14 @@ class TestSkillManagerOverlayLoading:
         mgr.discover(paths=[tmp_path / "skills"])
 
         manifest = mgr.resolve("test-skill")
-        oj = manifest.metadata.get("openjarvis", {})
+        oj = manifest.metadata.get("openeidon", {})
         few_shot = oj.get("few_shot", [])
         assert len(few_shot) == 2
         assert few_shot[0]["input"] == "q1"
 
     def test_no_overlay_dir_does_not_crash(self, tmp_path: Path):
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
 
         skill_dir = tmp_path / "skills" / "test-skill"
         skill_dir.mkdir(parents=True)
@@ -425,9 +425,9 @@ class TestSkillManagerOverlayLoading:
         assert manifest.description == "original"
 
     def test_get_few_shot_examples_returns_formatted_strings(self, tmp_path: Path):
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
-        from openjarvis.skills.overlay import SkillOverlay, write_overlay
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
+        from openeidon.skills.overlay import SkillOverlay, write_overlay
 
         skill_dir = tmp_path / "skills" / "fs-skill"
         skill_dir.mkdir(parents=True)
@@ -464,21 +464,21 @@ class TestSkillManagerOverlayLoading:
         cfg.learning.skills.overlay_dir when no explicit value is passed."""
         from unittest.mock import patch
 
-        from openjarvis.core.config import (
-            JarvisConfig,
+        from openeidon.core.config import (
+            EidonConfig,
             LearningConfig,
             SkillsLearningConfig,
         )
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         cfg.learning = LearningConfig()
         cfg.learning.skills = SkillsLearningConfig(
             overlay_dir=str(tmp_path / "configured-overlays")
         )
 
-        with patch("openjarvis.core.config.load_config", return_value=cfg):
+        with patch("openeidon.core.config.load_config", return_value=cfg):
             mgr = SkillManager(bus=EventBus())
             assert (
                 mgr._overlay_dir == (tmp_path / "configured-overlays").expanduser()
@@ -489,10 +489,10 @@ class TestSkillManagerOverlayLoading:
     ) -> None:
         """Plan 2A I2 fix: discover() with no paths still applies overlays
         to skills that were seeded by other means."""
-        from openjarvis.core.events import EventBus
-        from openjarvis.skills.manager import SkillManager
-        from openjarvis.skills.overlay import SkillOverlay, write_overlay
-        from openjarvis.skills.types import SkillManifest
+        from openeidon.core.events import EventBus
+        from openeidon.skills.manager import SkillManager
+        from openeidon.skills.overlay import SkillOverlay, write_overlay
+        from openeidon.skills.types import SkillManifest
 
         overlay_dir = tmp_path / "overlays"
         write_overlay(

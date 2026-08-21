@@ -6,9 +6,9 @@ import time
 
 import pytest
 
-from openjarvis.core.types import TelemetryRecord
-from openjarvis.telemetry.aggregator import TelemetryAggregator
-from openjarvis.telemetry.store import TelemetryStore
+from openeidon.core.types import TelemetryRecord
+from openeidon.telemetry.aggregator import TelemetryAggregator
+from openeidon.telemetry.store import TelemetryStore
 
 
 class TestTokensPerJouleStorage:

@@ -6,10 +6,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.channels.webchat import WebChatChannel
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.channels.webchat import WebChatChannel
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)

@@ -1,4 +1,4 @@
-"""Tests for ``jarvis memory`` CLI commands."""
+"""Tests for ``eidon memory`` CLI commands."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
-from openjarvis.core.registry import MemoryRegistry
-from openjarvis.tools.storage.sqlite import SQLiteMemory
+from openeidon.cli import cli
+from openeidon.core.registry import MemoryRegistry
+from openeidon.tools.storage.sqlite import SQLiteMemory
 
 
 def _register_sqlite():
@@ -27,7 +27,7 @@ def test_memory_index_file(tmp_path: Path, monkeypatch):
     doc = tmp_path / "doc.txt"
     doc.write_text(" ".join(f"word{i}" for i in range(100)))
 
-    mod = importlib.import_module("openjarvis.cli.memory_cmd")
+    mod = importlib.import_module("openeidon.cli.memory_cmd")
     monkeypatch.setattr(
         mod,
         "_get_backend",
@@ -56,7 +56,7 @@ def test_memory_search_returns_results(tmp_path: Path, monkeypatch):
         source="guide.md",
     )
 
-    mod = importlib.import_module("openjarvis.cli.memory_cmd")
+    mod = importlib.import_module("openeidon.cli.memory_cmd")
     monkeypatch.setattr(
         mod,
         "_get_backend",
@@ -76,7 +76,7 @@ def test_memory_search_no_results(tmp_path: Path, monkeypatch):
     backend = SQLiteMemory(db_path=db_path)
     backend.store("some unrelated content about cats")
 
-    mod = importlib.import_module("openjarvis.cli.memory_cmd")
+    mod = importlib.import_module("openeidon.cli.memory_cmd")
     monkeypatch.setattr(
         mod,
         "_get_backend",
@@ -97,7 +97,7 @@ def test_memory_stats_shows_count(tmp_path: Path, monkeypatch):
     backend.store("doc one")
     backend.store("doc two")
 
-    mod = importlib.import_module("openjarvis.cli.memory_cmd")
+    mod = importlib.import_module("openeidon.cli.memory_cmd")
     monkeypatch.setattr(
         mod,
         "_get_backend",

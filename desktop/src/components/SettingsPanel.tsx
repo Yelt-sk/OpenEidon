@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
 };
 
-const STORAGE_KEY = 'openjarvis-settings';
+const STORAGE_KEY = 'openeidon-settings';
 
 function loadSettings(): Settings {
   try {

@@ -1,7 +1,7 @@
-from openjarvis.agents._stubs import AgentResult
-from openjarvis.agents.executor import AgentExecutor
-from openjarvis.agents.manager import AgentManager
-from openjarvis.core.events import EventBus, EventType
+from openeidon.agents._stubs import AgentResult
+from openeidon.agents.executor import AgentExecutor
+from openeidon.agents.manager import AgentManager
+from openeidon.core.events import EventBus, EventType
 
 
 def test_budget_exceeded_sets_status(tmp_path):

@@ -1,6 +1,6 @@
 # Inference Engine Primitive
 
-The Engine primitive provides the **inference runtime** -- the layer that connects OpenJarvis to language model servers. All backends implement a uniform interface, making it straightforward to swap between local and cloud inference without changing application code.
+The Engine primitive provides the **inference runtime** -- the layer that connects OpenEidon to language model servers. All backends implement a uniform interface, making it straightforward to swap between local and cloud inference without changing application code.
 
 ---
 
@@ -241,7 +241,7 @@ The LiteLLM backend connects to a LiteLLM proxy server, which provides a unified
 
 ## Hardware Auto-Detection
 
-OpenJarvis automatically detects system hardware to recommend the best engine. Detection runs at config load time via `detect_hardware()`:
+OpenEidon automatically detects system hardware to recommend the best engine. Detection runs at config load time via `detect_hardware()`:
 
 | Detection | Method | Information Extracted |
 |-----------|--------|---------------------|
@@ -289,8 +289,8 @@ Returns a `(key, engine_instance)` tuple for the requested engine, or `None` if 
 Probes all registered engines for health and returns a sorted list of healthy `(key, engine)` pairs. The config default engine is sorted first.
 
 ```python
-from openjarvis.engine import discover_engines
-from openjarvis.core.config import load_config
+from openeidon.engine import discover_engines
+from openeidon.core.config import load_config
 
 config = load_config()
 healthy = discover_engines(config)
@@ -302,7 +302,7 @@ healthy = discover_engines(config)
 Calls `list_models()` on each engine and returns a dictionary mapping engine keys to model ID lists:
 
 ```python
-from openjarvis.engine import discover_engines, discover_models
+from openeidon.engine import discover_engines, discover_models
 
 engines = discover_engines(config)
 models = discover_models(engines)
@@ -337,7 +337,7 @@ Key behaviors:
 
 ## Configuration
 
-Engine hosts and defaults are configured in `~/.openjarvis/config.toml` using **nested per-engine sub-sections**:
+Engine hosts and defaults are configured in `~/.openeidon/config.toml` using **nested per-engine sub-sections**:
 
 ```toml
 [engine]
@@ -384,8 +384,8 @@ The `EngineConfig` dataclass and its per-engine sub-dataclasses map these settin
 Converts a sequence of `Message` objects to OpenAI-format dictionaries, handling tool calls and tool call IDs:
 
 ```python
-from openjarvis.engine._base import messages_to_dicts
-from openjarvis.core.types import Message, Role
+from openeidon.engine._base import messages_to_dicts
+from openeidon.core.types import Message, Role
 
 messages = [Message(role=Role.USER, content="Hello")]
 dicts = messages_to_dicts(messages)
@@ -397,7 +397,7 @@ dicts = messages_to_dicts(messages)
 A custom exception raised when an engine is unreachable. All engine backends catch `httpx.ConnectError` and `httpx.TimeoutException` and re-raise as `EngineConnectionError`:
 
 ```python
-from openjarvis.engine import EngineConnectionError
+from openeidon.engine import EngineConnectionError
 
 try:
     result = engine.generate(messages, model="qwen3:8b")

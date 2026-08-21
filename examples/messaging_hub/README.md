@@ -2,11 +2,11 @@
 
 A smart inbox assistant that triages incoming messages, classifies them by
 priority, drafts replies, and produces end-of-day summaries — all powered by an
-OpenJarvis orchestrator agent.
+OpenEidon orchestrator agent.
 
 ## What This Demonstrates
 
-- **Channel integration** — connecting OpenJarvis to messaging platforms (Slack, WhatsApp, etc.)
+- **Channel integration** — connecting OpenEidon to messaging platforms (Slack, WhatsApp, etc.)
 - **Message triage** — automatic classification into URGENT, ACTION_REQUIRED, FYI, or SPAM
 - **Smart replies** — context-aware reply drafting for actionable messages
 - **Memory-backed summaries** — key information stored in memory for end-of-day rollups
@@ -14,7 +14,7 @@ OpenJarvis orchestrator agent.
 ## Prerequisites
 
 - Python 3.10+
-- OpenJarvis installed: `uv sync --extra dev`
+- OpenEidon installed: `uv sync --extra dev`
 - An inference engine running (e.g., Ollama with `qwen3:8b` pulled)
 
 For live channel mode you also need the relevant channel credentials (see
@@ -57,7 +57,7 @@ second prompt asks the agent to summarize the inbox grouped by category.
 
 1. Add the Slack MCP server:
    ```bash
-   jarvis add slack
+   eidon add slack
    ```
 2. Set credentials in your `.env`:
    ```
@@ -73,7 +73,7 @@ second prompt asks the agent to summarize the inbox grouped by category.
 ### WhatsApp
 
 1. Ensure Node.js 22+ is installed.
-2. Configure the WhatsApp Baileys bridge (see the OpenJarvis channel docs).
+2. Configure the WhatsApp Baileys bridge (see the OpenEidon channel docs).
 3. Scan the QR code to authenticate.
 4. Run:
    ```bash
@@ -82,11 +82,11 @@ second prompt asks the agent to summarize the inbox grouped by category.
 
 ### Other Channels
 
-OpenJarvis supports many channels — LINE, Viber, Mastodon, Rocket.Chat, and
+OpenEidon supports many channels — LINE, Viber, Mastodon, Rocket.Chat, and
 more. List all available channels with:
 
 ```bash
-jarvis channel list
+eidon channel list
 ```
 
 ## Channel Configuration via TOML
@@ -105,7 +105,7 @@ temperature = 0.3
 tools = ["think", "memory_store", "memory_search"]
 ```
 
-Refer to `configs/openjarvis/config.toml` for the full list of channel and agent
+Refer to `configs/openeidon/config.toml` for the full list of channel and agent
 options.
 
 ## Adding Custom Triage Rules
@@ -134,11 +134,11 @@ You can also add domain-specific rules by extending the system prompt in
 
 After processing all messages, the agent produces a grouped summary. In demo
 mode this is printed to the terminal. In a production setup you could schedule
-this via the OpenJarvis scheduler:
+this via the OpenEidon scheduler:
 
 ```bash
-jarvis scheduler create "Daily inbox summary" --type cron --value "0 17 * * *"
+eidon scheduler create "Daily inbox summary" --type cron --value "0 17 * * *"
 ```
 
 Or use the operator recipe pattern to run a persistent triage agent on a
-schedule. See `src/openjarvis/recipes/data/operators/` for examples.
+schedule. See `src/openeidon/recipes/data/operators/` for examples.

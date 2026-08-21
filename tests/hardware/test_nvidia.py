@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.core.config import (
+from openeidon.core.config import (
     GpuInfo,
     HardwareInfo,
     _detect_nvidia_gpu,
@@ -24,9 +24,9 @@ pytestmark = pytest.mark.nvidia
 class TestNVIDIADetection:
     """Tests for _detect_nvidia_gpu() against various nvidia-smi outputs."""
 
-    @patch("openjarvis.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
+    @patch("openeidon.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
     @patch(
-        "openjarvis.core.config._run_cmd",
+        "openeidon.core.config._run_cmd",
         return_value="NVIDIA A100-SXM4-80GB, 81920, 1",
     )
     def test_nvidia_smi_parsing(self, mock_run, mock_which):
@@ -37,9 +37,9 @@ class TestNVIDIADetection:
         assert gpu.count == 1
         assert gpu.vendor == "nvidia"
 
-    @patch("openjarvis.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
+    @patch("openeidon.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
     @patch(
-        "openjarvis.core.config._run_cmd",
+        "openeidon.core.config._run_cmd",
         return_value=(
             "NVIDIA H100 80GB HBM3, 81920, 4\n"
             "NVIDIA H100 80GB HBM3, 81920, 4\n"
@@ -54,19 +54,19 @@ class TestNVIDIADetection:
         assert gpu.count == 4
         assert "H100" in gpu.name
 
-    @patch("openjarvis.core.config.shutil.which", return_value=None)
+    @patch("openeidon.core.config.shutil.which", return_value=None)
     def test_nvidia_smi_not_found(self, mock_which):
         assert _detect_nvidia_gpu() is None
 
-    @patch("openjarvis.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
-    @patch("openjarvis.core.config._run_cmd", return_value="")
+    @patch("openeidon.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
+    @patch("openeidon.core.config._run_cmd", return_value="")
     def test_nvidia_smi_error(self, mock_run, mock_which):
         """Empty output from nvidia-smi returns None."""
         assert _detect_nvidia_gpu() is None
 
-    @patch("openjarvis.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
+    @patch("openeidon.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
     @patch(
-        "openjarvis.core.config._run_cmd",
+        "openeidon.core.config._run_cmd",
         return_value="NVIDIA GeForce RTX 4090, 24564, 1",
     )
     def test_vram_detection(self, mock_run, mock_which):
@@ -75,9 +75,9 @@ class TestNVIDIADetection:
         # 24564 MB -> ~24.0 GB
         assert gpu.vram_gb == pytest.approx(24.0, abs=0.1)
 
-    @patch("openjarvis.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
+    @patch("openeidon.core.config.shutil.which", return_value="/usr/bin/nvidia-smi")
     @patch(
-        "openjarvis.core.config._run_cmd",
+        "openeidon.core.config._run_cmd",
         return_value="NVIDIA A100-SXM4-80GB, 81920, 1",
     )
     def test_compute_capability(self, mock_run, mock_which):

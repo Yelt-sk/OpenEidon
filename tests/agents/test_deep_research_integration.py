@@ -16,12 +16,12 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from openjarvis.agents.deep_research import DeepResearchAgent
-from openjarvis.connectors._stubs import Document
-from openjarvis.connectors.pipeline import IngestionPipeline
-from openjarvis.connectors.retriever import TwoStageRetriever
-from openjarvis.connectors.store import KnowledgeStore
-from openjarvis.tools.knowledge_search import KnowledgeSearchTool
+from openeidon.agents.deep_research import DeepResearchAgent
+from openeidon.connectors._stubs import Document
+from openeidon.connectors.pipeline import IngestionPipeline
+from openeidon.connectors.retriever import TwoStageRetriever
+from openeidon.connectors.store import KnowledgeStore
+from openeidon.tools.knowledge_search import KnowledgeSearchTool
 
 # ---------------------------------------------------------------------------
 # Helpers

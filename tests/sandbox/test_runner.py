@@ -8,9 +8,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.agents._stubs import AgentResult, BaseAgent
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.sandbox.runner import (
+from openeidon.agents._stubs import AgentResult, BaseAgent
+from openeidon.core.events import EventBus, EventType
+from openeidon.sandbox.runner import (
     _OUTPUT_END,
     _OUTPUT_START,
     ContainerRunner,

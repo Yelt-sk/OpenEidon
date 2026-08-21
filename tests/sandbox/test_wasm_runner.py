@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.sandbox.wasm_runner import WasmResult, WasmRunner, create_sandbox_runner
+from openeidon.sandbox.wasm_runner import WasmResult, WasmRunner, create_sandbox_runner
 
 
 class TestWasmRunner:

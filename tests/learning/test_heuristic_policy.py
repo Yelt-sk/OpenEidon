@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from openjarvis.core.registry import RouterPolicyRegistry
-from openjarvis.learning.routing.heuristic_policy import ensure_registered
-from openjarvis.learning.routing.router import HeuristicRouter
+from openeidon.core.registry import RouterPolicyRegistry
+from openeidon.learning.routing.heuristic_policy import ensure_registered
+from openeidon.learning.routing.router import HeuristicRouter
 
 
 class TestHeuristicPolicy:

@@ -18,7 +18,7 @@ class TestDockerFiles:
     def test_dockerfile_has_entrypoint(self):
         content = (DOCKER_DIR / "Dockerfile").read_text()
         assert "ENTRYPOINT" in content
-        assert "jarvis" in content
+        assert "eidon" in content
 
     def test_docker_compose_valid_yaml(self):
         import importlib
@@ -35,7 +35,7 @@ class TestDockerFiles:
 
         # Basic structural checks without requiring PyYAML
         assert "services:" in content
-        assert "jarvis:" in content
+        assert "eidon:" in content
 
         if yaml_mod is not None:
             data = yaml_mod.safe_load(content)
@@ -43,8 +43,8 @@ class TestDockerFiles:
 
     def test_docker_compose_has_services(self):
         content = (DOCKER_DIR / "docker-compose.yml").read_text()
-        assert "jarvis:" in content
+        assert "eidon:" in content
         assert "ollama:" in content
 
     def test_systemd_service_exists(self):
-        assert (ROOT / "deploy" / "systemd" / "openjarvis.service").is_file()
+        assert (ROOT / "deploy" / "systemd" / "openeidon.service").is_file()

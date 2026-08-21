@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.cli.hints import (
+from openeidon.cli.hints import (
     hint_no_config,
     hint_no_engine,
     hint_no_model,

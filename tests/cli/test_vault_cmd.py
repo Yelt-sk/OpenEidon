@@ -1,4 +1,4 @@
-"""Tests for the ``jarvis vault`` CLI commands."""
+"""Tests for the ``eidon vault`` CLI commands."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from unittest import mock
 import pytest
 from click.testing import CliRunner
 
-from openjarvis.cli.vault_cmd import vault
+from openeidon.cli.vault_cmd import vault
 
 
 class TestVaultCmd:
@@ -30,7 +30,7 @@ class TestVaultCmd:
 
     def test_vault_list_empty(self) -> None:
         with mock.patch(
-            "openjarvis.cli.vault_cmd._VAULT_FILE",
+            "openeidon.cli.vault_cmd._VAULT_FILE",
             Path("/nonexistent/vault.enc"),
         ):
             result = CliRunner().invoke(vault, ["list"])
@@ -44,10 +44,10 @@ class TestVaultCmd:
         key_file = tmp_path / ".vault_key"
 
         with (
-            mock.patch("openjarvis.cli.vault_cmd._VAULT_FILE", vault_file),
-            mock.patch("openjarvis.cli.vault_cmd._VAULT_KEY_FILE", key_file),
+            mock.patch("openeidon.cli.vault_cmd._VAULT_FILE", vault_file),
+            mock.patch("openeidon.cli.vault_cmd._VAULT_KEY_FILE", key_file),
             mock.patch(
-                "openjarvis.cli.vault_cmd.DEFAULT_CONFIG_DIR",
+                "openeidon.cli.vault_cmd.DEFAULT_CONFIG_DIR",
                 tmp_path,
             ),
         ):
@@ -64,7 +64,7 @@ class TestVaultCmd:
 
     def test_vault_remove_not_found(self) -> None:
         with mock.patch(
-            "openjarvis.cli.vault_cmd._VAULT_FILE",
+            "openeidon.cli.vault_cmd._VAULT_FILE",
             Path("/nonexistent/vault.enc"),
         ):
             result = CliRunner().invoke(vault, ["remove", "nonexistent"])

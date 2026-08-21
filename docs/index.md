@@ -1,5 +1,5 @@
 ---
-title: OpenJarvis
+title: OpenEidon
 description: Personal AI, On Personal Devices
 search:
   boost: 2
@@ -10,17 +10,17 @@ hide:
 # Personal AI, On Personal Devices
 
 <p class="hero-tagline">
-OpenJarvis is a research framework for composable, on-device AI systems.
+OpenEidon is a research framework for composable, on-device AI systems.
 Build personal AI that runs on your hardware. Cloud APIs are optional.
 </p>
 
 ---
 
-## Why OpenJarvis?
+## Why OpenEidon?
 
 Personal AI agents are exploding in popularity, but nearly all of them still route intelligence through cloud APIs. Your "personal" AI continues to depend on someone else's server. At the same time, our [Intelligence Per Watt](https://www.intelligence-per-watt.ai/) research showed that local language models already handle 88.7% of single-turn chat and reasoning queries, with intelligence efficiency improving 5.3× from 2023 to 2025. The models and hardware are increasingly ready. What has been missing is the software stack to make local-first personal AI practical.
 
-OpenJarvis is that stack. It is an opinionated framework for local-first personal AI, built around three core ideas: shared primitives for building on-device agents; evaluations that treat energy, FLOPs, latency, and dollar cost as first-class constraints alongside accuracy; and a learning loop that improves models using local trace data. The goal is simple: make it possible to build personal AI agents that run locally by default, calling the cloud only when truly necessary. OpenJarvis aims to be both a research platform and a production foundation for local AI, in the spirit of PyTorch.
+OpenEidon is that stack. It is an opinionated framework for local-first personal AI, built around three core ideas: shared primitives for building on-device agents; evaluations that treat energy, FLOPs, latency, and dollar cost as first-class constraints alongside accuracy; and a learning loop that improves models using local trace data. The goal is simple: make it possible to build personal AI agents that run locally by default, calling the cloud only when truly necessary. OpenEidon aims to be both a research platform and a production foundation for local AI, in the spirit of PyTorch.
 
 ---
 
@@ -31,8 +31,8 @@ OpenJarvis is that stack. It is an opinionated framework for local-first persona
     Run the full chat UI locally with one script:
 
     ```bash
-    git clone https://github.com/open-jarvis/OpenJarvis.git
-    cd OpenJarvis
+    git clone https://github.com/Yelt-sk/OpenEidon.git
+    cd OpenEidon
     ./scripts/quickstart.sh
     ```
 
@@ -41,33 +41,33 @@ OpenJarvis is that stack. It is an opinionated framework for local-first persona
 
 === "Desktop App"
 
-    The desktop app is a native window for the OpenJarvis UI.
+    The desktop app is a native window for the OpenEidon UI.
     The backend (Ollama + inference) runs on your machine — start it first, then open the app.
 
     **Step 1.** Start the backend:
 
     ```bash
-    git clone https://github.com/open-jarvis/OpenJarvis.git
-    cd OpenJarvis
+    git clone https://github.com/Yelt-sk/OpenEidon.git
+    cd OpenEidon
     ./scripts/quickstart.sh
     ```
 
     **Step 2.** Download and open the desktop app:
 
-    [Download for macOS](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-latest/OpenJarvis_0.1.0_universal.dmg){ .md-button .md-button--primary }
+    [Download for macOS](https://github.com/Yelt-sk/OpenEidon/releases/download/desktop-latest/OpenEidon_0.1.0_universal.dmg){ .md-button .md-button--primary }
 
-    Also available for [Windows](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-latest/OpenJarvis_0.1.0_x64-setup.exe), [Linux (DEB)](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-latest/OpenJarvis_0.1.0_amd64.deb), and [Linux (RPM)](https://github.com/open-jarvis/OpenJarvis/releases/download/desktop-latest/OpenJarvis-0.1.0-1.x86_64.rpm). See the [Downloads](downloads.md) page for details.
+    Also available for [Windows](https://github.com/Yelt-sk/OpenEidon/releases/download/desktop-latest/OpenEidon_0.1.0_x64-setup.exe), [Linux (DEB)](https://github.com/Yelt-sk/OpenEidon/releases/download/desktop-latest/OpenEidon_0.1.0_amd64.deb), and [Linux (RPM)](https://github.com/Yelt-sk/OpenEidon/releases/download/desktop-latest/OpenEidon-0.1.0-1.x86_64.rpm). See the [Downloads](downloads.md) page for details.
 
     The app connects to `http://localhost:8000` automatically.
 
-    !!! warning "macOS: run `xattr -cr /Applications/OpenJarvis.app` if the app shows as \"damaged\"."
+    !!! warning "macOS: run `xattr -cr /Applications/OpenEidon.app` if the app shows as \"damaged\"."
 
 === "Python SDK"
 
     ```python
-    from openjarvis import Jarvis
+    from openeidon import Eidon
 
-    j = Jarvis()                              # auto-detect engine
+    j = Eidon()                              # auto-detect engine
     response = j.ask("Explain quicksort.")
     print(response)
     ```
@@ -87,23 +87,23 @@ OpenJarvis is that stack. It is an opinionated framework for local-first persona
 === "CLI"
 
     ```bash
-    jarvis ask "What is the capital of France?"
+    eidon ask "What is the capital of France?"
 
-    jarvis ask --agent orchestrator --tools calculator "What is 137 * 42?"
+    eidon ask --agent orchestrator --tools calculator "What is 137 * 42?"
 
-    jarvis serve --port 8000
+    eidon serve --port 8000
 
-    jarvis memory index ./docs/
-    jarvis memory search "configuration options"
+    eidon memory index ./docs/
+    eidon memory search "configuration options"
     ```
 
 ---
 
 ## Five Primitives for Personal AI
 
-OpenJarvis is built around five composable layers. Each has a clean interface and can be swapped independently.
+OpenEidon is built around five composable layers. Each has a clean interface and can be swapped independently.
 
-1. **Intelligence** — Pick a model, or let OpenJarvis pick one for your hardware. Manages the full catalog of local models across providers.
+1. **Intelligence** — Pick a model, or let OpenEidon pick one for your hardware. Manages the full catalog of local models across providers.
 2. **Agents** — Multi-step reasoning with tool use. Seven built-in agent types from simple chat to orchestrated workflows.
 3. **Tools** — Web search, calculator, file I/O, code interpreter, retrieval, and any external MCP server.
 4. **Engine** — The inference runtime: [Ollama](https://ollama.com), [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang), [llama.cpp](https://github.com/ggerganov/llama.cpp), cloud APIs, and more. Auto-detects your hardware and recommends the best fit.
@@ -143,7 +143,7 @@ OpenJarvis is built around five composable layers. Each has a clean interface an
 
     ---
 
-    `jarvis serve` starts a FastAPI server with SSE streaming. Drop-in replacement for OpenAI clients.
+    `eidon serve` starts a FastAPI server with SSE streaming. Drop-in replacement for OpenAI clients.
 
 -   **Energy & Cost Tracking**
 
@@ -163,7 +163,7 @@ OpenJarvis is built around five composable layers. Each has a clean interface an
 
     ---
 
-    Install OpenJarvis, configure your first engine, and run your first query.
+    Install OpenEidon, configure your first engine, and run your first query.
 
 -   **[User Guide](user-guide/cli.md)**
 
@@ -177,7 +177,7 @@ OpenJarvis is built around five composable layers. Each has a clean interface an
 
     Five-primitive design, registry pattern, query flow, and cross-cutting learning.
 
--   **[API Reference](api-reference/openjarvis/index.md)**
+-   **[API Reference](api-reference/openeidon/index.md)**
 
     ---
 
@@ -199,15 +199,15 @@ OpenJarvis is built around five composable layers. Each has a clean interface an
 
 ## Research
 
-OpenJarvis is part of [Intelligence Per Watt](https://www.intelligence-per-watt.ai/), a research initiative studying the efficiency of on-device AI systems. Developed at [Hazy Research](https://hazyresearch.stanford.edu/) and the [Scaling Intelligence Lab](https://scalingintelligence.stanford.edu/) at [Stanford SAIL](https://ai.stanford.edu/).
+OpenEidon is part of [Intelligence Per Watt](https://www.intelligence-per-watt.ai/), a research initiative studying the efficiency of on-device AI systems. Developed at [Hazy Research](https://hazyresearch.stanford.edu/) and the [Scaling Intelligence Lab](https://scalingintelligence.stanford.edu/) at [Stanford SAIL](https://ai.stanford.edu/).
 
 Read the [blog post](https://scalingintelligence.stanford.edu/blogs/openjarvis/) for the full research motivation, architecture details, and experimental results.
 
 ## Citation
 
 ```bibtex
-@misc{saadfalcon2026openjarvis,
-  title={OpenJarvis: Personal AI, On Personal Devices},
+@misc{saadfalcon2026openeidon,
+  title={OpenEidon: Personal AI, On Personal Devices},
   author={Jon Saad-Falcon and Avanika Narayan and Herumb Shandilya and Hakki Orhun Akengin and Robby Manihani and Gabriel Bo and John Hennessy and Christopher R\'{e} and Azalia Mirhoseini},
   year={2026},
   howpublished={\url{https://scalingintelligence.stanford.edu/blogs/openjarvis/}},

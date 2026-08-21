@@ -33,7 +33,7 @@ class QueryAnalyzer(ABC):
 ```
 
 !!! note "Backward compatibility"
-    The canonical locations are now `openjarvis.learning._stubs` (for `RouterPolicy` and `QueryAnalyzer`) and `openjarvis.core.types` (for `RoutingContext`). The old `openjarvis.intelligence._stubs` import path still works via a backward-compatibility shim, but new code should import from `openjarvis.learning._stubs`.
+    The canonical locations are now `openeidon.learning._stubs` (for `RouterPolicy` and `QueryAnalyzer`) and `openeidon.core.types` (for `RoutingContext`). The old `openeidon.intelligence._stubs` import path still works via a backward-compatibility shim, but new code should import from `openeidon.learning._stubs`.
 
 ### RoutingContext
 
@@ -82,7 +82,7 @@ policy = "heuristic"
 ```
 
 ```bash
-jarvis ask --router learned "What is the capital of France?"
+eidon ask --router learned "What is the capital of France?"
 ```
 
 ### The `ensure_registered()` Pattern
@@ -123,7 +123,7 @@ The `HeuristicRouter` is the default routing policy. It is defined in `learning/
 ### Usage
 
 ```python
-from openjarvis.learning.router import HeuristicRouter, build_routing_context
+from openeidon.learning.router import HeuristicRouter, build_routing_context
 
 router = HeuristicRouter(
     available_models=["qwen3:8b", "llama3.2:3b", "deepseek-coder-v2:16b"],
@@ -140,7 +140,7 @@ model = router.select_model(ctx)  # Returns "deepseek-coder-v2:16b" (has "coder"
 The `build_routing_context()` function (in `learning/router.py`) analyzes a raw query string and produces a `RoutingContext` dataclass:
 
 ```python
-from openjarvis.learning.router import build_routing_context
+from openeidon.learning.router import build_routing_context
 
 ctx = build_routing_context("Solve the integral of x^2 dx")
 # ctx.has_math = True, ctx.has_code = False, ctx.query_length = 32
@@ -204,9 +204,9 @@ When `select_model()` is called:
 The primary update mechanism reads all traces from a `TraceAnalyzer` and recomputes the policy map:
 
 ```python
-from openjarvis.learning.trace_policy import TraceDrivenPolicy
-from openjarvis.traces.analyzer import TraceAnalyzer
-from openjarvis.traces.store import TraceStore
+from openeidon.learning.trace_policy import TraceDrivenPolicy
+from openeidon.traces.analyzer import TraceAnalyzer
+from openeidon.traces.store import TraceStore
 
 store = TraceStore("traces.db")
 analyzer = TraceAnalyzer(store)
@@ -253,9 +253,9 @@ The online update uses a conservative strategy: it only switches the preferred m
 The `SFTRouterPolicy` (in `learning/sft_policy.py`) is an `IntelligenceLearningPolicy` that learns routing decisions from historical traces. It analyzes trace outcomes, groups by query class (code, math, short, long, general), and builds a `query_class → model` mapping from the highest-scoring model per class. A backward-compatible alias `SFTPolicy = SFTRouterPolicy` is provided for code that used the old name.
 
 ```python
-from openjarvis.learning.sft_policy import SFTRouterPolicy
+from openeidon.learning.sft_policy import SFTRouterPolicy
 # or via the backward-compat alias:
-from openjarvis.learning.sft_policy import SFTPolicy
+from openeidon.learning.sft_policy import SFTPolicy
 ```
 
 ---
@@ -265,7 +265,7 @@ from openjarvis.learning.sft_policy import SFTPolicy
 The `AgentAdvisorPolicy` (in `learning/agent_advisor.py`) is an `AgentLearningPolicy` that advises on agent strategy -- for example, recommending tool sets, turn limits, or agent type -- based on patterns observed in historical traces.
 
 ```python
-from openjarvis.learning.agent_advisor import AgentAdvisorPolicy
+from openeidon.learning.agent_advisor import AgentAdvisorPolicy
 ```
 
 ---
@@ -275,7 +275,7 @@ from openjarvis.learning.agent_advisor import AgentAdvisorPolicy
 The `ICLUpdaterPolicy` (in `learning/icl_updater.py`) is an `AgentLearningPolicy` that uses in-context learning to discover reusable examples and multi-tool skill sequences from traces. It analyzes successful tool-call patterns to recommend ICL examples and skill libraries that update agent behavior.
 
 ```python
-from openjarvis.learning.icl_updater import ICLUpdaterPolicy
+from openeidon.learning.icl_updater import ICLUpdaterPolicy
 ```
 
 ---
@@ -323,7 +323,7 @@ The built-in reward function computes a weighted combination of three factors:
 | **Efficiency** | 0.3 | `completion_tokens / total_tokens` | 0 = all prompt, 1 = all completion |
 
 ```python
-from openjarvis.learning.heuristic_reward import HeuristicRewardFunction
+from openeidon.learning.heuristic_reward import HeuristicRewardFunction
 
 reward_fn = HeuristicRewardFunction(
     weight_latency=0.4,
@@ -356,9 +356,9 @@ The trace system records the full sequence of steps in every agent interaction, 
 `TraceStore` is an append-only SQLite store for interaction traces:
 
 ```python
-from openjarvis.traces.store import TraceStore
+from openeidon.traces.store import TraceStore
 
-store = TraceStore("~/.openjarvis/traces.db")
+store = TraceStore("~/.openeidon/traces.db")
 store.save(trace)                          # Persist a complete trace
 trace = store.get("abc123")                # Retrieve by trace ID
 traces = store.list_traces(                # Query with filters
@@ -388,7 +388,7 @@ store.subscribe_to_bus(bus)
 `TraceCollector` wraps any `BaseAgent` and automatically records a `Trace` for every `run()` call:
 
 ```python
-from openjarvis.traces.collector import TraceCollector
+from openeidon.traces.collector import TraceCollector
 
 agent = OrchestratorAgent(engine, model, tools=tools, bus=bus)
 collector = TraceCollector(agent, store=trace_store, bus=bus)
@@ -414,7 +414,7 @@ How it works:
 `TraceAnalyzer` provides a read-only query layer over stored traces, computing aggregated statistics:
 
 ```python
-from openjarvis.traces.analyzer import TraceAnalyzer
+from openeidon.traces.analyzer import TraceAnalyzer
 
 analyzer = TraceAnalyzer(store)
 
@@ -529,7 +529,7 @@ Trace
 ## Optimization Framework
 
 The optimization subsystem (`learning/optimize/`) provides LLM-guided search
-over OpenJarvis's 5-primitive configuration space. It automates finding optimal
+over OpenEidon's 5-primitive configuration space. It automates finding optimal
 configurations for accuracy, latency, cost, and energy consumption.
 
 ### Components
@@ -550,6 +550,6 @@ metric can be improved without degrading another.
 
 ### Rust Backend
 
-The optimization framework has full Rust parity via the `openjarvis-learning`
+The optimization framework has full Rust parity via the `openeidon-learning`
 crate, with PyO3 bindings exposing `OptimizationStore` and `LLMOptimizer`
 to Python.

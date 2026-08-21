@@ -7,15 +7,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.bench.energy import EnergyBenchmark
-from openjarvis.core.registry import BenchmarkRegistry
-from openjarvis.telemetry.energy_monitor import EnergySample
+from openeidon.bench.energy import EnergyBenchmark
+from openeidon.core.registry import BenchmarkRegistry
+from openeidon.telemetry.energy_monitor import EnergySample
 
 
 @pytest.fixture(autouse=True)
 def _register_energy():
     """Re-register energy benchmark after registry clear."""
-    from openjarvis.bench.energy import ensure_registered
+    from openeidon.bench.energy import ensure_registered
 
     ensure_registered()
 
@@ -114,7 +114,7 @@ class TestEnergyBenchmark:
         assert result.metrics.get("total_energy_joules", 0.0) == 0.0
 
     def test_ensure_registered(self):
-        from openjarvis.bench.energy import ensure_registered
+        from openeidon.bench.energy import ensure_registered
 
         ensure_registered()  # should not raise
         assert BenchmarkRegistry.contains("energy")

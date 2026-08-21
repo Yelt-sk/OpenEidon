@@ -1,8 +1,8 @@
-"""Tests for openjarvis.optimize.types module."""
+"""Tests for openeidon.optimize.types module."""
 
 from __future__ import annotations
 
-from openjarvis.optimize.types import (
+from openeidon.optimize.types import (
     OptimizationRun,
     SampleScore,
     SearchDimension,
@@ -11,7 +11,7 @@ from openjarvis.optimize.types import (
     TrialFeedback,
     TrialResult,
 )
-from openjarvis.recipes.loader import Recipe
+from openeidon.recipes.loader import Recipe
 
 # ---------------------------------------------------------------------------
 # SearchDimension

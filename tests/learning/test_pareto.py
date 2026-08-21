@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from openjarvis.evals.core.types import MetricStats, RunSummary
-from openjarvis.optimize.optimizer import compute_pareto_frontier
-from openjarvis.optimize.types import (
+from openeidon.evals.core.types import MetricStats, RunSummary
+from openeidon.optimize.optimizer import compute_pareto_frontier
+from openeidon.optimize.types import (
     ObjectiveSpec,
     TrialConfig,
     TrialResult,
@@ -53,7 +53,7 @@ def _make_trial_with_summary(
     defaults: Dict[str, Any] = dict(
         benchmark="test",
         category="reasoning",
-        backend="jarvis-direct",
+        backend="eidon-direct",
         model="test-model",
         total_samples=10,
         scored_samples=10,

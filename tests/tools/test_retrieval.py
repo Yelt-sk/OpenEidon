@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from openjarvis.tools.retrieval import RetrievalTool
-from openjarvis.tools.storage._stubs import MemoryBackend, RetrievalResult
+from openeidon.tools.retrieval import RetrievalTool
+from openeidon.tools.storage._stubs import MemoryBackend, RetrievalResult
 
 
 class _FakeBackend(MemoryBackend):

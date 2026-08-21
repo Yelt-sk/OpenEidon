@@ -1,6 +1,6 @@
 # Agents
 
-Agents are the agentic logic layer of OpenJarvis. They determine how a query is processed -- whether it goes directly to a model, through a tool-calling loop, via ReAct reasoning, CodeAct code execution, recursive decomposition, or an external agent runtime. All agents implement the `BaseAgent` ABC and are registered via the `AgentRegistry`.
+Agents are the agentic logic layer of OpenEidon. They determine how a query is processed -- whether it goes directly to a model, through a tool-calling loop, via ReAct reasoning, CodeAct code execution, recursive decomposition, or an external agent runtime. All agents implement the `BaseAgent` ABC and are registered via the `AgentRegistry`.
 
 ## Overview
 
@@ -24,7 +24,7 @@ All agents extend the abstract `BaseAgent` class.
 
 ```python
 from abc import ABC, abstractmethod
-from openjarvis.agents._stubs import AgentContext, AgentResult
+from openeidon.agents._stubs import AgentContext, AgentResult
 
 class BaseAgent(ABC):
     agent_id: str
@@ -165,7 +165,7 @@ The `NativeReActAgent` implements a **Thought-Action-Observation** loop followin
 **When to use:** For queries that benefit from explicit step-by-step reasoning with tool use, where you want visibility into the agent's thought process.
 
 !!! note "Backward compatibility"
-    The registry alias `"react"` maps to `NativeReActAgent`. The old import `from openjarvis.agents.react import ReActAgent` also still works.
+    The registry alias `"react"` maps to `NativeReActAgent`. The old import `from openeidon.agents.react import ReActAgent` also still works.
 
 ---
 
@@ -266,33 +266,33 @@ The `OpenHandsAgent` wraps the real `openhands-sdk` package for AI-driven softwa
 
 ```bash
 # Simple agent
-jarvis ask --agent simple "What is the capital of France?"
+eidon ask --agent simple "What is the capital of France?"
 
 # Orchestrator with tools
-jarvis ask --agent orchestrator --tools calculator,think "What is sqrt(256)?"
+eidon ask --agent orchestrator --tools calculator,think "What is sqrt(256)?"
 
 # NativeReActAgent
-jarvis ask --agent native_react --tools calculator "What is 2+2?"
+eidon ask --agent native_react --tools calculator "What is 2+2?"
 
 # ReAct alias (same as native_react)
-jarvis ask --agent react --tools calculator,think "Solve step by step: 15% of 340"
+eidon ask --agent react --tools calculator,think "Solve step by step: 15% of 340"
 
 # NativeOpenHandsAgent
-jarvis ask --agent native_openhands --tools calculator,web_search "Summarize example.com"
+eidon ask --agent native_openhands --tools calculator,web_search "Summarize example.com"
 
 # RLMAgent
-jarvis ask --agent rlm "Summarize this long document"
+eidon ask --agent rlm "Summarize this long document"
 
 # OpenHands SDK agent
-jarvis ask --agent openhands "Fix the bug in test_utils.py"
+eidon ask --agent openhands "Fix the bug in test_utils.py"
 ```
 
 ### Via Python SDK
 
 ```python
-from openjarvis import Jarvis
+from openeidon import Eidon
 
-j = Jarvis()
+j = Eidon()
 
 # Simple agent
 response = j.ask("Hello", agent="simple")
@@ -331,14 +331,14 @@ j.close()
 The `ClaudeCodeAgent` wraps the `@anthropic-ai/claude-code` SDK via a bundled Node.js subprocess bridge. Unlike the other agents, inference is handled entirely by the Claude Agent SDK -- the `engine` parameter is accepted only for `BaseAgent` interface conformance and is not used.
 
 !!! warning "Requirements"
-    Requires Node.js 22+ on `PATH` and an `ANTHROPIC_API_KEY` environment variable (or pass `api_key=` directly). The bundled runner is auto-installed to `~/.openjarvis/claude_code_runner/` on first use via `npm install`.
+    Requires Node.js 22+ on `PATH` and an `ANTHROPIC_API_KEY` environment variable (or pass `api_key=` directly). The bundled runner is auto-installed to `~/.openeidon/claude_code_runner/` on first use via `npm install`.
 
 **How it works:**
 
-1. On first call, copies the bundled `claude_code_runner/` to `~/.openjarvis/claude_code_runner/` and runs `npm install --production` if `node_modules` is missing.
+1. On first call, copies the bundled `claude_code_runner/` to `~/.openeidon/claude_code_runner/` and runs `npm install --production` if `node_modules` is missing.
 2. Builds a JSON request payload (prompt, API key, workspace, allowed tools, system prompt, session ID) and sends it to `stdin` of a `node dist/index.js` subprocess.
 3. The Node.js runner calls the Claude Agent SDK and writes sentinel-delimited JSON to `stdout`.
-4. The Python side parses the output between `---OPENJARVIS_OUTPUT_START---` and `---OPENJARVIS_OUTPUT_END---` markers, extracting content, tool results, and metadata.
+4. The Python side parses the output between `---OPENEIDON_OUTPUT_START---` and `---OPENEIDON_OUTPUT_END---` markers, extracting content, tool results, and metadata.
 5. Returns an `AgentResult` with `turns=1`.
 
 **Constructor parameters:**
@@ -357,10 +357,10 @@ The `ClaudeCodeAgent` wraps the `@anthropic-ai/claude-code` SDK via a bundled No
 | `system_prompt`  | `str`             | `""`                | Additional system prompt for the agent           |
 | `timeout`        | `int`             | `300`               | Subprocess timeout in seconds                    |
 
-**When to use:** For software engineering tasks where the Claude Agent SDK's built-in tools (code editing, bash execution, file operations) provide capabilities beyond what OpenJarvis tool-calling agents support.
+**When to use:** For software engineering tasks where the Claude Agent SDK's built-in tools (code editing, bash execution, file operations) provide capabilities beyond what OpenEidon tool-calling agents support.
 
 ```python
-from openjarvis.agents.claude_code import ClaudeCodeAgent
+from openeidon.agents.claude_code import ClaudeCodeAgent
 
 agent = ClaudeCodeAgent(
     engine=None,          # not used
@@ -375,11 +375,11 @@ print(result.content)
 
 ```bash
 # Via CLI
-jarvis ask --agent claude_code "Refactor the tests to use pytest fixtures"
+eidon ask --agent claude_code "Refactor the tests to use pytest fixtures"
 ```
 
 !!! info "accepts_tools = False"
-    `ClaudeCodeAgent` does not accept OpenJarvis tools via `--tools`. Tool access for the Claude agent is configured separately via the `allowed_tools` constructor parameter, which passes tool names understood by the Claude Agent SDK itself.
+    `ClaudeCodeAgent` does not accept OpenEidon tools via `--tools`. Tool access for the Claude agent is configured separately via the `allowed_tools` constructor parameter, which passes tool names understood by the Claude Agent SDK itself.
 
 ---
 
@@ -415,7 +415,7 @@ The `OperativeAgent` is a persistent, scheduled autonomous agent with built-in s
 **When to use:** For autonomous agents that run on a schedule (e.g., via `TaskScheduler`) and need to maintain state between invocations. The agent automatically manages session history and state persistence across ticks.
 
 ```python
-from openjarvis.agents.operative import OperativeAgent
+from openeidon.agents.operative import OperativeAgent
 
 agent = OperativeAgent(
     engine,
@@ -431,7 +431,7 @@ result = agent.run("Generate today's report")
 
 ```bash
 # Via CLI
-jarvis ask --agent operative "Check system status"
+eidon ask --agent operative "Check system status"
 ```
 
 ---
@@ -482,7 +482,7 @@ The `MonitorOperativeAgent` is a long-horizon agent with four configurable strat
 **When to use:** For long-horizon benchmark evaluation and complex multi-step tasks that benefit from configurable strategies for memory management, context compression, and task decomposition. Particularly useful for benchmarks like GAIA, FRAMES, and LifelongAgent where strategy selection impacts performance.
 
 ```python
-from openjarvis.agents.monitor_operative import MonitorOperativeAgent
+from openeidon.agents.monitor_operative import MonitorOperativeAgent
 
 agent = MonitorOperativeAgent(
     engine,
@@ -501,7 +501,7 @@ result = agent.run("Investigate the root cause of the production outage")
 
 ```bash
 # Via CLI
-jarvis ask --agent monitor_operative "Analyze the security audit findings"
+eidon ask --agent monitor_operative "Analyze the security audit findings"
 ```
 
 ---
@@ -533,13 +533,13 @@ See also the [`ContainerRunner`](#containerrunner) reference below, which manage
 | `bus`                  | `EventBus`        | `None`       | Event bus for telemetry                           |
 
 ```python
-from openjarvis.sandbox import ContainerRunner, SandboxedAgent
-from openjarvis.agents.simple import SimpleAgent
+from openeidon.sandbox import ContainerRunner, SandboxedAgent
+from openeidon.agents.simple import SimpleAgent
 
 runner = ContainerRunner(
-    image="openjarvis-sandbox:latest",
+    image="openeidon-sandbox:latest",
     timeout=60,
-    mount_allowlist_path="/etc/openjarvis/mount_allowlist.json",
+    mount_allowlist_path="/etc/openeidon/mount_allowlist.json",
 )
 inner = SimpleAgent(engine, model="qwen3:8b")
 agent = SandboxedAgent(
@@ -560,7 +560,7 @@ result = agent.run("Summarize the CSV files in /home/user/data")
 
 | Parameter              | Type   | Default                      | Description                                    |
 |------------------------|--------|------------------------------|------------------------------------------------|
-| `image`                | `str`  | `"openjarvis-sandbox:latest"`| Docker image to run                            |
+| `image`                | `str`  | `"openeidon-sandbox:latest"`| Docker image to run                            |
 | `timeout`              | `int`  | `300`                        | Max container execution time in seconds        |
 | `mount_allowlist_path` | `str`  | `""`                         | Path to JSON mount-allowlist file              |
 | `max_concurrent`       | `int`  | `5`                          | Max concurrent containers (informational)      |
@@ -590,7 +590,7 @@ If `mount_allowlist_path` is not set, no root restriction is applied. Blocked pa
 Agents are registered via the `@AgentRegistry.register()` decorator. This makes them discoverable by name at runtime:
 
 ```python
-from openjarvis.core.registry import AgentRegistry
+from openeidon.core.registry import AgentRegistry
 
 # Check if an agent is registered
 AgentRegistry.contains("orchestrator")  # True

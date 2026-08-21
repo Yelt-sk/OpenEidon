@@ -1,4 +1,4 @@
-"""Tests for ``jarvis quickstart`` command."""
+"""Tests for ``eidon quickstart`` command."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from openeidon.cli import cli
 
 
 class TestQuickstartCommand:
@@ -28,27 +28,27 @@ class TestQuickstartCommand:
         hw.gpu = MagicMock(name="Test GPU", vram_gb=24, count=1, vendor="nvidia")
 
         with (
-            patch("openjarvis.cli.quickstart_cmd.detect_hardware", return_value=hw),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
+            patch("openeidon.cli.quickstart_cmd.detect_hardware", return_value=hw),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
             patch(
-                "openjarvis.cli.quickstart_cmd.generate_default_toml",
+                "openeidon.cli.quickstart_cmd.generate_default_toml",
                 return_value="[engine]\n",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd.recommend_engine",
+                "openeidon.cli.quickstart_cmd.recommend_engine",
                 return_value="ollama",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_engine_health",
+                "openeidon.cli.quickstart_cmd._check_engine_health",
                 return_value=True,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_model_available",
+                "openeidon.cli.quickstart_cmd._check_model_available",
                 return_value=True,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._test_query",
+                "openeidon.cli.quickstart_cmd._test_query",
                 return_value="Hello!",
             ),
         ):
@@ -70,27 +70,27 @@ class TestQuickstartCommand:
         hw.gpu = None
 
         with (
-            patch("openjarvis.cli.quickstart_cmd.detect_hardware", return_value=hw),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
+            patch("openeidon.cli.quickstart_cmd.detect_hardware", return_value=hw),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
             patch(
-                "openjarvis.cli.quickstart_cmd.generate_default_toml",
+                "openeidon.cli.quickstart_cmd.generate_default_toml",
                 return_value="[engine]\n",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd.recommend_engine",
+                "openeidon.cli.quickstart_cmd.recommend_engine",
                 return_value="ollama",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_engine_health",
+                "openeidon.cli.quickstart_cmd._check_engine_health",
                 return_value=True,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_model_available",
+                "openeidon.cli.quickstart_cmd._check_model_available",
                 return_value=True,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._test_query",
+                "openeidon.cli.quickstart_cmd._test_query",
                 return_value="Hello!",
             ),
         ):
@@ -114,26 +114,26 @@ class TestQuickstartCommand:
         hw.gpu = None
 
         with (
-            patch("openjarvis.cli.quickstart_cmd.detect_hardware", return_value=hw),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
+            patch("openeidon.cli.quickstart_cmd.detect_hardware", return_value=hw),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
             patch(
-                "openjarvis.cli.quickstart_cmd.generate_default_toml",
+                "openeidon.cli.quickstart_cmd.generate_default_toml",
                 return_value="[engine]\nnew = true\n",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd.recommend_engine",
+                "openeidon.cli.quickstart_cmd.recommend_engine",
                 return_value="ollama",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_engine_health",
+                "openeidon.cli.quickstart_cmd._check_engine_health",
                 return_value=True,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_model_available",
+                "openeidon.cli.quickstart_cmd._check_model_available",
                 return_value=True,
             ),
-            patch("openjarvis.cli.quickstart_cmd._test_query", return_value="Hello!"),
+            patch("openeidon.cli.quickstart_cmd._test_query", return_value="Hello!"),
         ):
             runner = CliRunner()
             result = runner.invoke(cli, ["quickstart", "--force"])
@@ -151,19 +151,19 @@ class TestQuickstartCommand:
         hw.gpu = None
 
         with (
-            patch("openjarvis.cli.quickstart_cmd.detect_hardware", return_value=hw),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
+            patch("openeidon.cli.quickstart_cmd.detect_hardware", return_value=hw),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
             patch(
-                "openjarvis.cli.quickstart_cmd.generate_default_toml",
+                "openeidon.cli.quickstart_cmd.generate_default_toml",
                 return_value="[engine]\n",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd.recommend_engine",
+                "openeidon.cli.quickstart_cmd.recommend_engine",
                 return_value="ollama",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_engine_health",
+                "openeidon.cli.quickstart_cmd._check_engine_health",
                 return_value=False,
             ),
         ):
@@ -186,31 +186,31 @@ class TestQuickstartCommand:
         hw.gpu = MagicMock(name="Apple GPU", vram_gb=16, count=1, vendor="apple")
 
         with (
-            patch("openjarvis.cli.quickstart_cmd.detect_hardware", return_value=hw),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
-            patch("openjarvis.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
+            patch("openeidon.cli.quickstart_cmd.detect_hardware", return_value=hw),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_PATH", config_path),
+            patch("openeidon.cli.quickstart_cmd.DEFAULT_CONFIG_DIR", tmp_path),
             patch(
-                "openjarvis.cli.quickstart_cmd.generate_default_toml",
+                "openeidon.cli.quickstart_cmd.generate_default_toml",
                 return_value='[engine]\ndefault = "mlx"\n',
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd.recommend_engine",
+                "openeidon.cli.quickstart_cmd.recommend_engine",
                 return_value="mlx",
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_engine_health",
+                "openeidon.cli.quickstart_cmd._check_engine_health",
                 return_value=False,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._discover_healthy_engines",
+                "openeidon.cli.quickstart_cmd._discover_healthy_engines",
                 return_value=["ollama"],
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._check_model_available",
+                "openeidon.cli.quickstart_cmd._check_model_available",
                 return_value=True,
             ),
             patch(
-                "openjarvis.cli.quickstart_cmd._test_query",
+                "openeidon.cli.quickstart_cmd._test_query",
                 return_value="Hello!",
             ),
         ):

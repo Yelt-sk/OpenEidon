@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-REGISTRY_PATH = "openjarvis.core.registry.AgentRegistry.get"
+REGISTRY_PATH = "openeidon.core.registry.AgentRegistry.get"
 
 
 def test_run_ephemeral_creates_and_runs_agent():
-    from openjarvis.agents.executor import AgentExecutor
+    from openeidon.agents.executor import AgentExecutor
 
     manager = MagicMock()
     executor = AgentExecutor(manager=manager, event_bus=MagicMock())
@@ -26,7 +26,7 @@ def test_run_ephemeral_creates_and_runs_agent():
 
 
 def test_run_ephemeral_passes_input():
-    from openjarvis.agents.executor import AgentExecutor
+    from openeidon.agents.executor import AgentExecutor
 
     manager = MagicMock()
     executor = AgentExecutor(manager=manager, event_bus=MagicMock())

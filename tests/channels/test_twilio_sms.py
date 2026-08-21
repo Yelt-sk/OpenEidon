@@ -6,15 +6,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)
 def _register_twilio():
     if not ChannelRegistry.contains("twilio"):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -28,7 +28,7 @@ class TestRegistration:
 
 class TestInit:
     def test_from_params(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -41,7 +41,7 @@ class TestInit:
         assert ch.status() == ChannelStatus.DISCONNECTED
 
     def test_from_env_vars(self, monkeypatch):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -54,7 +54,7 @@ class TestInit:
 
 class TestSend:
     def test_send_success(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -78,7 +78,7 @@ class TestSend:
         )
 
     def test_send_failure(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -97,7 +97,7 @@ class TestSend:
         assert result is False
 
     def test_send_publishes_event(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -121,7 +121,7 @@ class TestSend:
 
 class TestStatus:
     def test_connected_after_connect(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -130,12 +130,12 @@ class TestStatus:
             auth_token="token_test",
             phone_number="+15551234567",
         )
-        with patch("openjarvis.channels.twilio_sms._create_twilio_client"):
+        with patch("openeidon.channels.twilio_sms._create_twilio_client"):
             ch.connect()
         assert ch.status() == ChannelStatus.CONNECTED
 
     def test_disconnected_after_disconnect(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 
@@ -144,7 +144,7 @@ class TestStatus:
             auth_token="token_test",
             phone_number="+15551234567",
         )
-        with patch("openjarvis.channels.twilio_sms._create_twilio_client"):
+        with patch("openeidon.channels.twilio_sms._create_twilio_client"):
             ch.connect()
             ch.disconnect()
         assert ch.status() == ChannelStatus.DISCONNECTED
@@ -152,7 +152,7 @@ class TestStatus:
 
 class TestOnMessage:
     def test_registers_handler(self):
-        from openjarvis.channels.twilio_sms import (
+        from openeidon.channels.twilio_sms import (
             TwilioSMSChannel,
         )
 

@@ -8,8 +8,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.core.types import Message, Role, ToolCall
-from openjarvis.engine._stubs import StreamChunk
+from openeidon.core.types import Message, Role, ToolCall
+from openeidon.engine._stubs import StreamChunk
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -18,7 +18,7 @@ from openjarvis.engine._stubs import StreamChunk
 
 def _make_cloud_engine(**overrides: Any) -> Any:
     """Create a CloudEngine without calling __init__ (no env vars needed)."""
-    from openjarvis.engine.cloud import CloudEngine
+    from openeidon.engine.cloud import CloudEngine
 
     engine = CloudEngine.__new__(CloudEngine)
     engine._openai_client = overrides.get("openai_client")

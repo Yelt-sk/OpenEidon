@@ -1,4 +1,4 @@
-"""Tests for the Python SDK — Jarvis class and MemoryHandle."""
+"""Tests for the Python SDK — Eidon class and MemoryHandle."""
 
 from __future__ import annotations
 
@@ -6,9 +6,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import openjarvis
-from openjarvis.core.config import JarvisConfig
-from openjarvis.sdk import Jarvis, MemoryHandle
+import openeidon
+from openeidon.core.config import EidonConfig
+from openeidon.sdk import Eidon, MemoryHandle
 
 
 def _make_engine(content="Hello from SDK"):
@@ -25,47 +25,47 @@ def _make_engine(content="Hello from SDK"):
     return engine
 
 
-class TestJarvisInit:
+class TestEidonInit:
     def test_default_config(self):
-        j = Jarvis(config=JarvisConfig())
+        j = Eidon(config=EidonConfig())
         assert j.config is not None
         j.close()
 
     def test_custom_config(self):
-        cfg = JarvisConfig()
-        j = Jarvis(config=cfg)
+        cfg = EidonConfig()
+        j = Eidon(config=cfg)
         assert j.config is cfg
         j.close()
 
     def test_version_property(self):
-        j = Jarvis(config=JarvisConfig())
-        assert j.version == openjarvis.__version__
+        j = Eidon(config=EidonConfig())
+        assert j.version == openeidon.__version__
         j.close()
 
     def test_engine_key_override(self):
-        j = Jarvis(config=JarvisConfig(), engine_key="custom")
+        j = Eidon(config=EidonConfig(), engine_key="custom")
         assert j._engine_key == "custom"
         j.close()
 
     def test_model_override(self):
-        j = Jarvis(config=JarvisConfig(), model="my-model")
+        j = Eidon(config=EidonConfig(), model="my-model")
         assert j._model_override == "my-model"
         j.close()
 
 
-class TestJarvisAsk:
+class TestEidonAsk:
     def test_ask_returns_string(self):
         engine = _make_engine("The answer is 42.")
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig(), model="test-model")
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig(), model="test-model")
             result = j.ask("What is the answer?")
             assert result == "The answer is 42."
             j.close()
 
     def test_ask_with_model_override(self):
         engine = _make_engine()
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig())
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig())
             j.ask("Hello", model="custom-model")
             # Verify engine.generate was called with the custom model
             call_kwargs = engine.generate.call_args
@@ -73,8 +73,8 @@ class TestJarvisAsk:
             j.close()
 
     def test_ask_with_agent(self):
-        from openjarvis.agents._stubs import AgentResult
-        from openjarvis.core.registry import AgentRegistry
+        from openeidon.agents._stubs import AgentResult
+        from openeidon.core.registry import AgentRegistry
 
         engine = _make_engine()
 
@@ -89,23 +89,23 @@ class TestJarvisAsk:
 
         AgentRegistry.register_value("mock-agent", MockAgent)
 
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig(), model="test-model")
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig(), model="test-model")
             result = j.ask("Hello", agent="mock-agent")
             assert result == "Agent response"
             j.close()
 
     def test_ask_no_engine_raises(self):
-        with patch("openjarvis.sdk.get_engine", return_value=None):
-            j = Jarvis(config=JarvisConfig())
+        with patch("openeidon.sdk.get_engine", return_value=None):
+            j = Eidon(config=EidonConfig())
             with pytest.raises(RuntimeError, match="No inference engine"):
                 j.ask("Hello")
             j.close()
 
     def test_ask_full_returns_dict(self):
         engine = _make_engine("Full response")
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig(), model="test-model")
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig(), model="test-model")
             result = j.ask_full("Hello")
             assert isinstance(result, dict)
             assert "content" in result
@@ -114,26 +114,26 @@ class TestJarvisAsk:
             j.close()
 
 
-class TestJarvisModels:
+class TestEidonModels:
     def test_list_models(self):
         engine = _make_engine()
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig())
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig())
             models = j.list_models()
             assert models == ["test-model"]
             j.close()
 
     def test_list_engines(self):
-        from openjarvis.core.registry import EngineRegistry
+        from openeidon.core.registry import EngineRegistry
 
         EngineRegistry.register_value("test-eng", object)
-        j = Jarvis(config=JarvisConfig())
+        j = Eidon(config=EidonConfig())
         engines = j.list_engines()
         assert "test-eng" in engines
         j.close()
 
     def test_list_engines_empty(self):
-        j = Jarvis(config=JarvisConfig())
+        j = Eidon(config=EidonConfig())
         engines = j.list_engines()
         assert isinstance(engines, list)
         j.close()
@@ -141,13 +141,13 @@ class TestJarvisModels:
 
 class TestMemoryHandle:
     def test_lazy_backend_init(self):
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         handle = MemoryHandle(cfg)
         assert handle._backend is None
         handle.close()
 
     def test_close_idempotent(self):
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         handle = MemoryHandle(cfg)
         handle.close()
         handle.close()  # should not raise
@@ -162,7 +162,7 @@ class TestMemoryHandle:
         mock_backend = MagicMock()
         mock_backend.store.return_value = "doc-1"
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         handle = MemoryHandle(cfg)
         handle._backend = mock_backend
 
@@ -180,7 +180,7 @@ class TestMemoryHandle:
         mock_result.metadata = {}
         mock_backend.retrieve.return_value = [mock_result]
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         handle = MemoryHandle(cfg)
         handle._backend = mock_backend
 
@@ -193,7 +193,7 @@ class TestMemoryHandle:
         mock_backend = MagicMock()
         mock_backend.retrieve.return_value = []
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         handle = MemoryHandle(cfg)
         handle._backend = mock_backend
 
@@ -205,7 +205,7 @@ class TestMemoryHandle:
         mock_backend = MagicMock()
         mock_backend.count.return_value = 5
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         handle = MemoryHandle(cfg)
         handle._backend = mock_backend
 
@@ -215,7 +215,7 @@ class TestMemoryHandle:
         handle.close()
 
 
-class TestJarvisStreaming:
+class TestEidonStreaming:
     @pytest.mark.asyncio
     async def test_ask_stream_yields_tokens(self):
         engine = _make_engine()
@@ -226,8 +226,8 @@ class TestJarvisStreaming:
 
         engine.stream = mock_stream
 
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig(), model="test-model")
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig(), model="test-model")
             tokens = []
             async for token in j.ask_stream("Hi"):
                 tokens.append(token)
@@ -244,8 +244,8 @@ class TestJarvisStreaming:
 
         engine.stream = mock_stream
 
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig(), model="test-model")
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig(), model="test-model")
             chunks = []
             async for chunk in j.ask_full_stream("Hi"):
                 chunks.append(chunk)
@@ -275,8 +275,8 @@ class TestJarvisStreaming:
 
         engine.stream = mock_stream
 
-        with patch("openjarvis.sdk.get_engine", return_value=("mock", engine)):
-            j = Jarvis(config=JarvisConfig())
+        with patch("openeidon.sdk.get_engine", return_value=("mock", engine)):
+            j = Eidon(config=EidonConfig())
             tokens = []
             async for token in j.ask_stream("Hi", model="custom-model"):
                 tokens.append(token)
@@ -285,13 +285,13 @@ class TestJarvisStreaming:
             j.close()
 
 
-class TestJarvisLifecycle:
+class TestEidonLifecycle:
     def test_close_releases_resources(self):
-        j = Jarvis(config=JarvisConfig())
+        j = Eidon(config=EidonConfig())
         j.close()
         assert j._engine is None
 
     def test_double_close_safe(self):
-        j = Jarvis(config=JarvisConfig())
+        j = Eidon(config=EidonConfig())
         j.close()
         j.close()  # should not raise

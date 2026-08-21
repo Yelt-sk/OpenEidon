@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.learning.intelligence.orchestrator.types import (
+from openeidon.learning.intelligence.orchestrator.types import (
     Episode,
     EpisodeState,
     OrchestratorAction,

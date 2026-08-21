@@ -7,7 +7,7 @@ Run manually::
 
 Or register as a scheduled task::
 
-    jarvis scheduler create "Weekly code review" --type cron --value "0 8 * * 1"
+    eidon scheduler create "Weekly code review" --type cron --value "0 8 * * 1"
 """
 
 from __future__ import annotations
@@ -62,7 +62,7 @@ def main(repo_path: str, days: int, model: str | None, engine_key: str | None) -
     )
 
     try:
-        from openjarvis import Jarvis
+        from openeidon import Eidon
 
         kwargs: dict[str, str | None] = {}
         if model:
@@ -70,12 +70,12 @@ def main(repo_path: str, days: int, model: str | None, engine_key: str | None) -
         if engine_key:
             kwargs["engine_key"] = engine_key
 
-        j = Jarvis(**kwargs)  # type: ignore[arg-type]
+        j = Eidon(**kwargs)  # type: ignore[arg-type]
     except Exception as exc:
         click.echo(
-            f"Error: Could not initialize Jarvis: {exc}\n\n"
+            f"Error: Could not initialize Eidon: {exc}\n\n"
             "Make sure an inference engine is running (e.g. `ollama serve`) "
-            "and the openjarvis package is installed (`uv sync`).",
+            "and the openeidon package is installed (`uv sync`).",
             err=True,
         )
         raise SystemExit(1) from exc

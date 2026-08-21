@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.tools.storage.chunking import ChunkConfig, chunk_text
+from openeidon.tools.storage.chunking import ChunkConfig, chunk_text
 
 
 def test_empty_string_returns_empty():

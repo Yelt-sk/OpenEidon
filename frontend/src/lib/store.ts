@@ -34,16 +34,16 @@ export interface Workflow {
 
 // ── localStorage persistence ──────────────────────────────────────────
 
-const CONVERSATIONS_KEY = 'openjarvis-conversations';
-const WORKFLOWS_KEY = 'openjarvis-workflows';
-const SETTINGS_KEY = 'openjarvis-settings';
-const DESKTOP_SPEECH_BOOTSTRAP_KEY = 'openjarvis-desktop-speech-bootstrap-v1';
-const OPTIN_KEY = 'openjarvis-optin';
-const OPTIN_NAME_KEY = 'openjarvis-display-name';
-const OPTIN_EMAIL_KEY = 'openjarvis-email';
-const OPTIN_ANONID_KEY = 'openjarvis-anon-id';
-const OPTIN_SEEN_KEY = 'openjarvis-optin-seen';
-const WINDOW_SYNC_CHANNEL = 'openjarvis-window-sync';
+const CONVERSATIONS_KEY = 'openeidon-conversations';
+const WORKFLOWS_KEY = 'openeidon-workflows';
+const SETTINGS_KEY = 'openeidon-settings';
+const DESKTOP_SPEECH_BOOTSTRAP_KEY = 'openeidon-desktop-speech-bootstrap-v1';
+const OPTIN_KEY = 'openeidon-optin';
+const OPTIN_NAME_KEY = 'openeidon-display-name';
+const OPTIN_EMAIL_KEY = 'openeidon-email';
+const OPTIN_ANONID_KEY = 'openeidon-anon-id';
+const OPTIN_SEEN_KEY = 'openeidon-optin-seen';
+const WINDOW_SYNC_CHANNEL = 'openeidon-window-sync';
 const WINDOW_ID = Math.random().toString(36).slice(2, 10);
 let syncChannel: BroadcastChannel | null = null;
 let applyingRemoteState = false;

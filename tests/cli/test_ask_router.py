@@ -1,4 +1,4 @@
-"""Tests for model resolution fallback chain in jarvis ask."""
+"""Tests for model resolution fallback chain in eidon ask."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from openeidon.cli import cli
 
-_ask_mod = importlib.import_module("openjarvis.cli.ask")
+_ask_mod = importlib.import_module("openeidon.cli.ask")
 
 
 def _mock_engine():

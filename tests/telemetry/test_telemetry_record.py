@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.core.types import TelemetryRecord
+from openeidon.core.types import TelemetryRecord
 
 
 class TestTelemetryRecord:

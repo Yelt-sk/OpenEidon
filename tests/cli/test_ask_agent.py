@@ -1,4 +1,4 @@
-"""Tests for ``jarvis ask --agent`` CLI integration."""
+"""Tests for ``eidon ask --agent`` CLI integration."""
 
 from __future__ import annotations
 
@@ -9,12 +9,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
-from openjarvis.agents._stubs import AgentContext, AgentResult, ToolUsingAgent
-from openjarvis.cli import cli
-from openjarvis.core.types import ToolCall, ToolResult
-from openjarvis.tools._stubs import BaseTool, ToolSpec
+from openeidon.agents._stubs import AgentContext, AgentResult, ToolUsingAgent
+from openeidon.cli import cli
+from openeidon.core.types import ToolCall, ToolResult
+from openeidon.tools._stubs import BaseTool, ToolSpec
 
-_ask_mod = importlib.import_module("openjarvis.cli.ask")
+_ask_mod = importlib.import_module("openeidon.cli.ask")
 
 
 def _mock_engine(content="Hello from engine"):
@@ -34,9 +34,9 @@ def _mock_engine(content="Hello from engine"):
 
 def _register_agents():
     """Re-register agents after registry clear."""
-    from openjarvis.agents.orchestrator import OrchestratorAgent
-    from openjarvis.agents.simple import SimpleAgent
-    from openjarvis.core.registry import AgentRegistry
+    from openeidon.agents.orchestrator import OrchestratorAgent
+    from openeidon.agents.simple import SimpleAgent
+    from openeidon.core.registry import AgentRegistry
 
     for name, cls in [
         ("simple", SimpleAgent),
@@ -48,12 +48,12 @@ def _register_agents():
 
 def _register_tools():
     """Re-register tools after registry clear."""
-    from openjarvis.core.registry import ToolRegistry
-    from openjarvis.tools.calculator import CalculatorTool
-    from openjarvis.tools.file_read import FileReadTool
-    from openjarvis.tools.llm_tool import LLMTool
-    from openjarvis.tools.retrieval import RetrievalTool
-    from openjarvis.tools.think import ThinkTool
+    from openeidon.core.registry import ToolRegistry
+    from openeidon.tools.calculator import CalculatorTool
+    from openeidon.tools.file_read import FileReadTool
+    from openeidon.tools.llm_tool import LLMTool
+    from openeidon.tools.retrieval import RetrievalTool
+    from openeidon.tools.think import ThinkTool
 
     for name, cls in [
         ("calculator", CalculatorTool),
@@ -107,11 +107,11 @@ class _EngineSetup:
 
 @pytest.fixture
 def agent_setup():
-    from openjarvis.core.config import JarvisConfig
-    from openjarvis.core.registry import AgentRegistry, ToolRegistry
+    from openeidon.core.config import EidonConfig
+    from openeidon.core.registry import AgentRegistry, ToolRegistry
 
     engine = _mock_engine("unused")
-    config = JarvisConfig()
+    config = EidonConfig()
     config.intelligence.default_model = "test-model"
     config.agent.max_turns = 3
 
@@ -152,9 +152,9 @@ def mock_setup():
         patch.object(_ask_mod, "register_builtin_models"),
         patch.object(_ask_mod, "merge_discovered_models"),
     ):
-        from openjarvis.core.config import JarvisConfig
+        from openeidon.core.config import EidonConfig
 
-        mock_cfg.return_value = JarvisConfig()
+        mock_cfg.return_value = EidonConfig()
         mock_ge.return_value = ("mock", engine)
         mock_de.return_value = [("mock", engine)]
         mock_dm.return_value = {"mock": ["test-model"]}
@@ -261,46 +261,46 @@ class TestAskAgentOption:
 
 class TestBuildTools:
     def test_build_calculator(self, mock_setup):
-        from openjarvis.cli.ask import _build_tools
-        from openjarvis.core.config import JarvisConfig
+        from openeidon.cli.ask import _build_tools
+        from openeidon.core.config import EidonConfig
 
         _register_tools()
-        config = JarvisConfig()
+        config = EidonConfig()
         tools = _build_tools(["calculator"], config, mock_setup, "test-model")
         assert len(tools) == 1
         assert tools[0].tool_id == "calculator"
 
     def test_build_think(self, mock_setup):
-        from openjarvis.cli.ask import _build_tools
-        from openjarvis.core.config import JarvisConfig
+        from openeidon.cli.ask import _build_tools
+        from openeidon.core.config import EidonConfig
 
         _register_tools()
-        config = JarvisConfig()
+        config = EidonConfig()
         tools = _build_tools(["think"], config, mock_setup, "test-model")
         assert len(tools) == 1
         assert tools[0].tool_id == "think"
 
     def test_build_unknown_tool_skipped(self, mock_setup):
-        from openjarvis.cli.ask import _build_tools
-        from openjarvis.core.config import JarvisConfig
+        from openeidon.cli.ask import _build_tools
+        from openeidon.core.config import EidonConfig
 
-        config = JarvisConfig()
+        config = EidonConfig()
         tools = _build_tools(["nonexistent"], config, mock_setup, "test-model")
         assert len(tools) == 0
 
     def test_build_empty_names(self, mock_setup):
-        from openjarvis.cli.ask import _build_tools
-        from openjarvis.core.config import JarvisConfig
+        from openeidon.cli.ask import _build_tools
+        from openeidon.core.config import EidonConfig
 
-        config = JarvisConfig()
+        config = EidonConfig()
         tools = _build_tools(["", " "], config, mock_setup, "test-model")
         assert len(tools) == 0
 
     def test_build_multiple_tools(self, mock_setup):
-        from openjarvis.cli.ask import _build_tools
-        from openjarvis.core.config import JarvisConfig
+        from openeidon.cli.ask import _build_tools
+        from openeidon.core.config import EidonConfig
 
         _register_tools()
-        config = JarvisConfig()
+        config = EidonConfig()
         tools = _build_tools(["calculator", "think"], config, mock_setup, "test-model")
         assert len(tools) == 2

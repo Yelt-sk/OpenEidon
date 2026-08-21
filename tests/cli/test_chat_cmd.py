@@ -1,4 +1,4 @@
-"""Tests for ``jarvis chat`` interactive REPL command."""
+"""Tests for ``eidon chat`` interactive REPL command."""
 
 from __future__ import annotations
 
@@ -7,17 +7,17 @@ from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 
-from openjarvis.agents._stubs import (
+from openeidon.agents._stubs import (
     AgentContext,
     AgentResult,
     BaseAgent,
     ToolUsingAgent,
 )
-from openjarvis.cli.chat_cmd import _read_input, chat
-from openjarvis.core.config import JarvisConfig
-from openjarvis.core.registry import AgentRegistry, ToolRegistry
-from openjarvis.core.types import ToolCall, ToolResult
-from openjarvis.tools._stubs import BaseTool, ToolSpec
+from openeidon.cli.chat_cmd import _read_input, chat
+from openeidon.core.config import EidonConfig
+from openeidon.core.registry import AgentRegistry, ToolRegistry
+from openeidon.core.types import ToolCall, ToolResult
+from openeidon.tools._stubs import BaseTool, ToolSpec
 
 
 class _SimpleChatAgent(BaseAgent):
@@ -100,15 +100,15 @@ class TestChatAgents:
         engine = MagicMock()
         engine.engine_id = "mock"
         engine.generate.return_value = {"content": "engine fallback"}
-        config = JarvisConfig()
+        config = EidonConfig()
         config.intelligence.default_model = "test-model"
 
         AgentRegistry.register_value("simple_chat_agent", _SimpleChatAgent)
 
         with (
-            patch("openjarvis.cli.chat_cmd.load_config", return_value=config),
-            patch("openjarvis.engine.get_engine", return_value=("mock", engine)),
-            patch("openjarvis.intelligence.register_builtin_models"),
+            patch("openeidon.cli.chat_cmd.load_config", return_value=config),
+            patch("openeidon.engine.get_engine", return_value=("mock", engine)),
+            patch("openeidon.intelligence.register_builtin_models"),
         ):
             result = CliRunner().invoke(
                 chat,
@@ -123,7 +123,7 @@ class TestChatAgents:
     def test_tool_agent_uses_legacy_agent_tools_and_prompts_confirmation(self) -> None:
         engine = MagicMock()
         engine.engine_id = "mock"
-        config = JarvisConfig()
+        config = EidonConfig()
         config.intelligence.default_model = "test-model"
         config.agent.tools = "dangerous_chat"
         config.agent.max_turns = 3
@@ -132,9 +132,9 @@ class TestChatAgents:
         ToolRegistry.register_value("dangerous_chat", _DangerousChatTool)
 
         with (
-            patch("openjarvis.cli.chat_cmd.load_config", return_value=config),
-            patch("openjarvis.engine.get_engine", return_value=("mock", engine)),
-            patch("openjarvis.intelligence.register_builtin_models"),
+            patch("openeidon.cli.chat_cmd.load_config", return_value=config),
+            patch("openeidon.engine.get_engine", return_value=("mock", engine)),
+            patch("openeidon.intelligence.register_builtin_models"),
         ):
             result = CliRunner().invoke(
                 chat,

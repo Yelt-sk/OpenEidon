@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from openjarvis.core.credentials import (
+from openeidon.core.credentials import (
     get_credential_status,
     load_credentials,
     save_credential,

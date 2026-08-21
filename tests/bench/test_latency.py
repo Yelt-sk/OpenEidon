@@ -6,14 +6,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.bench.latency import LatencyBenchmark
-from openjarvis.core.registry import BenchmarkRegistry
+from openeidon.bench.latency import LatencyBenchmark
+from openeidon.core.registry import BenchmarkRegistry
 
 
 @pytest.fixture(autouse=True)
 def _register_latency():
     """Re-register latency benchmark after registry clear."""
-    from openjarvis.bench.latency import ensure_registered
+    from openeidon.bench.latency import ensure_registered
 
     ensure_registered()
 
@@ -80,7 +80,7 @@ class TestLatencyBenchmark:
         assert result.metrics == {}
 
     def test_ensure_registered(self):
-        from openjarvis.bench.latency import ensure_registered
+        from openeidon.bench.latency import ensure_registered
 
         ensure_registered()  # should not raise
         assert BenchmarkRegistry.contains("latency")

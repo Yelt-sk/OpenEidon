@@ -3,7 +3,7 @@
 import pytest
 
 try:
-    from openjarvis.server.agent_manager_routes import build_tools_list
+    from openeidon.server.agent_manager_routes import build_tools_list
 except ImportError:
     build_tools_list = None
 
@@ -14,7 +14,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_tools_endpoint_returns_list():
-    from openjarvis.server.agent_manager_routes import build_tools_list
+    from openeidon.server.agent_manager_routes import build_tools_list
 
     tools = build_tools_list()
     assert isinstance(tools, list)
@@ -30,7 +30,7 @@ def test_tools_endpoint_returns_list():
 
 
 def test_tools_includes_channels():
-    from openjarvis.server.agent_manager_routes import build_tools_list
+    from openeidon.server.agent_manager_routes import build_tools_list
 
     tools = build_tools_list()
     names = {t["name"] for t in tools}
@@ -39,7 +39,7 @@ def test_tools_includes_channels():
 
 
 def test_browser_meta_group():
-    from openjarvis.server.agent_manager_routes import build_tools_list
+    from openeidon.server.agent_manager_routes import build_tools_list
 
     tools = build_tools_list()
     names = {t["name"] for t in tools}

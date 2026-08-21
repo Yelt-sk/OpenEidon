@@ -1,12 +1,12 @@
-"""Tests for openjarvis.optimize.trial_runner module."""
+"""Tests for openeidon.optimize.trial_runner module."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from openjarvis.evals.core.types import RunConfig, RunSummary
-from openjarvis.optimize.trial_runner import TrialRunner
-from openjarvis.optimize.types import TrialConfig, TrialResult
+from openeidon.evals.core.types import RunConfig, RunSummary
+from openeidon.optimize.trial_runner import TrialRunner
+from openeidon.optimize.types import TrialConfig, TrialResult
 
 
 class TestTrialRunnerInit:
@@ -60,7 +60,7 @@ class TestBuildRunConfig:
         recipe = trial.to_recipe()
         cfg = runner._build_run_config(trial, recipe)
 
-        assert cfg.backend == "jarvis-agent"
+        assert cfg.backend == "eidon-agent"
         assert cfg.agent_name == "native_react"
 
     def test_no_agent_maps_to_direct_backend(self) -> None:
@@ -72,7 +72,7 @@ class TestBuildRunConfig:
         recipe = trial.to_recipe()
         cfg = runner._build_run_config(trial, recipe)
 
-        assert cfg.backend == "jarvis-direct"
+        assert cfg.backend == "eidon-direct"
         assert cfg.agent_name is None
 
     def test_tools_mapping(self) -> None:
@@ -163,7 +163,7 @@ class TestRunTrial:
         defaults = dict(
             benchmark="supergpqa",
             category="reasoning",
-            backend="jarvis-direct",
+            backend="eidon-direct",
             model="qwen3:8b",
             total_samples=50,
             scored_samples=48,
@@ -179,11 +179,11 @@ class TestRunTrial:
         defaults.update(overrides)
         return RunSummary(**defaults)
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_returns_trial_result(
         self,
         mock_runner_cls,
@@ -216,11 +216,11 @@ class TestRunTrial:
         mock_runner_cls.assert_called_once()
         mock_runner_instance.run.assert_called_once()
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_accuracy_from_summary(
         self,
         mock_runner_cls,
@@ -240,11 +240,11 @@ class TestRunTrial:
 
         assert result.accuracy == 0.92
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_tokens_summed(
         self,
         mock_runner_cls,
@@ -267,11 +267,11 @@ class TestRunTrial:
 
         assert result.total_tokens == 5000
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_summary_attached(
         self,
         mock_runner_cls,
@@ -291,11 +291,11 @@ class TestRunTrial:
 
         assert result.summary is summary
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_failure_modes_on_errors(
         self,
         mock_runner_cls,
@@ -316,11 +316,11 @@ class TestRunTrial:
         assert len(result.failure_modes) == 1
         assert "5" in result.failure_modes[0]
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_no_failure_modes_when_clean(
         self,
         mock_runner_cls,
@@ -340,11 +340,11 @@ class TestRunTrial:
 
         assert result.failure_modes == []
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_closes_backends(
         self,
         mock_runner_cls,
@@ -367,11 +367,11 @@ class TestRunTrial:
         mock_backend.close.assert_called_once()
         mock_judge.close.assert_called_once()
 
-    @patch("openjarvis.evals.cli._build_scorer")
-    @patch("openjarvis.evals.cli._build_judge_backend")
-    @patch("openjarvis.evals.cli._build_dataset")
-    @patch("openjarvis.evals.cli._build_backend")
-    @patch("openjarvis.evals.core.runner.EvalRunner")
+    @patch("openeidon.evals.cli._build_scorer")
+    @patch("openeidon.evals.cli._build_judge_backend")
+    @patch("openeidon.evals.cli._build_dataset")
+    @patch("openeidon.evals.cli._build_backend")
+    @patch("openeidon.evals.core.runner.EvalRunner")
     def test_run_trial_populates_sample_scores(
         self,
         mock_runner_cls,
@@ -380,7 +380,7 @@ class TestRunTrial:
         mock_build_judge,
         mock_build_scorer,
     ) -> None:
-        from openjarvis.evals.core.types import EvalResult
+        from openeidon.evals.core.types import EvalResult
 
         summary = self._make_summary()
         mock_runner_instance = MagicMock()

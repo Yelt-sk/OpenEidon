@@ -7,11 +7,11 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.core.registry import ConnectorRegistry
 
 
 def test_spotify_registered():
-    from openjarvis.connectors.spotify import SpotifyConnector
+    from openeidon.connectors.spotify import SpotifyConnector
 
     ConnectorRegistry.register_value("spotify", SpotifyConnector)
     assert ConnectorRegistry.contains("spotify")
@@ -51,7 +51,7 @@ _RECENTLY_PLAYED_RESPONSE = {
 
 @pytest.fixture()
 def connector(tmp_path):
-    from openjarvis.connectors.spotify import SpotifyConnector
+    from openeidon.connectors.spotify import SpotifyConnector
 
     token_path = tmp_path / "spotify.json"
     token_path.write_text('{"access_token": "fake-token"}', encoding="utf-8")
@@ -60,7 +60,7 @@ def connector(tmp_path):
 
 def test_sync_yields_tracks(connector):
     with patch(
-        "openjarvis.connectors.spotify._spotify_api_get",
+        "openeidon.connectors.spotify._spotify_api_get",
         return_value=_RECENTLY_PLAYED_RESPONSE,
     ):
         docs = list(connector.sync(since=datetime(2026, 4, 1)))

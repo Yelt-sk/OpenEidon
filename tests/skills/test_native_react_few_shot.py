@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from openjarvis.agents.native_react import REACT_SYSTEM_PROMPT, NativeReActAgent
+from openeidon.agents.native_react import REACT_SYSTEM_PROMPT, NativeReActAgent
 
 
 class _StubEngine:
@@ -71,12 +71,12 @@ class TestReactSystemPromptPlaceholder:
 class TestSystemBuilderCapturesFewShot:
     def test_skill_manager_examples_stored_on_system(self, tmp_path):
         """SystemBuilder.build() pulls examples from SkillManager and
-        stashes them on the JarvisSystem instance for _run_agent to
+        stashes them on the EidonSystem instance for _run_agent to
         forward to tool-using agents."""
 
-        from openjarvis.skills.manager import SkillManager
-        from openjarvis.skills.overlay import SkillOverlay, write_overlay
-        from openjarvis.skills.types import SkillManifest
+        from openeidon.skills.manager import SkillManager
+        from openeidon.skills.overlay import SkillOverlay, write_overlay
+        from openeidon.skills.types import SkillManifest
 
         # Build an overlay so the manager picks up real few-shot examples
         overlay_dir = tmp_path / "overlays"
@@ -92,7 +92,7 @@ class TestSystemBuilderCapturesFewShot:
             overlay_dir,
         )
 
-        from openjarvis.core.events import EventBus
+        from openeidon.core.events import EventBus
 
         mgr = SkillManager(bus=EventBus(), overlay_dir=overlay_dir)
         mgr._skills["seeded-skill"] = SkillManifest(
@@ -114,8 +114,8 @@ class TestRunAgentForwardsExamples:
         agent_kwargs when the agent class has accepts_tools=True."""
         from unittest.mock import patch
 
-        from openjarvis.agents._stubs import AgentResult
-        from openjarvis.system import JarvisSystem
+        from openeidon.agents._stubs import AgentResult
+        from openeidon.system import EidonSystem
 
         captured_kwargs: dict = {}
 
@@ -128,8 +128,8 @@ class TestRunAgentForwardsExamples:
             def run(self, query, context=None, **kw):
                 return AgentResult(content="ok", turns=1)
 
-        # Build a minimal JarvisSystem with the captured examples
-        system = JarvisSystem.__new__(JarvisSystem)
+        # Build a minimal EidonSystem with the captured examples
+        system = EidonSystem.__new__(EidonSystem)
         system.config = MagicMock()
         system.config.intelligence.temperature = 0.0
         system.config.intelligence.max_tokens = 100
@@ -149,7 +149,7 @@ class TestRunAgentForwardsExamples:
         system._mcp_clients = []
 
         with patch(
-            "openjarvis.core.registry.AgentRegistry.get",
+            "openeidon.core.registry.AgentRegistry.get",
             return_value=_CapturingAgent,
         ):
             system._run_agent(

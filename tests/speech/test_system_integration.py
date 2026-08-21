@@ -1,8 +1,8 @@
-"""Tests for speech integration in SystemBuilder/JarvisSystem."""
+"""Tests for speech integration in SystemBuilder/EidonSystem."""
 
-from openjarvis.system import JarvisSystem
+from openeidon.system import EidonSystem
 
 
-def test_jarvis_system_has_speech_backend():
-    """JarvisSystem has a speech_backend attribute."""
-    assert "speech_backend" in JarvisSystem.__dataclass_fields__
+def test_eidon_system_has_speech_backend():
+    """EidonSystem has a speech_backend attribute."""
+    assert "speech_backend" in EidonSystem.__dataclass_fields__

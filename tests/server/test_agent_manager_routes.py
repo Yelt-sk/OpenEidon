@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.agents.manager import AgentManager
+from openeidon.agents.manager import AgentManager
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ class TestAgentManagerRoutes:
     def client(self, manager):
         from fastapi import FastAPI
 
-        from openjarvis.server.agent_manager_routes import create_agent_manager_router
+        from openeidon.server.agent_manager_routes import create_agent_manager_router
 
         app = FastAPI()
         routers = create_agent_manager_router(manager)
@@ -226,7 +226,7 @@ class TestAgentManagerRoutes:
 
 def test_run_agent_concurrent_returns_409(tmp_path):
     """Rapid Run Now clicks should not spawn multiple ticks."""
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.manager import AgentManager
 
     mgr = AgentManager(db_path=str(tmp_path / "test.db"))
     agent = mgr.create_agent("Test", config={"schedule_type": "manual"})
@@ -253,7 +253,7 @@ class TestAgentManagerStreaming:
     @pytest.fixture
     def _mock_engine(self):
         """Create a mock engine with a working stream_full() method."""
-        from openjarvis.engine._stubs import StreamChunk
+        from openeidon.engine._stubs import StreamChunk
 
         engine = MagicMock()
         engine.engine_id = "mock"
@@ -280,7 +280,7 @@ class TestAgentManagerStreaming:
     def stream_client(self, manager, _mock_engine):
         from fastapi import FastAPI
 
-        from openjarvis.server.agent_manager_routes import create_agent_manager_router
+        from openeidon.server.agent_manager_routes import create_agent_manager_router
 
         app = FastAPI()
         app.state.engine = _mock_engine
@@ -407,7 +407,7 @@ class TestAgentManagerStreaming:
         from fastapi import FastAPI
         from fastapi.testclient import TestClient as TC
 
-        from openjarvis.server.agent_manager_routes import create_agent_manager_router
+        from openeidon.server.agent_manager_routes import create_agent_manager_router
 
         app = FastAPI()
         app.state.engine = error_engine

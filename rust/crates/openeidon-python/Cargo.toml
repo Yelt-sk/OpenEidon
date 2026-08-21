@@ -1,0 +1,32 @@
+[package]
+name = "openeidon-python"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "openeidon_rust"
+crate-type = ["cdylib"]
+
+[dependencies]
+openeidon-core = { path = "../openeidon-core" }
+openeidon-engine = { path = "../openeidon-engine" }
+openeidon-security = { path = "../openeidon-security" }
+openeidon-tools = { path = "../openeidon-tools" }
+openeidon-agents = { path = "../openeidon-agents" }
+openeidon-traces = { path = "../openeidon-traces" }
+openeidon-telemetry = { path = "../openeidon-telemetry" }
+openeidon-learning = { path = "../openeidon-learning" }
+openeidon-mcp = { path = "../openeidon-mcp" }
+openeidon-sessions = { path = "../openeidon-sessions" }
+openeidon-workflow = { path = "../openeidon-workflow" }
+openeidon-skills = { path = "../openeidon-skills" }
+openeidon-recipes = { path = "../openeidon-recipes" }
+openeidon-templates = { path = "../openeidon-templates" }
+openeidon-a2a = { path = "../openeidon-a2a" }
+openeidon-scheduler = { path = "../openeidon-scheduler" }
+pyo3 = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+once_cell = { workspace = true }
+parking_lot = { workspace = true }

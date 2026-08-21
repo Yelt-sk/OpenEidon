@@ -1,7 +1,7 @@
 """Tests for the daily_digest scorer."""
 
-from openjarvis.evals.core.types import EvalRecord
-from openjarvis.evals.scorers.daily_digest import DailyDigestScorer
+from openeidon.evals.core.types import EvalRecord
+from openeidon.evals.scorers.daily_digest import DailyDigestScorer
 
 
 def _make_record(must_mention, priority_order=None):

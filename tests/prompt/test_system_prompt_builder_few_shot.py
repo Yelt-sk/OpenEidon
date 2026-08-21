@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.prompt.builder import SystemPromptBuilder
+from openeidon.prompt.builder import SystemPromptBuilder
 
 
 class TestSystemPromptBuilderFewShot:

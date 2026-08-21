@@ -1,27 +1,27 @@
 # API Server
 
-OpenJarvis includes an OpenAI-compatible API server built on FastAPI and uvicorn. It exposes chat completion, model listing, and health check endpoints, making it a drop-in replacement for the OpenAI API when working with local models.
+OpenEidon includes an OpenAI-compatible API server built on FastAPI and uvicorn. It exposes chat completion, model listing, and health check endpoints, making it a drop-in replacement for the OpenAI API when working with local models.
 
 ## Starting the Server
 
 The server requires the `[server]` extra (FastAPI + uvicorn):
 
 ```bash
-git clone https://github.com/open-jarvis/OpenJarvis.git
-cd OpenJarvis
+git clone https://github.com/Yelt-sk/OpenEidon.git
+cd OpenEidon
 uv sync --extra server
 ```
 
 Start with default settings:
 
 ```bash
-jarvis serve
+eidon serve
 ```
 
-The server reads defaults from `~/.openjarvis/config.toml` and auto-detects available engines and models. Override any option via CLI flags:
+The server reads defaults from `~/.openeidon/config.toml` and auto-detects available engines and models. Override any option via CLI flags:
 
 ```bash
-jarvis serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
+eidon serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent orchestrator
 ```
 
 ### CLI Options
@@ -37,7 +37,7 @@ jarvis serve --host 0.0.0.0 --port 8000 --engine ollama --model qwen3:8b --agent
 On startup, the server prints a summary:
 
 ```
-Starting OpenJarvis API server
+Starting OpenEidon API server
   Engine: ollama
   Model:  qwen3:8b
   Agent:  orchestrator
@@ -45,7 +45,7 @@ Starting OpenJarvis API server
 ```
 
 !!! warning "Server dependency check"
-    If the `[server]` extra is not installed, `jarvis serve` exits with a clear error message explaining how to install the required dependencies.
+    If the `[server]` extra is not installed, `eidon serve` exits with a clear error message explaining how to install the required dependencies.
 
 ## Endpoints
 
@@ -159,13 +159,13 @@ Lists all models available on the configured inference engine.
       "id": "qwen3:8b",
       "object": "model",
       "created": 1740100800,
-      "owned_by": "openjarvis"
+      "owned_by": "openeidon"
     },
     {
       "id": "llama3.1:8b",
       "object": "model",
       "created": 1740100800,
-      "owned_by": "openjarvis"
+      "owned_by": "openeidon"
     }
   ]
 }
@@ -216,7 +216,7 @@ Send a message to a specific channel.
 ```json
 {
   "target": "slack",
-  "message": "Hello from Jarvis!"
+  "message": "Hello from Eidon!"
 }
 ```
 
@@ -422,7 +422,7 @@ Response headers include `Cache-Control: no-cache` and `Connection: keep-alive` 
 
 ## Configuration via `config.toml`
 
-The `[server]` section of `~/.openjarvis/config.toml` controls default server behavior:
+The `[server]` section of `~/.openeidon/config.toml` controls default server behavior:
 
 ```toml
 [server]
@@ -441,7 +441,7 @@ workers = 1
 | `model`   | `string`  | `""`            | Default model name. When empty, falls back to `[intelligence] default_model` or the first model discovered on the engine. |
 | `workers` | `integer` | `1`             | Number of uvicorn workers (for future use).                                |
 
-CLI flags override config file values. For example, `jarvis serve --port 9000` overrides the `port` setting in the config file.
+CLI flags override config file values. For example, `eidon serve --port 9000` overrides the `port` setting in the config file.
 
 The server also reads from other config sections at startup:
 
@@ -451,17 +451,17 @@ The server also reads from other config sections at startup:
 
 ## Running Behind a Reverse Proxy
 
-For production deployments, run OpenJarvis behind a reverse proxy like Nginx or Caddy for TLS termination, rate limiting, and authentication.
+For production deployments, run OpenEidon behind a reverse proxy like Nginx or Caddy for TLS termination, rate limiting, and authentication.
 
 ### Nginx
 
 ```nginx
 server {
     listen 443 ssl;
-    server_name jarvis.example.com;
+    server_name eidon.example.com;
 
-    ssl_certificate /etc/ssl/certs/jarvis.pem;
-    ssl_certificate_key /etc/ssl/private/jarvis.key;
+    ssl_certificate /etc/ssl/certs/eidon.pem;
+    ssl_certificate_key /etc/ssl/private/eidon.key;
 
     location / {
         proxy_pass http://127.0.0.1:8000;
@@ -484,7 +484,7 @@ server {
 ### Caddy
 
 ```
-jarvis.example.com {
+eidon.example.com {
     reverse_proxy 127.0.0.1:8000 {
         flush_interval -1
     }
@@ -498,7 +498,7 @@ The `flush_interval -1` setting disables response buffering, which is required f
 When running behind a reverse proxy, bind the server to `127.0.0.1` so it only accepts connections from the proxy:
 
 ```bash
-jarvis serve --host 127.0.0.1 --port 8000
+eidon serve --host 127.0.0.1 --port 8000
 ```
 
 Or in `config.toml`:

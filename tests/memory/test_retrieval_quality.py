@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.core.registry import MemoryRegistry
-from openjarvis.tools.storage.sqlite import SQLiteMemory
+from openeidon.core.registry import MemoryRegistry
+from openeidon.tools.storage.sqlite import SQLiteMemory
 
 # ---------------------------------------------------------------------------
 # Shared corpus
@@ -39,7 +39,7 @@ def _make_sqlite(tmp_path):
 
 def _make_bm25():
     bm25_mod = pytest.importorskip(
-        "openjarvis.tools.storage.bm25",
+        "openeidon.tools.storage.bm25",
         exc_type=ImportError,
     )
     BM25Memory = bm25_mod.BM25Memory

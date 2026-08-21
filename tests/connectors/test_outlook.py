@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from openjarvis.connectors.oauth import load_tokens
-from openjarvis.connectors.outlook import OutlookConnector
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.connectors.oauth import load_tokens
+from openeidon.connectors.outlook import OutlookConnector
+from openeidon.core.registry import ConnectorRegistry
 
 
 def test_outlook_registered() -> None:
@@ -68,7 +68,7 @@ def test_outlook_sync_source_is_outlook(tmp_path: Path) -> None:
     mock_imap.fetch.return_value = ("OK", [(b"1", raw_email)])
     mock_imap.logout.return_value = ("OK", [])
 
-    with patch("openjarvis.connectors.gmail_imap.imaplib") as mock_imaplib:
+    with patch("openeidon.connectors.gmail_imap.imaplib") as mock_imaplib:
         mock_imaplib.IMAP4_SSL.return_value = mock_imap
         mock_imaplib.IMAP4 = type(mock_imap)
         docs = list(conn.sync())

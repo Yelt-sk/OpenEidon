@@ -1,6 +1,6 @@
 """Tests for speech configuration."""
 
-from openjarvis.core.config import JarvisConfig, SpeechConfig
+from openeidon.core.config import EidonConfig, SpeechConfig
 
 
 def test_speech_config_defaults():
@@ -12,8 +12,8 @@ def test_speech_config_defaults():
     assert cfg.compute_type == "float16"
 
 
-def test_jarvis_config_has_speech():
-    cfg = JarvisConfig()
+def test_eidon_config_has_speech():
+    cfg = EidonConfig()
     assert hasattr(cfg, "speech")
     assert isinstance(cfg.speech, SpeechConfig)
     assert cfg.speech.backend == "auto"

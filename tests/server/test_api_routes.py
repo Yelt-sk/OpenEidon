@@ -6,7 +6,7 @@ fastapi = pytest.importorskip("fastapi")
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-from openjarvis.server.api_routes import include_all_routes  # noqa: E402
+from openeidon.server.api_routes import include_all_routes  # noqa: E402
 
 
 def _make_app():
@@ -70,7 +70,7 @@ class TestMetricsRoute:
         client = TestClient(_make_app())
         resp = client.get("/metrics")
         assert resp.status_code == 200
-        assert "openjarvis" in resp.text or "No metrics" in resp.text
+        assert "openeidon" in resp.text or "No metrics" in resp.text
 
 
 class TestSkillRoutes:

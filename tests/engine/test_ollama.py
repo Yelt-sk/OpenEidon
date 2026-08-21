@@ -8,10 +8,10 @@ import httpx
 import pytest
 import respx
 
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._base import EngineConnectionError
-from openjarvis.engine.ollama import OllamaEngine
+from openeidon.core.registry import EngineRegistry
+from openeidon.core.types import Message, Role
+from openeidon.engine._base import EngineConnectionError
+from openeidon.engine.ollama import OllamaEngine
 
 
 @pytest.fixture()

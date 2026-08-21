@@ -5,12 +5,12 @@ Canonical tests live in tests/learning/test_routing_models.py.
 
 from __future__ import annotations
 
-from openjarvis.intelligence.model_catalog import register_builtin_models
-from openjarvis.intelligence.router import (
+from openeidon.intelligence.model_catalog import register_builtin_models
+from openeidon.intelligence.router import (
     HeuristicRouter,
     build_routing_context,
 )
-from openjarvis.learning._stubs import RoutingContext
+from openeidon.learning._stubs import RoutingContext
 
 
 def _setup_models() -> None:

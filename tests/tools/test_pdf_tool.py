@@ -6,7 +6,7 @@ import builtins
 import sys
 from unittest.mock import MagicMock
 
-from openjarvis.tools.pdf_tool import PDFExtractTool, _parse_pages
+from openeidon.tools.pdf_tool import PDFExtractTool, _parse_pages
 
 
 class TestPDFExtractTool:

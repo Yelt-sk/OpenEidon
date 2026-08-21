@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.mcp.client import MCPClient
-from openjarvis.mcp.protocol import MCPError
-from openjarvis.mcp.server import MCPServer
-from openjarvis.mcp.transport import InProcessTransport
-from openjarvis.tools._stubs import ToolSpec
-from openjarvis.tools.calculator import CalculatorTool
-from openjarvis.tools.think import ThinkTool
+from openeidon.mcp.client import MCPClient
+from openeidon.mcp.protocol import MCPError
+from openeidon.mcp.server import MCPServer
+from openeidon.mcp.transport import InProcessTransport
+from openeidon.tools._stubs import ToolSpec
+from openeidon.tools.calculator import CalculatorTool
+from openeidon.tools.think import ThinkTool
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ class TestMCPClient:
         result = client.initialize()
         assert "protocolVersion" in result
         assert "serverInfo" in result
-        assert result["serverInfo"]["name"] == "openjarvis"
+        assert result["serverInfo"]["name"] == "openeidon"
         assert client._initialized is True
 
     def test_initialize_sets_capabilities(self, client):

@@ -1,15 +1,15 @@
 ---
 title: Architecture Overview
-description: The five-primitive architecture behind OpenJarvis — Intelligence, Engine, Agents, Tools, and Learning
+description: The five-primitive architecture behind OpenEidon — Intelligence, Engine, Agents, Tools, and Learning
 search:
   boost: 2
 ---
 
 # Architecture Overview
 
-OpenJarvis is a research framework for studying on-device AI systems. Its architecture is organized around **five core abstractions** -- Intelligence, Engine, Agentic Logic, Memory, and Learning -- that work together through trace-driven feedback.
+OpenEidon is a research framework for studying on-device AI systems. Its architecture is organized around **five core abstractions** -- Intelligence, Engine, Agentic Logic, Memory, and Learning -- that work together through trace-driven feedback.
 
-![OpenJarvis Architecture](../assets/OpenJarvis_Architecture.png)
+![OpenEidon Architecture](../assets/OpenEidon_Architecture.png)
 
 ---
 
@@ -31,7 +31,7 @@ Each engine is configured via its own sub-section in `config.toml` (e.g., `[engi
 
 The Agentic Logic primitive implements **pluggable agents** that handle queries with varying levels of sophistication. The agent hierarchy is organized around `BaseAgent` (ABC with concrete helpers) and `ToolUsingAgent` (intermediate base for agents that accept tools, with `accepts_tools = True`). Nine agent types are available: `SimpleAgent` (single-turn, no tools), `OrchestratorAgent` (multi-turn tool-calling loop with function_calling and structured modes), `NativeReActAgent` (Thought-Action-Observation loop), `NativeOpenHandsAgent` (CodeAct-style code execution), `RLMAgent` (recursive LM with persistent REPL), `OpenHandsAgent` (wraps real `openhands-sdk`), `ClaudeCodeAgent` (Claude Agent SDK via Node.js subprocess), `OperativeAgent` (persistent scheduled agent with state management), and `MonitorOperativeAgent` (long-horizon agent with configurable strategy axes).
 
-The sandbox module (`openjarvis.sandbox`) adds a `SandboxedAgent` wrapper that runs any `BaseAgent` inside a Docker or Podman container with mount-security enforcement, and a `ContainerRunner` that manages the container lifecycle.
+The sandbox module (`openeidon.sandbox`) adds a `SandboxedAgent` wrapper that runs any `BaseAgent` inside a Docker or Podman container with mount-security enforcement, and a `ContainerRunner` that manages the container lifecycle.
 
 Agent behavior is configured through `[agent]` in `config.toml`, including the default agent, turn limits, tool list, optional system prompt, and the `context_from_memory` flag (previously `context_injection`) that controls automatic memory context injection. Sandbox configuration lives in `[sandbox]`. All agents implement the `BaseAgent` ABC with a `run()` method, and are registered via `@AgentRegistry.register("name")`.
 
@@ -51,10 +51,10 @@ The learning system is configured through nested sub-sections in `config.toml`: 
 
 ## The Registry Pattern
 
-All extensible components in OpenJarvis use a **decorator-based registry** for runtime discovery. The pattern is implemented in `RegistryBase[T]`, a generic base class that provides isolated storage per typed subclass.
+All extensible components in OpenEidon use a **decorator-based registry** for runtime discovery. The pattern is implemented in `RegistryBase[T]`, a generic base class that provides isolated storage per typed subclass.
 
 ```python
-from openjarvis.core.registry import EngineRegistry
+from openeidon.core.registry import EngineRegistry
 
 @EngineRegistry.register("ollama")
 class OllamaEngine(InferenceEngine):
@@ -97,11 +97,11 @@ Each registry provides:
 ## Source Directory Layout
 
 ```
-src/openjarvis/
+src/openeidon/
     core/               Core infrastructure shared by all primitives
         registry.py         RegistryBase[T] and typed subclass registries
         types.py            Message, ModelSpec, Trace, TelemetryRecord, etc.
-        config.py           JarvisConfig, hardware detection, TOML loading
+        config.py           EidonConfig, hardware detection, TOML loading
         events.py           EventBus pub/sub system (EventType, Event)
 
     intelligence/       Intelligence primitive -- model definition & catalog
@@ -200,10 +200,10 @@ src/openjarvis/
         tools.py            MCP scheduler tools (schedule_task, list, pause, resume, cancel)
 
     cli/                CLI commands (Click-based)
-        ask.py              jarvis ask -- query the assistant
-        serve.py            jarvis serve -- start API server
+        ask.py              eidon ask -- query the assistant
+        serve.py            eidon serve -- start API server
 
-    sdk.py              Jarvis class -- high-level Python SDK
+    sdk.py              Eidon class -- high-level Python SDK
     mcp/                MCP (Model Context Protocol) layer
 ```
 

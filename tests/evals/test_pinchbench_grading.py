@@ -1,7 +1,7 @@
 """Tests for PinchBench grading functions."""
 
-from openjarvis.evals.core.types import EvalRecord
-from openjarvis.evals.scorers.pinchbench import (
+from openeidon.evals.core.types import EvalRecord
+from openeidon.evals.scorers.pinchbench import (
     _grade_automated,
     _parse_judge_response,
     _summarize_transcript,

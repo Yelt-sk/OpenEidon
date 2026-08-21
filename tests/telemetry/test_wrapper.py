@@ -6,10 +6,10 @@ from collections.abc import AsyncIterator, Sequence
 from typing import Any, Dict, List
 from unittest import mock
 
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.types import Message, Role, TelemetryRecord
-from openjarvis.engine._base import InferenceEngine
-from openjarvis.telemetry.wrapper import instrumented_generate
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.types import Message, Role, TelemetryRecord
+from openeidon.engine._base import InferenceEngine
+from openeidon.telemetry.wrapper import instrumented_generate
 
 
 class _StubEngine(InferenceEngine):

@@ -7,10 +7,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.channels.feishu import FeishuChannel
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.channels.feishu import FeishuChannel
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)

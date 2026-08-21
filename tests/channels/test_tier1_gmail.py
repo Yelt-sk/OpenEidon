@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.channels.gmail import GmailChannel
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.channels.gmail import GmailChannel
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)
@@ -202,8 +202,8 @@ class TestLive:
 
         result = ch.send(
             recipient,
-            "OpenJarvis Gmail channel test message",
-            metadata={"subject": "OpenJarvis Test"},
+            "OpenEidon Gmail channel test message",
+            metadata={"subject": "OpenEidon Test"},
         )
         assert result is True
         ch.disconnect()

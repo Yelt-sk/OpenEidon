@@ -1,0 +1,10 @@
+[package]
+name = "openeidon-recipes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openeidon-core = { path = "../openeidon-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }

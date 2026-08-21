@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * OpenJarvis design tokens.
+ * OpenEidon design tokens.
  * Zinc/slate neutrals, blue accent. Light default, dark via class or system pref.
  */
 
@@ -447,7 +447,7 @@
 }
 @theme inline {
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  /* shadcn component tokens — namespaced to avoid collision with OpenJarvis design tokens */
+  /* shadcn component tokens — namespaced to avoid collision with OpenEidon design tokens */
   --color-cn-sidebar-ring: var(--sidebar-ring);
   --color-cn-sidebar-border: var(--sidebar-border);
   --color-cn-sidebar-accent-foreground: var(--sidebar-accent-foreground);

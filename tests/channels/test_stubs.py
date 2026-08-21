@@ -6,7 +6,7 @@ from typing import Optional
 
 import pytest
 
-from openjarvis.channels._stubs import (
+from openeidon.channels._stubs import (
     BaseChannel,
     ChannelMessage,
     ChannelStatus,

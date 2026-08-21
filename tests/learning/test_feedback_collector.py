@@ -1,12 +1,12 @@
-"""Tests for openjarvis.optimize.feedback.collector module."""
+"""Tests for openeidon.optimize.feedback.collector module."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from openjarvis.core.types import Trace
-from openjarvis.optimize.feedback.collector import FeedbackCollector
-from openjarvis.optimize.feedback.judge import TraceJudge
+from openeidon.core.types import Trace
+from openeidon.optimize.feedback.collector import FeedbackCollector
+from openeidon.optimize.feedback.judge import TraceJudge
 
 
 def _make_trace(trace_id: str = "trace-001") -> Trace:

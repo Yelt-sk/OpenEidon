@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from openjarvis.core.types import TelemetryRecord
-from openjarvis.telemetry.aggregator import (
+from openeidon.core.types import TelemetryRecord
+from openeidon.telemetry.aggregator import (
     AggregatedStats,
     EngineStats,
     ModelStats,
     TelemetryAggregator,
 )
-from openjarvis.telemetry.store import TelemetryStore
+from openeidon.telemetry.store import TelemetryStore
 
 
 def _make_record(

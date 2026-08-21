@@ -56,10 +56,10 @@ def main() -> None:
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     try:
-        from openjarvis import Jarvis
+        from openeidon import Eidon
     except ImportError:
         print(
-            "Error: openjarvis is not installed. "
+            "Error: openeidon is not installed. "
             "Install it with:  uv sync --extra dev",
             file=sys.stderr,
         )
@@ -84,12 +84,12 @@ def main() -> None:
     print()
 
     try:
-        j = Jarvis(model=args.model, engine_key=args.engine)
+        j = Eidon(model=args.model, engine_key=args.engine)
     except Exception as exc:
         print(
-            f"Error: could not initialize Jarvis -- {exc}\n\n"
+            f"Error: could not initialize Eidon -- {exc}\n\n"
             "Make sure an inference engine is running (e.g., ollama serve) "
-            "and the openjarvis package is installed (uv sync).",
+            "and the openeidon package is installed (uv sync).",
             file=sys.stderr,
         )
         sys.exit(1)

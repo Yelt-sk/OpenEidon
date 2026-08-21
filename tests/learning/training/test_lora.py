@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.learning.training.lora import HAS_TORCH, LoRATrainer, LoRATrainingConfig
+from openeidon.learning.training.lora import HAS_TORCH, LoRATrainer, LoRATrainingConfig
 
 # ---------------------------------------------------------------------------
 # Config tests (no torch required)

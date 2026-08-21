@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from openjarvis.operators.loader import load_operator
+from openeidon.operators.loader import load_operator
 
 _OPERATORS_DIR = (
     Path(__file__).parent.parent.parent
     / "src"
-    / "openjarvis"
+    / "openeidon"
     / "recipes"
     / "data"
     / "operators"

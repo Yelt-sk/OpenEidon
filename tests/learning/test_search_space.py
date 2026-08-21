@@ -1,12 +1,12 @@
-"""Tests for openjarvis.optimize.search_space module."""
+"""Tests for openeidon.optimize.search_space module."""
 
 from __future__ import annotations
 
-from openjarvis.optimize.search_space import (
+from openeidon.optimize.search_space import (
     DEFAULT_SEARCH_SPACE,
     build_search_space,
 )
-from openjarvis.optimize.types import SearchSpace
+from openeidon.optimize.types import SearchSpace
 
 # ---------------------------------------------------------------------------
 # build_search_space

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { OverlayPage } from './pages/OverlayPage';
-import { JarvisApp } from './pages/JarvisApp';
+import { EidonApp } from './pages/EidonApp';
 import { SetupScreen } from './components/SetupScreen';
 import { Toaster } from './components/ui/sonner';
 import { useAppStore } from './lib/store';
@@ -58,7 +58,7 @@ export default function App() {
 
   return (
     <>
-      <JarvisApp />
+      <EidonApp />
       <Toaster position="bottom-right" />
     </>
   );

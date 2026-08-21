@@ -1,11 +1,11 @@
-"""Verify that importing openjarvis.tools registers all built-in tools."""
+"""Verify that importing openeidon.tools registers all built-in tools."""
 
 from __future__ import annotations
 
 import importlib
 import sys
 
-from openjarvis.core.registry import ToolRegistry
+from openeidon.core.registry import ToolRegistry
 
 # Every tool name that should be registered after importing the package.
 EXPECTED_TOOLS = {
@@ -72,17 +72,17 @@ EXPECTED_TOOLS = {
 
 
 def _reload_tool_modules() -> None:
-    """Reload all openjarvis.tools.* submodules to re-trigger @register decorators.
+    """Reload all openeidon.tools.* submodules to re-trigger @register decorators.
 
     The autouse ``_clean_registries`` fixture clears all registries before each
-    test.  A plain ``import openjarvis.tools`` won't re-register because the
+    test.  A plain ``import openeidon.tools`` won't re-register because the
     submodules are already cached in ``sys.modules``.  We must reload the
     individual submodules so their class-level ``@ToolRegistry.register``
     decorators execute again.
     """
     for mod_name in list(sys.modules):
         if (
-            mod_name.startswith("openjarvis.tools.")
+            mod_name.startswith("openeidon.tools.")
             and not mod_name.endswith("_stubs")
             and not mod_name.endswith("agent_tools")
         ):

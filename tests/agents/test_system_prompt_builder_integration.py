@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from openjarvis.core.config import MemoryFilesConfig, SystemPromptConfig
+from openeidon.core.config import MemoryFilesConfig, SystemPromptConfig
 
 
 def test_base_agent_uses_builder(tmp_path: Path):
     soul = tmp_path / "SOUL.md"
-    soul.write_text("I am Jarvis.")
+    soul.write_text("I am Eidon.")
     memory = tmp_path / "MEMORY.md"
     memory.write_text("- User likes Python")
 
-    from openjarvis.prompt.builder import SystemPromptBuilder
+    from openeidon.prompt.builder import SystemPromptBuilder
 
     builder = SystemPromptBuilder(
         agent_template="You are a helpful assistant.",
@@ -23,6 +23,6 @@ def test_base_agent_uses_builder(tmp_path: Path):
         system_prompt_config=SystemPromptConfig(),
     )
     prompt = builder.build()
-    assert "Jarvis" in prompt
+    assert "Eidon" in prompt
     assert "Python" in prompt
     assert "helpful assistant" in prompt

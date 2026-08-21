@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.learning._stubs import RoutingContext
+from openeidon.learning._stubs import RoutingContext
 
 
 class TestRoutingContext:

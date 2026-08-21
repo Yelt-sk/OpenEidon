@@ -6,13 +6,13 @@ on:
     paths:
       - "docs/**"
       - "mkdocs.yml"
-      - "src/openjarvis/**"
+      - "src/openeidon/**"
   pull_request:
     branches: [main]
     paths:
       - "docs/**"
       - "mkdocs.yml"
-      - "src/openjarvis/**"
+      - "src/openeidon/**"
   workflow_dispatch:
 
 permissions:

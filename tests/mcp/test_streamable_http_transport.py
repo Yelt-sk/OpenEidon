@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.mcp.protocol import MCPRequest
+from openeidon.mcp.protocol import MCPRequest
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def _make_http_response(result, *, session_id=None):
 class TestStreamableHTTPTransport:
     def test_send_request(self, _mock_httpx_client):
         """Verify correct URL, headers, JSON body, and MCPResponse parsing."""
-        from openjarvis.mcp.transport import StreamableHTTPTransport
+        from openeidon.mcp.transport import StreamableHTTPTransport
 
         mock_client = _mock_httpx_client
         mock_client.post.return_value = _make_http_response({"tools": []})
@@ -64,7 +64,7 @@ class TestStreamableHTTPTransport:
 
     def test_session_id_tracking(self, _mock_httpx_client):
         """First response sets Mcp-Session-Id, subsequent requests include it."""
-        from openjarvis.mcp.transport import StreamableHTTPTransport
+        from openeidon.mcp.transport import StreamableHTTPTransport
 
         mock_client = _mock_httpx_client
         # First response sets the session id
@@ -89,7 +89,7 @@ class TestStreamableHTTPTransport:
 
     def test_first_request_has_no_session_id(self, _mock_httpx_client):
         """First request should not include Mcp-Session-Id header."""
-        from openjarvis.mcp.transport import StreamableHTTPTransport
+        from openeidon.mcp.transport import StreamableHTTPTransport
 
         mock_client = _mock_httpx_client
         mock_client.post.return_value = _make_http_response({})
@@ -104,7 +104,7 @@ class TestStreamableHTTPTransport:
         """httpx.ConnectError should be wrapped in RuntimeError."""
         import httpx
 
-        from openjarvis.mcp.transport import StreamableHTTPTransport
+        from openeidon.mcp.transport import StreamableHTTPTransport
 
         mock_client = _mock_httpx_client
         mock_client.post.side_effect = httpx.ConnectError("Connection refused")
@@ -117,7 +117,7 @@ class TestStreamableHTTPTransport:
         """httpx.TimeoutException should be wrapped in RuntimeError."""
         import httpx
 
-        from openjarvis.mcp.transport import StreamableHTTPTransport
+        from openeidon.mcp.transport import StreamableHTTPTransport
 
         mock_client = _mock_httpx_client
         mock_client.post.side_effect = httpx.TimeoutException("Read timed out")
@@ -128,7 +128,7 @@ class TestStreamableHTTPTransport:
 
     def test_close(self, _mock_httpx_client):
         """close() should close the underlying httpx client."""
-        from openjarvis.mcp.transport import StreamableHTTPTransport
+        from openeidon.mcp.transport import StreamableHTTPTransport
 
         mock_client = _mock_httpx_client
         transport = StreamableHTTPTransport("http://localhost:9583/mcp")
@@ -137,6 +137,6 @@ class TestStreamableHTTPTransport:
 
     def test_backward_compat_alias(self):
         """SSETransport should be the same class as StreamableHTTPTransport."""
-        from openjarvis.mcp.transport import SSETransport, StreamableHTTPTransport
+        from openeidon.mcp.transport import SSETransport, StreamableHTTPTransport
 
         assert SSETransport is StreamableHTTPTransport

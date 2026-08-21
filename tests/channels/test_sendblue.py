@@ -11,15 +11,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.channels._stubs import ChannelStatus
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import ChannelRegistry
+from openeidon.channels._stubs import ChannelStatus
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import ChannelRegistry
 
 
 @pytest.fixture(autouse=True)
 def _register_sendblue():
     if not ChannelRegistry.contains("sendblue"):
-        from openjarvis.channels.sendblue import SendBlueChannel
+        from openeidon.channels.sendblue import SendBlueChannel
 
         ChannelRegistry.register_value("sendblue", SendBlueChannel)
 
@@ -30,7 +30,7 @@ def _register_sendblue():
 
 
 def _make_channel(**overrides):
-    from openjarvis.channels.sendblue import SendBlueChannel
+    from openeidon.channels.sendblue import SendBlueChannel
 
     defaults = {
         "api_key_id": "test_key",
@@ -69,7 +69,7 @@ class TestInit:
         monkeypatch.setenv("SENDBLUE_API_SECRET_KEY", "env_secret")
         monkeypatch.setenv("SENDBLUE_FROM_NUMBER", "+19998887777")
 
-        from openjarvis.channels.sendblue import SendBlueChannel
+        from openeidon.channels.sendblue import SendBlueChannel
 
         ch = SendBlueChannel()
         assert ch._api_key_id == "env_key"
@@ -77,7 +77,7 @@ class TestInit:
         assert ch._from_number == "+19998887777"
 
     def test_no_credentials(self):
-        from openjarvis.channels.sendblue import SendBlueChannel
+        from openeidon.channels.sendblue import SendBlueChannel
 
         ch = SendBlueChannel()
         ch.connect()
@@ -141,7 +141,7 @@ class TestSend:
         assert result is False
 
     def test_send_no_credentials_returns_false(self):
-        from openjarvis.channels.sendblue import SendBlueChannel
+        from openeidon.channels.sendblue import SendBlueChannel
 
         ch = SendBlueChannel()
         result = ch.send("+19998887777", "Hello!")
@@ -172,7 +172,7 @@ class TestWebhookHandler:
             {
                 "from_number": "+19127130720",
                 "to_number": "+15551234567",
-                "content": "Hello Jarvis",
+                "content": "Hello Eidon",
                 "message_handle": "msg-001",
                 "is_outbound": False,
                 "status": "RECEIVED",
@@ -182,7 +182,7 @@ class TestWebhookHandler:
 
         assert len(received) == 1
         assert received[0].sender == "+19127130720"
-        assert received[0].content == "Hello Jarvis"
+        assert received[0].content == "Hello Eidon"
         assert received[0].channel == "sendblue"
 
     def test_outbound_messages_ignored(self):

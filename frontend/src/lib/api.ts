@@ -28,7 +28,7 @@ export const isTauri = () => {
 
 // Cached API base URL fetched from the Tauri backend at startup.
 // This avoids hardcoding the port вЂ” the Rust backend is the single
-// source of truth for JARVIS_PORT.
+// source of truth for EIDON_PORT.
 let _tauriApiBase: string | null = null;
 
 /** Pre-fetch the API base URL from the Tauri backend (call once at init). */
@@ -46,7 +46,7 @@ const DESKTOP_API_FALLBACK = 'http://127.0.0.1:8000';
 
 const getSettingsApiUrl = (): string => {
   try {
-    const raw = localStorage.getItem('openjarvis-settings');
+    const raw = localStorage.getItem('openeidon-settings');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.apiUrl) return parsed.apiUrl.replace(/\/+$/, '');
@@ -224,7 +224,7 @@ export async function fetchServerInfo(): Promise<ServerInfo> {
 
 function stripGreetingPrefix(text: string): string {
   return text
-    .replace(/^(джарвис|jarvis|ейдон|eidon)[,!\s]+/i, '')
+    .replace(/^(джарвис|eidon|ейдон|eidon)[,!\s]+/i, '')
     .replace(/^(привет|hi|hey|hello|ну|слушай|добрый день|добрый вечер|добрый утро)[,!\s]+/i, '')
     .trim();
 }
@@ -664,7 +664,7 @@ export interface AgentPlan {
   summary: string;
 }
 
-const JARVIS_TOOLS_DESC = [
+const EIDON_TOOLS_DESC = [
   'open_app(name) — opens a desktop application by name',
   'play_youtube(query) — plays music or video on YouTube',
   'open_site(url) — opens a website URL in browser',
@@ -677,7 +677,7 @@ const JARVIS_TOOLS_DESC = [
   'cancel_reminder(reminder_id) — cancel a reminder by its id',
   'web_search(query) — search the internet for current/real-time information, news, facts',
   'save_preference(category, value) — save a user fact to memory. Categories: "music_artist" (band/singer name), "music_genre" (genre like rock/jazz), "work_app" (app name), "note" (any other fact about the user)',
-  'read_file(path) — read the contents of a file on disk. Use full path, e.g. D:\\projects\\jarvis\\notes.md',
+  'read_file(path) — read the contents of a file on disk. Use full path, e.g. D:\\projects\\eidon\\notes.md',
   'write_file(path, file_content) — write or overwrite a file on disk',
   'list_files(path) — list files and folders in a directory',
   'find_and_open_file(query) — search for a file by name across accessible directories and open it with the default app. Use when user says "открой мою курсовую", "открой мой диплом", "открой отчёт" etc. without specifying exact path.',
@@ -714,7 +714,7 @@ export async function buildAgentPlan(
 
   const fileRootsHint = fileRoots.length > 0
     ? `Accessible directories for file operations:\n${fileRoots.join('\n')}\nWhen user asks to find/open/read a file without specifying a path, use list_files on these directories first.`
-    : `Accessible directories: Desktop, Documents, D:\\projects\\jarvis`;
+    : `Accessible directories: Desktop, Documents, D:\\projects\\eidon`;
 
   const systemPrompt = [
     'You are a request router for Eidon, a Windows AI assistant.',
@@ -722,7 +722,7 @@ export async function buildAgentPlan(
     'Return ONLY valid JSON — no markdown, no explanation.',
     '',
     'Available tools:',
-    JARVIS_TOOLS_DESC,
+    EIDON_TOOLS_DESC,
     '',
     appsHint,
     '',
@@ -1076,9 +1076,9 @@ const DESKTOP_AGENT_PROMPT = [
   'Use file_read/file_write/apply_patch only for file tasks inside explicitly relevant workspaces.',
   'Use save_markdown_note, list_markdown_notes, and read_markdown_note for personal notes in the Eidon markdown folder.',
   'Use set_reminder, list_reminders, and cancel_reminder for timers and spoken reminders.',
-  'Use create_project_file, list_project_files, read_project_file, and open_project_file for code projects in the exact folder D:\\projects\\Jarvis\\His-projects.',
-  'When asked to create a project or write code, save the result into D:\\projects\\Jarvis\\His-projects under a clear project folder name.',
-  'When asked to open a project file, use open_project_file and never invent another filesystem path such as C:\\Users\\Public\\Jarvis.',
+  'Use create_project_file, list_project_files, read_project_file, and open_project_file for code projects in the exact folder D:\\projects\\Eidon\\His-projects.',
+  'When asked to create a project or write code, save the result into D:\\projects\\Eidon\\His-projects under a clear project folder name.',
+  'When asked to open a project file, use open_project_file and never invent another filesystem path such as C:\\Users\\Public\\Eidon.',
   'Supported project file types are html, css, js, py, and ts.',
   'Do not claim that you cannot access the computer when browser, shell, or file tools can solve the task.',
   'For safe actions, act immediately.',
@@ -1190,7 +1190,7 @@ export function routeDesktopIntentFinal(content: string): string {
   if (projectCreateIntent) {
     return `${text}
 
-Important: this is a code project request for the exact folder D:\\projects\\Jarvis\\His-projects.
+Important: this is a code project request for the exact folder D:\\projects\\Eidon\\His-projects.
 You must use create_project_file for every file you create.
 If the user asked to open the project, then after creation you must use open_project_file for the main entry file, usually index.html.
 Do not only describe the project. Actually create the files with tools first.
@@ -1200,8 +1200,8 @@ Reply briefly with the real created filenames and the real opened path.`;
   if (projectOpenIntent) {
     return `${text}
 
-Important: if this refers to a Jarvis-created code project, use list_project_files, read_project_file, and open_project_file in the exact folder D:\\projects\\Jarvis\\His-projects.
-Never invent any path such as C:\\Users\\Public\\Jarvis.
+Important: if this refers to a Eidon-created code project, use list_project_files, read_project_file, and open_project_file in the exact folder D:\\projects\\Eidon\\His-projects.
+Never invent any path such as C:\\Users\\Public\\Eidon.
 Reply briefly with the real opened path.`;
   }
 

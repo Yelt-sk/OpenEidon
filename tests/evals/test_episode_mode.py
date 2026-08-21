@@ -1,7 +1,7 @@
 """Tests for EvalRunner episode mode."""
 
-from openjarvis.evals.core.dataset import DatasetProvider
-from openjarvis.evals.core.types import EvalRecord
+from openeidon.evals.core.dataset import DatasetProvider
+from openeidon.evals.core.types import EvalRecord
 
 
 class TestDatasetProviderEpisodes:
@@ -36,7 +36,7 @@ class TestDatasetProviderEpisodes:
 
 class TestRunConfigEpisodeMode:
     def test_episode_mode_field(self) -> None:
-        from openjarvis.evals.core.types import RunConfig
+        from openeidon.evals.core.types import RunConfig
 
         cfg = RunConfig(
             benchmark="test",
@@ -47,7 +47,7 @@ class TestRunConfigEpisodeMode:
         assert cfg.episode_mode is True
 
     def test_episode_mode_default_false(self) -> None:
-        from openjarvis.evals.core.types import RunConfig
+        from openeidon.evals.core.types import RunConfig
 
         cfg = RunConfig(benchmark="test", backend="test", model="test")
         assert cfg.episode_mode is False

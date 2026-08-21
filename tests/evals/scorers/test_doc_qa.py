@@ -1,7 +1,7 @@
 """Tests for the doc_qa scorer."""
 
-from openjarvis.evals.core.types import EvalRecord
-from openjarvis.evals.scorers.doc_qa import DocQAScorer
+from openeidon.evals.core.types import EvalRecord
+from openeidon.evals.scorers.doc_qa import DocQAScorer
 
 
 def _make_record(required_facts):

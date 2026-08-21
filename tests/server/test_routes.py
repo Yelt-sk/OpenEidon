@@ -10,7 +10,7 @@ import pytest
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
-from openjarvis.server.app import create_app  # noqa: E402
+from openeidon.server.app import create_app  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -46,7 +46,7 @@ def _make_engine(content="Hello from server", models=None):
 
 
 def _make_agent(content="Hello from agent"):
-    from openjarvis.agents._stubs import AgentResult
+    from openeidon.agents._stubs import AgentResult
 
     agent = MagicMock()
     agent.agent_id = "mock"

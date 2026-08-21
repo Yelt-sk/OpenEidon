@@ -1,4 +1,4 @@
-"""Tests for ``jarvis doctor`` CLI command."""
+"""Tests for ``eidon doctor`` CLI command."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
-from openjarvis.cli.doctor_cmd import (
+from openeidon.cli import cli
+from openeidon.cli.doctor_cmd import (
     _check_config_exists,
     _check_default_model,
     _check_nodejs,
@@ -32,13 +32,13 @@ class TestDoctorRuns:
         mock_config.intelligence.default_model = ""
 
         with (
-            patch("openjarvis.cli.doctor_cmd.load_config", return_value=mock_config),
+            patch("openeidon.cli.doctor_cmd.load_config", return_value=mock_config),
             patch(
-                "openjarvis.cli.doctor_cmd.DEFAULT_CONFIG_PATH",
+                "openeidon.cli.doctor_cmd.DEFAULT_CONFIG_PATH",
                 Path("/tmp/nonexistent/config.toml"),
             ),
-            patch("openjarvis.cli.doctor_cmd._check_engines", return_value=[]),
-            patch("openjarvis.cli.doctor_cmd._check_models", return_value=[]),
+            patch("openeidon.cli.doctor_cmd._check_engines", return_value=[]),
+            patch("openeidon.cli.doctor_cmd._check_models", return_value=[]),
         ):
             result = CliRunner().invoke(cli, ["doctor"])
         assert result.exit_code == 0
@@ -52,13 +52,13 @@ class TestDoctorJsonOutput:
         mock_config.intelligence.default_model = ""
 
         with (
-            patch("openjarvis.cli.doctor_cmd.load_config", return_value=mock_config),
+            patch("openeidon.cli.doctor_cmd.load_config", return_value=mock_config),
             patch(
-                "openjarvis.cli.doctor_cmd.DEFAULT_CONFIG_PATH",
+                "openeidon.cli.doctor_cmd.DEFAULT_CONFIG_PATH",
                 Path("/tmp/nonexistent/config.toml"),
             ),
-            patch("openjarvis.cli.doctor_cmd._check_engines", return_value=[]),
-            patch("openjarvis.cli.doctor_cmd._check_models", return_value=[]),
+            patch("openeidon.cli.doctor_cmd._check_engines", return_value=[]),
+            patch("openeidon.cli.doctor_cmd._check_models", return_value=[]),
         ):
             result = CliRunner().invoke(cli, ["doctor", "--json"])
         assert result.exit_code == 0
@@ -84,7 +84,7 @@ class TestCheckConfigMissing:
     def test_check_config_missing(self) -> None:
         """Warning when config file does not exist."""
         with patch(
-            "openjarvis.cli.doctor_cmd.DEFAULT_CONFIG_PATH",
+            "openeidon.cli.doctor_cmd.DEFAULT_CONFIG_PATH",
             Path("/tmp/nonexistent/config.toml"),
         ):
             result = _check_config_exists()
@@ -95,7 +95,7 @@ class TestCheckConfigMissing:
 class TestCheckEngineProbing:
     def test_check_engine_probing(self) -> None:
         """Engine health check reports reachable/unreachable engines."""
-        from openjarvis.cli.doctor_cmd import CheckResult
+        from openeidon.cli.doctor_cmd import CheckResult
 
         mock_engine_healthy = MagicMock()
         mock_engine_healthy.health.return_value = True
@@ -136,7 +136,7 @@ class TestCheckDefaultModel:
         """Leaving default model empty should be treated as valid auto-routing."""
         mock_config = MagicMock()
         mock_config.intelligence.default_model = ""
-        with patch("openjarvis.cli.doctor_cmd.load_config", return_value=mock_config):
+        with patch("openeidon.cli.doctor_cmd.load_config", return_value=mock_config):
             result = _check_default_model()
         assert result.status == "ok"
         assert "auto" in result.message.lower()

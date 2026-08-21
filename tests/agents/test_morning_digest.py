@@ -4,20 +4,20 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from openjarvis.agents._stubs import AgentResult
-from openjarvis.core.registry import AgentRegistry
-from openjarvis.core.types import ToolResult
+from openeidon.agents._stubs import AgentResult
+from openeidon.core.registry import AgentRegistry
+from openeidon.core.types import ToolResult
 
 
 def test_morning_digest_registered():
-    from openjarvis.agents.morning_digest import MorningDigestAgent
+    from openeidon.agents.morning_digest import MorningDigestAgent
 
     AgentRegistry.register_value("morning_digest", MorningDigestAgent)
     assert AgentRegistry.contains("morning_digest")
 
 
 def test_morning_digest_run(tmp_path):
-    from openjarvis.agents.morning_digest import MorningDigestAgent
+    from openeidon.agents.morning_digest import MorningDigestAgent
 
     mock_engine = MagicMock()
     mock_engine.generate.return_value = {
@@ -64,7 +64,7 @@ def test_morning_digest_run(tmp_path):
 
 
 def test_load_persona():
-    from openjarvis.agents.morning_digest import _load_persona
+    from openeidon.agents.morning_digest import _load_persona
 
     # Nonexistent persona returns empty string
     result = _load_persona("nonexistent_persona_xyz")

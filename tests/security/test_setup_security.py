@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.core.config import CapabilitiesConfig, JarvisConfig, SecurityConfig
-from openjarvis.core.events import EventBus
-from openjarvis.security import SecurityContext, setup_security
+from openeidon.core.config import CapabilitiesConfig, EidonConfig, SecurityConfig
+from openeidon.core.events import EventBus
+from openeidon.security import SecurityContext, setup_security
 
 
 def _make_mock_engine() -> MagicMock:
@@ -20,8 +20,8 @@ def _make_mock_engine() -> MagicMock:
     return engine
 
 
-def _make_config(*, enabled: bool = True, caps_enabled: bool = False) -> JarvisConfig:
-    cfg = JarvisConfig()
+def _make_config(*, enabled: bool = True, caps_enabled: bool = False) -> EidonConfig:
+    cfg = EidonConfig()
     cfg.security = SecurityConfig(
         enabled=enabled,
         secret_scanner=True,
@@ -34,7 +34,7 @@ def _make_config(*, enabled: bool = True, caps_enabled: bool = False) -> JarvisC
 
 def _has_rust() -> bool:
     try:
-        import openjarvis_rust  # noqa: F401
+        import openeidon_rust  # noqa: F401
 
         return True
     except ImportError:
@@ -44,7 +44,7 @@ def _has_rust() -> bool:
 class TestSetupSecurityEnabled:
     @pytest.mark.skipif(not _has_rust(), reason="Rust extension not compiled")
     def test_returns_wrapped_engine(self) -> None:
-        from openjarvis.security.guardrails import GuardrailsEngine
+        from openeidon.security.guardrails import GuardrailsEngine
 
         engine = _make_mock_engine()
         bus = EventBus()

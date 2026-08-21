@@ -1,4 +1,4 @@
-"""Tests for context injection integration in ``jarvis ask``."""
+"""Tests for context injection integration in ``eidon ask``."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import importlib
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from openeidon.cli import cli
 
 
 def test_ask_no_context_flag():
@@ -28,19 +28,19 @@ def test_get_memory_backend_returns_none_when_empty(
     monkeypatch,
 ):
     """_get_memory_backend returns None when no docs indexed."""
-    from openjarvis.core.config import JarvisConfig, MemoryConfig
-    from openjarvis.core.registry import MemoryRegistry
-    from openjarvis.tools.storage.sqlite import SQLiteMemory
+    from openeidon.core.config import EidonConfig, MemoryConfig
+    from openeidon.core.registry import MemoryRegistry
+    from openeidon.tools.storage.sqlite import SQLiteMemory
 
     if not MemoryRegistry.contains("sqlite"):
         MemoryRegistry.register_value("sqlite", SQLiteMemory)
 
-    config = JarvisConfig()
+    config = EidonConfig()
     config.memory = MemoryConfig(
         db_path=str(tmp_path / "empty.db"),
     )
 
-    mod = importlib.import_module("openjarvis.cli.ask")
+    mod = importlib.import_module("openeidon.cli.ask")
     result = mod._get_memory_backend(config)
     assert result is None
 
@@ -50,15 +50,15 @@ def test_get_memory_backend_returns_backend_with_docs(
     monkeypatch,
 ):
     """_get_memory_backend returns a backend when docs exist."""
-    from openjarvis.core.config import JarvisConfig, MemoryConfig
-    from openjarvis.core.registry import MemoryRegistry
-    from openjarvis.tools.storage.sqlite import SQLiteMemory
+    from openeidon.core.config import EidonConfig, MemoryConfig
+    from openeidon.core.registry import MemoryRegistry
+    from openeidon.tools.storage.sqlite import SQLiteMemory
 
     if not MemoryRegistry.contains("sqlite"):
         MemoryRegistry.register_value("sqlite", SQLiteMemory)
 
     db_path = str(tmp_path / "test.db")
-    config = JarvisConfig()
+    config = EidonConfig()
     config.memory = MemoryConfig(db_path=db_path)
 
     # Pre-populate with a document
@@ -66,7 +66,7 @@ def test_get_memory_backend_returns_backend_with_docs(
     backend.store("test document content")
     backend.close()
 
-    mod = importlib.import_module("openjarvis.cli.ask")
+    mod = importlib.import_module("openeidon.cli.ask")
     result = mod._get_memory_backend(config)
     assert result is not None
     if hasattr(result, "close"):

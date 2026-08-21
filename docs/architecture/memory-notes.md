@@ -1,8 +1,8 @@
-# Система долгосрочной памяти Jarvis
+# Система долгосрочной памяти Eidon
 
 ## Что это
 
-Jarvis умеет запоминать предпочтения пользователя и использовать их при обработке команд. Данные хранятся в `~/.openjarvis/user_preferences.json` и сохраняются между перезапусками.
+Eidon умеет запоминать предпочтения пользователя и использовать их при обработке команд. Данные хранятся в `~/.openeidon/user_preferences.json` и сохраняются между перезапусками.
 
 ---
 
@@ -10,7 +10,7 @@ Jarvis умеет запоминать предпочтения пользова
 
 ### Хранилище
 
-Файл: `~/.openjarvis/user_preferences.json`
+Файл: `~/.openeidon/user_preferences.json`
 
 ```json
 {
@@ -43,8 +43,8 @@ Jarvis умеет запоминать предпочтения пользова
 
 | Слой | Файл | Роль |
 |------|------|------|
-| Backend tool | `src/openjarvis/tools/preferences_tool.py` | LLM-вызываемый инструмент; читает/пишет JSON |
-| Backend API | `src/openjarvis/server/routes.py` | REST: `GET /v1/user/preferences`, `POST /v1/user/preferences/{category}` |
+| Backend tool | `src/openeidon/tools/preferences_tool.py` | LLM-вызываемый инструмент; читает/пишет JSON |
+| Backend API | `src/openeidon/server/routes.py` | REST: `GET /v1/user/preferences`, `POST /v1/user/preferences/{category}` |
 | Frontend API | `frontend/src/lib/api.ts` | `getUserPreferences()`, `setUserPreferences()`, детекторы интентов |
 | Frontend routing | `frontend/src/components/Chat/InputArea.tsx` | Fast-path блоки для save/open/music |
 

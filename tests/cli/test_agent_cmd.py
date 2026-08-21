@@ -1,10 +1,10 @@
-"""Tests for the ``jarvis agents`` CLI commands."""
+"""Tests for the ``eidon agents`` CLI commands."""
 
 from __future__ import annotations
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from openeidon.cli import cli
 
 
 class TestAgentCmd:

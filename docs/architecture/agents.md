@@ -152,7 +152,7 @@ How it works:
 4. Calls `_emit_turn_end()` and returns an `AgentResult` with `turns=1`
 
 ```python
-from openjarvis.agents.simple import SimpleAgent
+from openeidon.agents.simple import SimpleAgent
 
 agent = SimpleAgent(engine, model="qwen3:8b", bus=bus)
 result = agent.run("What is the capital of France?")
@@ -194,9 +194,9 @@ How it works:
 4. If `max_turns` is exceeded, returns the last content or a warning message
 
 ```python
-from openjarvis.agents.orchestrator import OrchestratorAgent
-from openjarvis.tools.calculator import CalculatorTool
-from openjarvis.tools.think import ThinkTool
+from openeidon.agents.orchestrator import OrchestratorAgent
+from openeidon.tools.calculator import CalculatorTool
+from openeidon.tools.think import ThinkTool
 
 agent = OrchestratorAgent(
     engine,
@@ -240,10 +240,10 @@ How it works:
 5. Loops until a final answer is produced or `max_turns` is exceeded
 
 !!! note "Backward compatibility"
-    The old `from openjarvis.agents.react import ReActAgent` import path still works via a backward-compat shim. The registry alias `"react"` also maps to `NativeReActAgent`.
+    The old `from openeidon.agents.react import ReActAgent` import path still works via a backward-compat shim. The registry alias `"react"` also maps to `NativeReActAgent`.
 
 ```python
-from openjarvis.agents.native_react import NativeReActAgent
+from openeidon.agents.native_react import NativeReActAgent
 
 agent = NativeReActAgent(
     engine,
@@ -272,7 +272,7 @@ How it works:
 4. Handles context window overflow with automatic truncation
 
 ```python
-from openjarvis.agents.native_openhands import NativeOpenHandsAgent
+from openeidon.agents.native_openhands import NativeOpenHandsAgent
 
 agent = NativeOpenHandsAgent(
     engine,
@@ -324,7 +324,7 @@ The agent supports configurable sub-model parameters for recursive calls:
 | `system_prompt` | `RLM_SYSTEM_PROMPT` | Override the system prompt |
 
 ```python
-from openjarvis.agents.rlm import RLMAgent
+from openeidon.agents.rlm import RLMAgent
 
 agent = RLMAgent(
     engine,
@@ -353,7 +353,7 @@ How it works:
 4. Extracts the final message content from the conversation
 
 ```python
-from openjarvis.agents.openhands import OpenHandsAgent
+from openeidon.agents.openhands import OpenHandsAgent
 
 agent = OpenHandsAgent(
     engine,
@@ -368,7 +368,7 @@ result = agent.run("Fix the failing test in test_utils.py")
 
 **Registry key:** `claude_code`
 
-Wraps the `@anthropic-ai/claude-code` SDK via a bundled Node.js subprocess bridge. Unlike every other agent, inference is handled entirely by the Claude Agent SDK -- the OpenJarvis inference engine is not used. This makes `ClaudeCodeAgent` a true external agent, similar in spirit to `OpenHandsAgent` but implemented via subprocess rather than an importable Python SDK.
+Wraps the `@anthropic-ai/claude-code` SDK via a bundled Node.js subprocess bridge. Unlike every other agent, inference is handled entirely by the Claude Agent SDK -- the OpenEidon inference engine is not used. This makes `ClaudeCodeAgent` a true external agent, similar in spirit to `OpenHandsAgent` but implemented via subprocess rather than an importable Python SDK.
 
 ```mermaid
 graph LR
@@ -384,17 +384,17 @@ graph LR
 
 How it works:
 
-1. On first call, copies the bundled `claude_code_runner/` to `~/.openjarvis/claude_code_runner/` and runs `npm install --production` if `node_modules` is absent
+1. On first call, copies the bundled `claude_code_runner/` to `~/.openeidon/claude_code_runner/` and runs `npm install --production` if `node_modules` is absent
 2. Builds a JSON request with `prompt`, `api_key`, `workspace`, `allowed_tools`, `system_prompt`, and `session_id`
 3. Spawns `node dist/index.js` and writes the request to stdin
-4. Reads stdout and extracts the JSON payload between `---OPENJARVIS_OUTPUT_START---` and `---OPENJARVIS_OUTPUT_END---` sentinels
+4. Reads stdout and extracts the JSON payload between `---OPENEIDON_OUTPUT_START---` and `---OPENEIDON_OUTPUT_END---` sentinels
 5. Falls back to treating all stdout as plain text content if sentinels are absent
 
 !!! warning "Requires Node.js 22+"
     `ClaudeCodeAgent` raises `RuntimeError` at `run()` time if `node` is not found on `PATH`. An `ANTHROPIC_API_KEY` environment variable is required for the Claude Agent SDK to authenticate.
 
 ```python
-from openjarvis.agents.claude_code import ClaudeCodeAgent
+from openeidon.agents.claude_code import ClaudeCodeAgent
 
 agent = ClaudeCodeAgent(
     engine=None,   # not used
@@ -428,7 +428,7 @@ graph LR
 - Sends a JSON payload to container stdin (prompt, agent ID, model, and optional secrets)
 - Reads stdout and parses sentinel-delimited JSON output
 - On timeout, force-kills the container via `docker rm -f`
-- `cleanup_orphans()` removes any stale containers labelled `openjarvis-sandbox=true`
+- `cleanup_orphans()` removes any stale containers labelled `openeidon-sandbox=true`
 
 **Mount security** (`sandbox/mount_security.py`) enforces two independent checks on every mount path:
 
@@ -436,10 +436,10 @@ graph LR
 2. **Allowed roots:** If `roots` are configured in the allowlist, the resolved path must be under one of them. An empty `roots` list allows any non-blocked path.
 
 ```python
-from openjarvis.sandbox import ContainerRunner, SandboxedAgent
+from openeidon.sandbox import ContainerRunner, SandboxedAgent
 
 runner = ContainerRunner(
-    image="openjarvis-sandbox:latest",
+    image="openeidon-sandbox:latest",
     timeout=60,
     runtime="docker",
 )
@@ -540,8 +540,8 @@ These events are consumed by the `TelemetryStore` (for metrics) and `TraceCollec
 Agents are registered via the `@AgentRegistry.register("name")` decorator:
 
 ```python
-from openjarvis.core.registry import AgentRegistry
-from openjarvis.agents._stubs import BaseAgent
+from openeidon.core.registry import AgentRegistry
+from openeidon.agents._stubs import BaseAgent
 
 @AgentRegistry.register("my-agent")
 class MyAgent(BaseAgent):
@@ -554,7 +554,7 @@ class MyAgent(BaseAgent):
 To list all registered agents:
 
 ```python
-from openjarvis.core.registry import AgentRegistry
+from openeidon.core.registry import AgentRegistry
 
 print(AgentRegistry.keys())
 # ("simple", "orchestrator", "native_react", "react", "native_openhands", "rlm", "openhands")

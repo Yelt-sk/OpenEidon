@@ -14,7 +14,7 @@ try:
 except ImportError:
     HAS_FASTAPI = False
 
-from openjarvis.connectors.store import KnowledgeStore
+from openeidon.connectors.store import KnowledgeStore
 
 
 @pytest.mark.skipif(not HAS_FASTAPI, reason="fastapi not installed")
@@ -24,7 +24,7 @@ def test_deep_research_agent_gets_tools(tmp_path: Path) -> None:
     store = KnowledgeStore(str(db_path))
     store.store("test content", source="test", doc_type="note")
 
-    from openjarvis.server.agent_manager_routes import _build_deep_research_tools
+    from openeidon.server.agent_manager_routes import _build_deep_research_tools
 
     tools = _build_deep_research_tools(
         engine=MagicMock(),
@@ -44,7 +44,7 @@ def test_deep_research_agent_gets_tools(tmp_path: Path) -> None:
 @pytest.mark.skipif(not HAS_FASTAPI, reason="fastapi not installed")
 def test_deep_research_tools_returns_empty_when_no_db() -> None:
     """When knowledge.db doesn't exist, returns empty list."""
-    from openjarvis.server.agent_manager_routes import _build_deep_research_tools
+    from openeidon.server.agent_manager_routes import _build_deep_research_tools
 
     tools = _build_deep_research_tools(
         engine=MagicMock(),

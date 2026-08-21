@@ -13,8 +13,8 @@ from typing import List
 
 import pytest
 
-from openjarvis.connectors._stubs import Document
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.connectors._stubs import Document
+from openeidon.core.registry import ConnectorRegistry
 
 # ---------------------------------------------------------------------------
 # Helper: create a fake NoteStore.sqlite
@@ -78,7 +78,7 @@ def fake_db(tmp_path: Path) -> Path:
 @pytest.fixture()
 def connector(fake_db: Path):
     """AppleNotesConnector pointing at the fake DB."""
-    from openjarvis.connectors.apple_notes import AppleNotesConnector  # noqa: PLC0415
+    from openeidon.connectors.apple_notes import AppleNotesConnector  # noqa: PLC0415
 
     return AppleNotesConnector(db_path=str(fake_db))
 
@@ -100,7 +100,7 @@ def test_is_connected(connector) -> None:
 
 def test_not_connected_missing_db() -> None:
     """is_connected() returns False when the database file does not exist."""
-    from openjarvis.connectors.apple_notes import AppleNotesConnector  # noqa: PLC0415
+    from openeidon.connectors.apple_notes import AppleNotesConnector  # noqa: PLC0415
 
     conn = AppleNotesConnector(db_path="/nonexistent/path/NoteStore.sqlite")
     assert conn.is_connected() is False
@@ -202,7 +202,7 @@ def test_mcp_tools(connector) -> None:
 
 def test_registry() -> None:
     """AppleNotesConnector is registered and retrievable via ConnectorRegistry."""
-    from openjarvis.connectors.apple_notes import AppleNotesConnector  # noqa: PLC0415
+    from openeidon.connectors.apple_notes import AppleNotesConnector  # noqa: PLC0415
 
     ConnectorRegistry.register_value("apple_notes", AppleNotesConnector)
     assert ConnectorRegistry.contains("apple_notes")

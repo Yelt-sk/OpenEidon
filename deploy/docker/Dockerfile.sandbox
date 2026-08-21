@@ -11,6 +11,6 @@ WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir ".[server]"
 
-LABEL openjarvis-sandbox=true
+LABEL openeidon-sandbox=true
 
-ENTRYPOINT ["python", "-m", "openjarvis.sandbox.entrypoint"]
+ENTRYPOINT ["python", "-m", "openeidon.sandbox.entrypoint"]

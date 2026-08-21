@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.tools._stubs import ToolSpec
+from openeidon.tools._stubs import ToolSpec
 
 
 def _make_mock_tool(name: str) -> MagicMock:
@@ -19,7 +19,7 @@ def _make_mock_tool(name: str) -> MagicMock:
 @pytest.fixture
 def builder():
     """Create a minimal SystemBuilder instance for testing _discover_external_mcp."""
-    from openjarvis.system import SystemBuilder
+    from openeidon.system import SystemBuilder
 
     def _minimal_init(self):
         self._mcp_clients = []
@@ -32,11 +32,11 @@ def builder():
 
 # Patch targets: the method uses local imports, so we patch the actual classes
 # in their source modules (which is where the local from-imports resolve to).
-_PATCH_HTTP = "openjarvis.mcp.transport.StreamableHTTPTransport"
-_PATCH_STDIO = "openjarvis.mcp.transport.StdioTransport"
-_PATCH_CLIENT = "openjarvis.mcp.client.MCPClient"
-_PATCH_PROVIDER = "openjarvis.tools.mcp_adapter.MCPToolProvider"
-_PATCH_LOGGER = "openjarvis.system.logger"
+_PATCH_HTTP = "openeidon.mcp.transport.StreamableHTTPTransport"
+_PATCH_STDIO = "openeidon.mcp.transport.StdioTransport"
+_PATCH_CLIENT = "openeidon.mcp.client.MCPClient"
+_PATCH_PROVIDER = "openeidon.tools.mcp_adapter.MCPToolProvider"
+_PATCH_LOGGER = "openeidon.system.logger"
 
 
 class TestDiscoverHTTPServer:

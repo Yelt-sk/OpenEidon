@@ -10,11 +10,11 @@ import httpx
 import pytest
 import respx
 
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._stubs import ResponseFormat
-from openjarvis.engine.cloud import CloudEngine
-from openjarvis.engine.ollama import OllamaEngine
+from openeidon.core.registry import EngineRegistry
+from openeidon.core.types import Message, Role
+from openeidon.engine._stubs import ResponseFormat
+from openeidon.engine.cloud import CloudEngine
+from openeidon.engine.ollama import OllamaEngine
 
 # ---------------------------------------------------------------------------
 # ResponseFormat dataclass
@@ -252,7 +252,7 @@ class TestGoogleStructuredOutput:
             {"google": mock.MagicMock(), "google.genai": mock.MagicMock()},
         ):
             with mock.patch(
-                "openjarvis.engine.cloud.genai_types", fake_genai_types, create=True
+                "openeidon.engine.cloud.genai_types", fake_genai_types, create=True
             ):
                 # We need to actually test the config mutation. The simplest
                 # approach is to observe the config object passed to

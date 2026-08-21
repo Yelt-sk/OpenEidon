@@ -5,7 +5,7 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-from openjarvis.skills.index import SkillIndex
+from openeidon.skills.index import SkillIndex
 
 
 class TestSkillIndex:
@@ -17,8 +17,8 @@ class TestSkillIndex:
             name = "research"
             version = "0.1.0"
             description = "Research a topic"
-            author = "openjarvis"
-            source = "github.com/openjarvis/skills/research"
+            author = "openeidon"
+            source = "github.com/openeidon/skills/research"
             sha256 = "abc123"
             tags = ["research"]
             required_capabilities = ["network:fetch"]
@@ -46,8 +46,8 @@ class TestSkillIndex:
             name = "web_research"
             version = "0.1.0"
             description = "Search the web"
-            author = "openjarvis"
-            source = "github.com/openjarvis/skills/web_research"
+            author = "openeidon"
+            source = "github.com/openeidon/skills/web_research"
             sha256 = "abc"
             tags = ["research"]
             required_capabilities = []
@@ -56,8 +56,8 @@ class TestSkillIndex:
             name = "code_review"
             version = "0.1.0"
             description = "Review code"
-            author = "openjarvis"
-            source = "github.com/openjarvis/skills/code_review"
+            author = "openeidon"
+            source = "github.com/openeidon/skills/code_review"
             sha256 = "def"
             tags = ["coding"]
             required_capabilities = []

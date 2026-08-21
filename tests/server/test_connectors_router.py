@@ -15,7 +15,7 @@ def app():
     except ImportError:
         pytest.skip("fastapi not installed")
 
-    from openjarvis.server.connectors_router import create_connectors_router
+    from openeidon.server.connectors_router import create_connectors_router
 
     _app = FastAPI()
     router = create_connectors_router()

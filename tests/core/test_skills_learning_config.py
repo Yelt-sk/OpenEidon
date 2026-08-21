@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.core.config import LearningConfig, SkillsLearningConfig
+from openeidon.core.config import LearningConfig, SkillsLearningConfig
 
 
 class TestSkillsLearningConfig:
@@ -12,7 +12,7 @@ class TestSkillsLearningConfig:
         assert cfg.optimizer == "dspy"
         assert cfg.min_traces_per_skill == 20
         assert cfg.optimization_interval_seconds == 86400
-        assert cfg.overlay_dir == "~/.openjarvis/learning/skills/"
+        assert cfg.overlay_dir == "~/.openeidon/learning/skills/"
 
     def test_can_be_constructed_with_all_fields(self):
         cfg = SkillsLearningConfig(

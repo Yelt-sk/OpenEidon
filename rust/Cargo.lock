@@ -1222,24 +1222,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
-name = "openjarvis-a2a"
+name = "openeidon-a2a"
 version = "0.1.0"
 dependencies = [
- "openjarvis-core",
+ "openeidon-core",
  "serde",
  "serde_json",
  "uuid",
 ]
 
 [[package]]
-name = "openjarvis-agents"
+name = "openeidon-agents"
 version = "0.1.0"
 dependencies = [
  "async-trait",
  "once_cell",
- "openjarvis-core",
- "openjarvis-engine",
- "openjarvis-tools",
+ "openeidon-core",
+ "openeidon-engine",
+ "openeidon-tools",
  "parking_lot",
  "regex",
  "rig-core",
@@ -1252,7 +1252,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-core"
+name = "openeidon-core"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -1269,13 +1269,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-engine"
+name = "openeidon-engine"
 version = "0.1.0"
 dependencies = [
  "async-trait",
  "futures",
  "once_cell",
- "openjarvis-core",
+ "openeidon-core",
  "reqwest 0.12.28",
  "rig-core",
  "schemars",
@@ -1288,12 +1288,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-learning"
+name = "openeidon-learning"
 version = "0.1.0"
 dependencies = [
  "once_cell",
- "openjarvis-core",
- "openjarvis-traces",
+ "openeidon-core",
+ "openeidon-traces",
  "parking_lot",
  "rand 0.8.5",
  "regex",
@@ -1306,11 +1306,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-mcp"
+name = "openeidon-mcp"
 version = "0.1.0"
 dependencies = [
- "openjarvis-core",
- "openjarvis-tools",
+ "openeidon-core",
+ "openeidon-tools",
  "serde",
  "serde_json",
  "thiserror 2.0.18",
@@ -1319,26 +1319,26 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-python"
+name = "openeidon-python"
 version = "0.1.0"
 dependencies = [
  "once_cell",
- "openjarvis-a2a",
- "openjarvis-agents",
- "openjarvis-core",
- "openjarvis-engine",
- "openjarvis-learning",
- "openjarvis-mcp",
- "openjarvis-recipes",
- "openjarvis-scheduler",
- "openjarvis-security",
- "openjarvis-sessions",
- "openjarvis-skills",
- "openjarvis-telemetry",
- "openjarvis-templates",
- "openjarvis-tools",
- "openjarvis-traces",
- "openjarvis-workflow",
+ "openeidon-a2a",
+ "openeidon-agents",
+ "openeidon-core",
+ "openeidon-engine",
+ "openeidon-learning",
+ "openeidon-mcp",
+ "openeidon-recipes",
+ "openeidon-scheduler",
+ "openeidon-security",
+ "openeidon-sessions",
+ "openeidon-skills",
+ "openeidon-telemetry",
+ "openeidon-templates",
+ "openeidon-tools",
+ "openeidon-traces",
+ "openeidon-workflow",
  "parking_lot",
  "pyo3",
  "serde",
@@ -1347,21 +1347,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-recipes"
+name = "openeidon-recipes"
 version = "0.1.0"
 dependencies = [
- "openjarvis-core",
+ "openeidon-core",
  "serde",
  "serde_json",
  "toml",
 ]
 
 [[package]]
-name = "openjarvis-scheduler"
+name = "openeidon-scheduler"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "openjarvis-core",
+ "openeidon-core",
  "rusqlite",
  "serde",
  "serde_json",
@@ -1369,15 +1369,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-security"
+name = "openeidon-security"
 version = "0.1.0"
 dependencies = [
  "async-trait",
  "chrono",
  "futures",
  "once_cell",
- "openjarvis-core",
- "openjarvis-engine",
+ "openeidon-core",
+ "openeidon-engine",
  "parking_lot",
  "regex",
  "rusqlite",
@@ -1392,10 +1392,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-sessions"
+name = "openeidon-sessions"
 version = "0.1.0"
 dependencies = [
- "openjarvis-core",
+ "openeidon-core",
  "rusqlite",
  "serde",
  "serde_json",
@@ -1403,25 +1403,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-skills"
+name = "openeidon-skills"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
- "openjarvis-core",
+ "openeidon-core",
  "serde",
  "serde_json",
  "toml",
 ]
 
 [[package]]
-name = "openjarvis-telemetry"
+name = "openeidon-telemetry"
 version = "0.1.0"
 dependencies = [
  "async-trait",
  "chrono",
  "futures",
- "openjarvis-core",
- "openjarvis-engine",
+ "openeidon-core",
+ "openeidon-engine",
  "parking_lot",
  "rusqlite",
  "serde",
@@ -1434,25 +1434,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-templates"
+name = "openeidon-templates"
 version = "0.1.0"
 dependencies = [
- "openjarvis-core",
+ "openeidon-core",
  "serde",
  "serde_json",
  "toml",
 ]
 
 [[package]]
-name = "openjarvis-tools"
+name = "openeidon-tools"
 version = "0.1.0"
 dependencies = [
  "chrono",
  "meval",
  "once_cell",
- "openjarvis-core",
- "openjarvis-engine",
- "openjarvis-security",
+ "openeidon-core",
+ "openeidon-engine",
+ "openeidon-security",
  "parking_lot",
  "regex",
  "reqwest 0.12.28",
@@ -1470,11 +1470,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-traces"
+name = "openeidon-traces"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "openjarvis-core",
+ "openeidon-core",
  "parking_lot",
  "rusqlite",
  "serde",
@@ -1485,10 +1485,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "openjarvis-workflow"
+name = "openeidon-workflow"
 version = "0.1.0"
 dependencies = [
- "openjarvis-core",
+ "openeidon-core",
  "serde",
  "serde_json",
  "toml",

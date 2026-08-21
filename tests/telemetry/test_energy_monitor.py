@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.telemetry.energy_monitor import (
+from openeidon.telemetry.energy_monitor import (
     EnergyMonitor,
     EnergySample,
     EnergyVendor,
@@ -79,19 +79,19 @@ class TestCreateEnergyMonitor:
     def test_returns_none_when_nothing_available(self):
         with (
             patch(
-                "openjarvis.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
+                "openeidon.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_amd.AmdEnergyMonitor.available",
+                "openeidon.telemetry.energy_amd.AmdEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_apple.AppleEnergyMonitor.available",
+                "openeidon.telemetry.energy_apple.AppleEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_rapl.RaplEnergyMonitor.available",
+                "openeidon.telemetry.energy_rapl.RaplEnergyMonitor.available",
                 return_value=False,
             ),
         ):
@@ -102,23 +102,23 @@ class TestCreateEnergyMonitor:
         """When prefer_vendor is set, that vendor is tried first."""
         with (
             patch(
-                "openjarvis.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
+                "openeidon.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_amd.AmdEnergyMonitor.available",
+                "openeidon.telemetry.energy_amd.AmdEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_apple.AppleEnergyMonitor.available",
+                "openeidon.telemetry.energy_apple.AppleEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_rapl.RaplEnergyMonitor.available",
+                "openeidon.telemetry.energy_rapl.RaplEnergyMonitor.available",
                 return_value=True,
             ),
             patch(
-                "openjarvis.telemetry.energy_rapl.RaplEnergyMonitor.__init__",
+                "openeidon.telemetry.energy_rapl.RaplEnergyMonitor.__init__",
                 return_value=None,
             ) as mock_init,
         ):
@@ -140,23 +140,23 @@ class TestCreateEnergyMonitor:
 
         with (
             patch(
-                "openjarvis.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
+                "openeidon.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
                 side_effect=nvidia_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_amd.AmdEnergyMonitor.available",
+                "openeidon.telemetry.energy_amd.AmdEnergyMonitor.available",
                 side_effect=amd_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_apple.AppleEnergyMonitor.available",
+                "openeidon.telemetry.energy_apple.AppleEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_rapl.RaplEnergyMonitor.available",
+                "openeidon.telemetry.energy_rapl.RaplEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_nvidia.NvidiaEnergyMonitor.__init__",
+                "openeidon.telemetry.energy_nvidia.NvidiaEnergyMonitor.__init__",
                 return_value=None,
             ),
         ):
@@ -178,23 +178,23 @@ class TestCreateEnergyMonitor:
 
         with (
             patch(
-                "openjarvis.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
+                "openeidon.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
                 side_effect=nvidia_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_amd.AmdEnergyMonitor.available",
+                "openeidon.telemetry.energy_amd.AmdEnergyMonitor.available",
                 side_effect=amd_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_apple.AppleEnergyMonitor.available",
+                "openeidon.telemetry.energy_apple.AppleEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_rapl.RaplEnergyMonitor.available",
+                "openeidon.telemetry.energy_rapl.RaplEnergyMonitor.available",
                 return_value=False,
             ),
             patch(
-                "openjarvis.telemetry.energy_amd.AmdEnergyMonitor.__init__",
+                "openeidon.telemetry.energy_amd.AmdEnergyMonitor.__init__",
                 return_value=None,
             ),
         ):
@@ -223,19 +223,19 @@ class TestCreateEnergyMonitor:
 
         with (
             patch(
-                "openjarvis.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
+                "openeidon.telemetry.energy_nvidia.NvidiaEnergyMonitor.available",
                 side_effect=nvidia_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_amd.AmdEnergyMonitor.available",
+                "openeidon.telemetry.energy_amd.AmdEnergyMonitor.available",
                 side_effect=amd_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_apple.AppleEnergyMonitor.available",
+                "openeidon.telemetry.energy_apple.AppleEnergyMonitor.available",
                 side_effect=apple_available,
             ),
             patch(
-                "openjarvis.telemetry.energy_rapl.RaplEnergyMonitor.available",
+                "openeidon.telemetry.energy_rapl.RaplEnergyMonitor.available",
                 side_effect=rapl_available,
             ),
         ):

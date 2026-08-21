@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 
 def test_exchange_google_token_calls_endpoint() -> None:
-    from openjarvis.connectors.oauth import exchange_google_token
+    from openeidon.connectors.oauth import exchange_google_token
 
     mock_resp = MagicMock()
     mock_resp.json.return_value = {
@@ -31,12 +31,12 @@ def test_exchange_google_token_calls_endpoint() -> None:
 
 
 def test_gdrive_handle_callback_triggers_oauth(tmp_path: Path) -> None:
-    from openjarvis.connectors.gdrive import GDriveConnector
+    from openeidon.connectors.gdrive import GDriveConnector
 
     creds = str(tmp_path / "gdrive.json")
     conn = GDriveConnector(credentials_path=creds)
 
-    with patch("openjarvis.connectors.gdrive.run_oauth_flow") as mock_flow:
+    with patch("openeidon.connectors.gdrive.run_oauth_flow") as mock_flow:
         mock_flow.return_value = {"access_token": "ya29.test"}
         conn.handle_callback("test-id.apps.googleusercontent.com:test-secret")
 
@@ -46,8 +46,8 @@ def test_gdrive_handle_callback_triggers_oauth(tmp_path: Path) -> None:
 
 
 def test_gdrive_is_connected_requires_access_token(tmp_path: Path) -> None:
-    from openjarvis.connectors.gdrive import GDriveConnector
-    from openjarvis.connectors.oauth import save_tokens
+    from openeidon.connectors.gdrive import GDriveConnector
+    from openeidon.connectors.oauth import save_tokens
 
     creds = str(tmp_path / "gdrive.json")
     conn = GDriveConnector(credentials_path=creds)
@@ -62,12 +62,12 @@ def test_gdrive_is_connected_requires_access_token(tmp_path: Path) -> None:
 
 
 def test_gcalendar_handle_callback_triggers_oauth(tmp_path: Path) -> None:
-    from openjarvis.connectors.gcalendar import GCalendarConnector
+    from openeidon.connectors.gcalendar import GCalendarConnector
 
     creds = str(tmp_path / "gcalendar.json")
     conn = GCalendarConnector(credentials_path=creds)
 
-    with patch("openjarvis.connectors.gcalendar.run_oauth_flow") as mock_flow:
+    with patch("openeidon.connectors.gcalendar.run_oauth_flow") as mock_flow:
         mock_flow.return_value = {"access_token": "ya29.test"}
         conn.handle_callback("test-id.apps.googleusercontent.com:test-secret")
 
@@ -75,12 +75,12 @@ def test_gcalendar_handle_callback_triggers_oauth(tmp_path: Path) -> None:
 
 
 def test_gcontacts_handle_callback_triggers_oauth(tmp_path: Path) -> None:
-    from openjarvis.connectors.gcontacts import GContactsConnector
+    from openeidon.connectors.gcontacts import GContactsConnector
 
     creds = str(tmp_path / "gcontacts.json")
     conn = GContactsConnector(credentials_path=creds)
 
-    with patch("openjarvis.connectors.gcontacts.run_oauth_flow") as mock_flow:
+    with patch("openeidon.connectors.gcontacts.run_oauth_flow") as mock_flow:
         mock_flow.return_value = {"access_token": "ya29.test"}
         conn.handle_callback("test-id.apps.googleusercontent.com:test-secret")
 
@@ -88,13 +88,13 @@ def test_gcontacts_handle_callback_triggers_oauth(tmp_path: Path) -> None:
 
 
 def test_gdrive_handle_callback_fallback_on_failure(tmp_path: Path) -> None:
-    from openjarvis.connectors.gdrive import GDriveConnector
-    from openjarvis.connectors.oauth import load_tokens
+    from openeidon.connectors.gdrive import GDriveConnector
+    from openeidon.connectors.oauth import load_tokens
 
     creds = str(tmp_path / "gdrive.json")
     conn = GDriveConnector(credentials_path=creds)
 
-    with patch("openjarvis.connectors.gdrive.run_oauth_flow") as mock_flow:
+    with patch("openeidon.connectors.gdrive.run_oauth_flow") as mock_flow:
         mock_flow.side_effect = RuntimeError("OAuth failed")
         conn.handle_callback("test-id.apps.googleusercontent.com:test-secret")
 
@@ -106,8 +106,8 @@ def test_gdrive_handle_callback_fallback_on_failure(tmp_path: Path) -> None:
 
 
 def test_gdrive_handle_callback_raw_token(tmp_path: Path) -> None:
-    from openjarvis.connectors.gdrive import GDriveConnector
-    from openjarvis.connectors.oauth import load_tokens
+    from openeidon.connectors.gdrive import GDriveConnector
+    from openeidon.connectors.oauth import load_tokens
 
     creds = str(tmp_path / "gdrive.json")
     conn = GDriveConnector(credentials_path=creds)
@@ -122,7 +122,7 @@ def test_gdrive_handle_callback_raw_token(tmp_path: Path) -> None:
 def test_gdrive_auth_url_returns_credentials_page_without_client_id(
     tmp_path: Path,
 ) -> None:
-    from openjarvis.connectors.gdrive import GDriveConnector
+    from openeidon.connectors.gdrive import GDriveConnector
 
     creds = str(tmp_path / "gdrive.json")
     conn = GDriveConnector(credentials_path=creds)
@@ -134,8 +134,8 @@ def test_gdrive_auth_url_returns_credentials_page_without_client_id(
 def test_gdrive_auth_url_returns_consent_url_with_client_id(
     tmp_path: Path,
 ) -> None:
-    from openjarvis.connectors.gdrive import GDriveConnector
-    from openjarvis.connectors.oauth import save_tokens
+    from openeidon.connectors.gdrive import GDriveConnector
+    from openeidon.connectors.oauth import save_tokens
 
     creds = str(tmp_path / "gdrive.json")
     conn = GDriveConnector(credentials_path=creds)

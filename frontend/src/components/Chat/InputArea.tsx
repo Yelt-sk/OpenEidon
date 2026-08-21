@@ -605,7 +605,7 @@ export function InputArea({ mode = 'chat' }: { mode?: 'chat' | 'cmd' | 'voice' |
                     break;
                   }
                   case 'list_files': {
-                    const dir = action.path || 'D:\\projects\\jarvis';
+                    const dir = action.path || 'D:\\projects\\eidon';
                     appendActivity(`Listing: ${dir}`);
                     const listResult = await listFiles(dir);
                     const lines = listResult.entries.map(e =>

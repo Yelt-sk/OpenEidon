@@ -7,13 +7,13 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.connectors._stubs import Document
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.connectors._stubs import Document
+from openeidon.core.registry import ConnectorRegistry
 
 
 def test_news_rss_registered():
     """NewsRSSConnector is discoverable via ConnectorRegistry."""
-    from openjarvis.connectors.news_rss import NewsRSSConnector
+    from openeidon.connectors.news_rss import NewsRSSConnector
 
     ConnectorRegistry.register_value("news_rss", NewsRSSConnector)
     assert ConnectorRegistry.contains("news_rss")
@@ -68,7 +68,7 @@ def connector(tmp_path):
     """NewsRSSConnector with fake config file."""
     import json
 
-    from openjarvis.connectors.news_rss import NewsRSSConnector
+    from openeidon.connectors.news_rss import NewsRSSConnector
 
     config_path = tmp_path / "news_rss.json"
     config_path.write_text(
@@ -89,14 +89,14 @@ def test_is_connected(connector):
 
 
 def test_is_connected_no_file(tmp_path):
-    from openjarvis.connectors.news_rss import NewsRSSConnector
+    from openeidon.connectors.news_rss import NewsRSSConnector
 
     c = NewsRSSConnector(config_path=str(tmp_path / "missing.json"))
     assert c.is_connected() is False
 
 
 def test_is_connected_empty_feeds(tmp_path):
-    from openjarvis.connectors.news_rss import NewsRSSConnector
+    from openeidon.connectors.news_rss import NewsRSSConnector
 
     config_path = tmp_path / "news_rss.json"
     config_path.write_text('{"feeds": []}', encoding="utf-8")
@@ -107,7 +107,7 @@ def test_is_connected_empty_feeds(tmp_path):
 def test_sync_rss_feed(connector):
     """Sync parses RSS XML and returns Documents."""
     with patch(
-        "openjarvis.connectors.news_rss._fetch_feed",
+        "openeidon.connectors.news_rss._fetch_feed",
         return_value=_SAMPLE_RSS,
     ):
         docs = list(connector.sync())
@@ -128,7 +128,7 @@ def test_sync_atom_feed(tmp_path):
     """Sync parses Atom XML and returns Documents."""
     import json
 
-    from openjarvis.connectors.news_rss import NewsRSSConnector
+    from openeidon.connectors.news_rss import NewsRSSConnector
 
     config_path = tmp_path / "news_rss.json"
     config_path.write_text(
@@ -144,7 +144,7 @@ def test_sync_atom_feed(tmp_path):
     c = NewsRSSConnector(config_path=str(config_path))
 
     with patch(
-        "openjarvis.connectors.news_rss._fetch_feed",
+        "openeidon.connectors.news_rss._fetch_feed",
         return_value=_SAMPLE_ATOM,
     ):
         docs = list(c.sync())
@@ -157,7 +157,7 @@ def test_sync_atom_feed(tmp_path):
 def test_sync_filters_by_since(connector):
     """Items older than `since` are excluded when date is parseable."""
     with patch(
-        "openjarvis.connectors.news_rss._fetch_feed",
+        "openeidon.connectors.news_rss._fetch_feed",
         return_value=_SAMPLE_RSS,
     ):
         # Only items after April 1 12:00 should come through

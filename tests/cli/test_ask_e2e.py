@@ -1,4 +1,4 @@
-"""End-to-end tests for ``jarvis ask``."""
+"""End-to-end tests for ``eidon ask``."""
 
 from __future__ import annotations
 
@@ -9,11 +9,11 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
-from openjarvis.core.config import JarvisConfig
+from openeidon.cli import cli
+from openeidon.core.config import EidonConfig
 
 # Import the actual module (not the Click command attribute)
-_ask_mod = importlib.import_module("openjarvis.cli.ask")
+_ask_mod = importlib.import_module("openeidon.cli.ask")
 
 
 def _mock_engine_response():
@@ -32,7 +32,7 @@ def _mock_engine_response():
 
 def _patch_ask(monkeypatch, tmp_path, *, engine_result=None, no_engine=False):
     """Set up common mocks for ask tests."""
-    cfg = JarvisConfig()
+    cfg = EidonConfig()
     cfg.telemetry.db_path = str(tmp_path / "telemetry.db")
 
     monkeypatch.setattr(_ask_mod, "load_config", lambda: cfg)

@@ -10,7 +10,7 @@ class TestOrchestratorSkillAutoOptimize:
     def test_auto_optimize_disabled_by_default_does_not_call_skill_optimizer(
         self, tmp_path: Path
     ) -> None:
-        from openjarvis.learning.learning_orchestrator import (
+        from openeidon.learning.learning_orchestrator import (
             LearningOrchestrator,
         )
 
@@ -23,13 +23,13 @@ class TestOrchestratorSkillAutoOptimize:
         )
 
         with patch(
-            "openjarvis.learning.agents.skill_optimizer.SkillOptimizer.optimize"
+            "openeidon.learning.agents.skill_optimizer.SkillOptimizer.optimize"
         ) as mock_optimize:
             orchestrator._maybe_optimize_skills(auto_optimize=False)
             mock_optimize.assert_not_called()
 
     def test_auto_optimize_enabled_calls_skill_optimizer(self, tmp_path: Path) -> None:
-        from openjarvis.learning.learning_orchestrator import (
+        from openeidon.learning.learning_orchestrator import (
             LearningOrchestrator,
         )
 
@@ -42,7 +42,7 @@ class TestOrchestratorSkillAutoOptimize:
         )
 
         with patch(
-            "openjarvis.learning.agents.skill_optimizer.SkillOptimizer.optimize",
+            "openeidon.learning.agents.skill_optimizer.SkillOptimizer.optimize",
             return_value={},
         ) as mock_optimize:
             orchestrator._maybe_optimize_skills(
@@ -64,13 +64,13 @@ class TestOrchestratorRunSkillTrigger:
         return store
 
     def _make_config(self, *, auto_optimize: bool):
-        from openjarvis.core.config import (
-            JarvisConfig,
+        from openeidon.core.config import (
+            EidonConfig,
             LearningConfig,
             SkillsLearningConfig,
         )
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         cfg.learning = LearningConfig()
         cfg.learning.skills = SkillsLearningConfig(
             auto_optimize=auto_optimize,
@@ -82,7 +82,7 @@ class TestOrchestratorRunSkillTrigger:
     def test_run_does_not_call_skill_optimizer_when_disabled(
         self, tmp_path: Path
     ) -> None:
-        from openjarvis.learning.learning_orchestrator import (
+        from openeidon.learning.learning_orchestrator import (
             LearningOrchestrator,
         )
 
@@ -93,11 +93,11 @@ class TestOrchestratorRunSkillTrigger:
         )
 
         with patch(
-            "openjarvis.core.config.load_config",
+            "openeidon.core.config.load_config",
             return_value=self._make_config(auto_optimize=False),
         ):
             with patch(
-                "openjarvis.learning.agents.skill_optimizer.SkillOptimizer.optimize"
+                "openeidon.learning.agents.skill_optimizer.SkillOptimizer.optimize"
             ) as mock_optimize:
                 orchestrator.run()
                 mock_optimize.assert_not_called()
@@ -105,10 +105,10 @@ class TestOrchestratorRunSkillTrigger:
     def test_run_calls_skill_optimizer_when_enabled(
         self, tmp_path: Path
     ) -> None:
-        from openjarvis.learning.agents.skill_optimizer import (
+        from openeidon.learning.agents.skill_optimizer import (
             SkillOptimizationResult,
         )
-        from openjarvis.learning.learning_orchestrator import (
+        from openeidon.learning.learning_orchestrator import (
             LearningOrchestrator,
         )
 
@@ -127,11 +127,11 @@ class TestOrchestratorRunSkillTrigger:
         }
 
         with patch(
-            "openjarvis.core.config.load_config",
+            "openeidon.core.config.load_config",
             return_value=self._make_config(auto_optimize=True),
         ):
             with patch(
-                "openjarvis.learning.agents.skill_optimizer.SkillOptimizer.optimize",
+                "openeidon.learning.agents.skill_optimizer.SkillOptimizer.optimize",
                 return_value=fake_results,
             ) as mock_optimize:
                 result = orchestrator.run()

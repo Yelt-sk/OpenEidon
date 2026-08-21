@@ -5,8 +5,8 @@ from __future__ import annotations
 import sys
 from unittest.mock import MagicMock, patch
 
-from openjarvis.core.registry import ToolRegistry
-from openjarvis.tools.web_search import WebSearchTool
+from openeidon.core.registry import ToolRegistry
+from openeidon.tools.web_search import WebSearchTool
 
 
 class TestWebSearchTool:
@@ -294,7 +294,7 @@ class TestUrlNormalization:
 class TestUrlFetching:
     def _mock_ssrf(self, monkeypatch):
         """Stub out the SSRF check (requires Rust backend)."""
-        import openjarvis.tools.web_search as _ws
+        import openeidon.tools.web_search as _ws
 
         monkeypatch.setattr(_ws, "check_ssrf", lambda url: None)
 
@@ -358,7 +358,7 @@ class TestUrlFetching:
 class TestExecuteWithUrl:
     def _mock_ssrf(self, monkeypatch):
         """Stub out the SSRF check (requires Rust backend)."""
-        import openjarvis.tools.web_search as _ws
+        import openeidon.tools.web_search as _ws
 
         monkeypatch.setattr(_ws, "check_ssrf", lambda url: None)
 
@@ -397,7 +397,7 @@ class TestExecuteWithUrl:
 
     def test_execute_url_ssrf_blocked(self, monkeypatch):
         """SSRF check rejects unsafe URLs before any HTTP request."""
-        import openjarvis.tools.web_search as _ws
+        import openeidon.tools.web_search as _ws
 
         monkeypatch.setattr(
             _ws,

@@ -18,7 +18,7 @@ if (Test-Path $stderr) { Remove-Item $stderr -Force -ErrorAction SilentlyContinu
 Start-Process `
     -FilePath $python `
     -ArgumentList @(
-        "-m", "openjarvis.cli", "serve",
+        "-m", "openeidon.cli", "serve",
         "--host", "127.0.0.1",
         "--port", "8000",
         "--engine", "ollama",

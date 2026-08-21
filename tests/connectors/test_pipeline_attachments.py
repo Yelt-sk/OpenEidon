@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from openjarvis.connectors._stubs import Attachment, Document
-from openjarvis.connectors.attachment_store import AttachmentStore
-from openjarvis.connectors.pipeline import IngestionPipeline
-from openjarvis.connectors.store import KnowledgeStore
+from openeidon.connectors._stubs import Attachment, Document
+from openeidon.connectors.attachment_store import AttachmentStore
+from openeidon.connectors.pipeline import IngestionPipeline
+from openeidon.connectors.store import KnowledgeStore
 
 # ---------------------------------------------------------------------------
 # Helpers

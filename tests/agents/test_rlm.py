@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from openjarvis.agents._stubs import AgentContext
-from openjarvis.agents.rlm import RLMAgent
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.registry import AgentRegistry
-from openjarvis.core.types import ToolResult
-from openjarvis.tools._stubs import BaseTool, ToolSpec
+from openeidon.agents._stubs import AgentContext
+from openeidon.agents.rlm import RLMAgent
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.registry import AgentRegistry
+from openeidon.core.types import ToolResult
+from openeidon.tools._stubs import BaseTool, ToolSpec
 
 # ---------------------------------------------------------------------------
 # Helpers

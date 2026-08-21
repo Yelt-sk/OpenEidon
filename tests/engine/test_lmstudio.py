@@ -6,10 +6,10 @@ import httpx
 import pytest
 import respx
 
-from openjarvis.core.registry import EngineRegistry
-from openjarvis.core.types import Message, Role
-from openjarvis.engine._base import EngineConnectionError
-from openjarvis.engine.openai_compat_engines import LMStudioEngine
+from openeidon.core.registry import EngineRegistry
+from openeidon.core.types import Message, Role
+from openeidon.engine._base import EngineConnectionError
+from openeidon.engine.openai_compat_engines import LMStudioEngine
 
 
 @pytest.fixture()

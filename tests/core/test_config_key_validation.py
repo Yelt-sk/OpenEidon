@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.core.config import validate_config_key
+from openeidon.core.config import validate_config_key
 
 
 class TestValidateConfigKey:

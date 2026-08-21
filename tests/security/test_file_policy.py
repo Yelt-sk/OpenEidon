@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from openjarvis.security.file_policy import filter_sensitive_paths, is_sensitive_file
+from openeidon.security.file_policy import filter_sensitive_paths, is_sensitive_file
 
 
 class TestIsSensitiveFile:

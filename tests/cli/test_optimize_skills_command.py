@@ -1,4 +1,4 @@
-"""Tests for jarvis optimize skills CLI command (Plan 2A)."""
+"""Tests for eidon optimize skills CLI command (Plan 2A)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from openeidon.cli import cli
 
 
 class TestOptimizeSkillsCommand:
@@ -21,15 +21,15 @@ class TestOptimizeSkillsCommand:
                 return []
 
         with patch(
-            "openjarvis.cli.optimize_cmd._get_trace_store",
+            "openeidon.cli.optimize_cmd._get_trace_store",
             return_value=_EmptyStore(),
         ):
             result = CliRunner().invoke(cli, ["optimize", "skills", "--dry-run"])
             assert result.exit_code == 0
 
     def test_optimize_runs_with_mocked_optimizer(self, tmp_path: Path) -> None:
-        from openjarvis.core.types import StepType, Trace, TraceStep
-        from openjarvis.learning.agents.skill_optimizer import (
+        from openeidon.core.types import StepType, Trace, TraceStep
+        from openeidon.learning.agents.skill_optimizer import (
             SkillOptimizationResult,
         )
 
@@ -67,11 +67,11 @@ class TestOptimizeSkillsCommand:
         }
 
         with patch(
-            "openjarvis.cli.optimize_cmd._get_trace_store",
+            "openeidon.cli.optimize_cmd._get_trace_store",
             return_value=_Store(),
         ):
             with patch(
-                "openjarvis.learning.agents.skill_optimizer.SkillOptimizer.optimize",
+                "openeidon.learning.agents.skill_optimizer.SkillOptimizer.optimize",
                 return_value=fake_results,
             ):
                 result = CliRunner().invoke(

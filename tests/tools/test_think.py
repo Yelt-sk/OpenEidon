@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from openjarvis.tools.think import ThinkTool
+from openeidon.tools.think import ThinkTool
 
 
 class TestThinkTool:

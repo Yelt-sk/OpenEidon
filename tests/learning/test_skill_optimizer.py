@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, List
 
-from openjarvis.core.events import EventBus
-from openjarvis.core.types import StepType, Trace, TraceStep
-from openjarvis.skills.manager import SkillManager
+from openeidon.core.events import EventBus
+from openeidon.core.types import StepType, Trace, TraceStep
+from openeidon.skills.manager import SkillManager
 
 
 class _FakeTraceStore:
@@ -52,7 +52,7 @@ def _make_manager_with_skill(name: str, tmp_path: Path) -> SkillManager:
 
 class TestSkillOptimizerBucketing:
     def test_buckets_traces_by_skill_name(self, tmp_path: Path):
-        from openjarvis.learning.agents.skill_optimizer import SkillOptimizer
+        from openeidon.learning.agents.skill_optimizer import SkillOptimizer
 
         traces = [
             _make_skill_trace("research-skill"),
@@ -68,7 +68,7 @@ class TestSkillOptimizerBucketing:
         assert len(buckets["code-skill"]) == 1
 
     def test_skips_traces_without_skill_metadata(self, tmp_path: Path):
-        from openjarvis.learning.agents.skill_optimizer import SkillOptimizer
+        from openeidon.learning.agents.skill_optimizer import SkillOptimizer
 
         # A trace with no skill metadata in the tool call
         plain_trace = Trace(
@@ -90,7 +90,7 @@ class TestSkillOptimizerBucketing:
 
 class TestSkillOptimizerOptimize:
     def test_skips_skills_below_min_traces(self, tmp_path: Path):
-        from openjarvis.learning.agents.skill_optimizer import SkillOptimizer
+        from openeidon.learning.agents.skill_optimizer import SkillOptimizer
 
         traces = [_make_skill_trace("research-skill") for _ in range(3)]
         store = _FakeTraceStore(traces)
@@ -106,7 +106,7 @@ class TestSkillOptimizerOptimize:
     def test_optimizes_skill_with_enough_traces(
         self, tmp_path: Path, monkeypatch: Any
     ) -> None:
-        from openjarvis.learning.agents.skill_optimizer import (
+        from openeidon.learning.agents.skill_optimizer import (
             SkillOptimizer,
             _OptimizerOutput,
         )

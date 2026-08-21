@@ -5,9 +5,9 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from openjarvis.core.events import EventBus, EventType
-from openjarvis.core.types import StepType, Trace, TraceStep
-from openjarvis.traces.store import TraceStore
+from openeidon.core.events import EventBus, EventType
+from openeidon.core.types import StepType, Trace, TraceStep
+from openeidon.traces.store import TraceStore
 
 
 def _make_trace(

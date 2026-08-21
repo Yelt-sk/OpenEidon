@@ -8,14 +8,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openjarvis.agents._stubs import AgentResult
-from openjarvis.agents.errors import FatalError, RetryableError
-from openjarvis.core.events import EventBus, EventType
+from openeidon.agents._stubs import AgentResult
+from openeidon.agents.errors import FatalError, RetryableError
+from openeidon.core.events import EventBus, EventType
 
 
 @pytest.fixture
 def manager():
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.manager import AgentManager
 
     with tempfile.TemporaryDirectory() as tmpdir:
         mgr = AgentManager(db_path=str(Path(tmpdir) / "agents.db"))
@@ -30,7 +30,7 @@ def event_bus():
 
 @pytest.fixture
 def executor(manager, event_bus):
-    from openjarvis.agents.executor import AgentExecutor
+    from openeidon.agents.executor import AgentExecutor
 
     mock_system = MagicMock()
     ex = AgentExecutor(manager=manager, event_bus=event_bus)
@@ -110,7 +110,7 @@ class TestExecutorBasic:
             return AgentResult(content="success")
 
         with patch.object(executor, "_invoke_agent", side_effect=flaky_invoke):
-            with patch("openjarvis.agents.executor.retry_delay", return_value=0):
+            with patch("openeidon.agents.executor.retry_delay", return_value=0):
                 executor.execute_tick(agent["id"])
 
         assert call_count == 3
@@ -122,7 +122,7 @@ class TestExecutorBasic:
         with patch.object(
             executor, "_invoke_agent", side_effect=RetryableError("always fails")
         ):
-            with patch("openjarvis.agents.executor.retry_delay", return_value=0):
+            with patch("openeidon.agents.executor.retry_delay", return_value=0):
                 executor.execute_tick(agent["id"])
 
         assert manager.get_agent(agent["id"])["status"] == "error"
@@ -142,8 +142,8 @@ class TestExecutorBasic:
 
 def test_finalize_tick_reads_agent_result_metadata(tmp_path):
     """_finalize_tick() accumulates cost/tokens from AgentResult.metadata."""
-    from openjarvis.agents.executor import AgentExecutor
-    from openjarvis.agents.manager import AgentManager
+    from openeidon.agents.executor import AgentExecutor
+    from openeidon.agents.manager import AgentManager
 
     mgr = AgentManager(str(tmp_path / "test.db"))
     bus = EventBus()

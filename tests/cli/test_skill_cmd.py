@@ -1,4 +1,4 @@
-"""Tests for the ``jarvis skill`` CLI commands."""
+"""Tests for the ``eidon skill`` CLI commands."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from openjarvis.cli import cli
+from openeidon.cli import cli
 
 
 class TestSkillCmd:
@@ -59,7 +59,7 @@ class TestSkillCmd:
         """)
         )
         with patch(
-            "openjarvis.cli.skill_cmd._get_skill_paths",
+            "openeidon.cli.skill_cmd._get_skill_paths",
             return_value=[tmp_path],
         ):
             result = CliRunner().invoke(cli, ["skill", "list"])
@@ -84,7 +84,7 @@ class TestSkillCmd:
         """)
         )
         with patch(
-            "openjarvis.cli.skill_cmd._get_skill_paths",
+            "openeidon.cli.skill_cmd._get_skill_paths",
             return_value=[tmp_path],
         ):
             result = CliRunner().invoke(cli, ["skill", "info", "info_skill"])
@@ -119,20 +119,20 @@ class TestSkillSourcesCommand:
     def test_sources_lists_configured_sources(self, tmp_path: Path) -> None:
         from unittest.mock import patch
 
-        from openjarvis.core.config import (
-            JarvisConfig,
+        from openeidon.core.config import (
+            EidonConfig,
             SkillsConfig,
             SkillSourceConfig,
         )
 
-        cfg = JarvisConfig()
+        cfg = EidonConfig()
         cfg.skills = SkillsConfig(
             sources=[
                 SkillSourceConfig(source="hermes"),
                 SkillSourceConfig(source="openclaw"),
             ]
         )
-        with patch("openjarvis.cli.skill_cmd.load_config", return_value=cfg):
+        with patch("openeidon.cli.skill_cmd.load_config", return_value=cfg):
             result = CliRunner().invoke(cli, ["skill", "sources"])
             assert result.exit_code == 0
             assert "hermes" in result.output
@@ -153,7 +153,7 @@ class TestSkillDiscoverCommand:
                 return []
 
         with patch(
-            "openjarvis.cli.skill_cmd._get_trace_store",
+            "openeidon.cli.skill_cmd._get_trace_store",
             return_value=_EmptyStore(),
         ):
             result = CliRunner().invoke(cli, ["skill", "discover", "--dry-run"])
@@ -162,7 +162,7 @@ class TestSkillDiscoverCommand:
     def test_discover_writes_when_not_dry_run(self, tmp_path: Path) -> None:
         from unittest.mock import patch
 
-        from openjarvis.core.types import StepType, Trace, TraceStep
+        from openeidon.core.types import StepType, Trace, TraceStep
 
         def _trace():
             return Trace(
@@ -193,11 +193,11 @@ class TestSkillDiscoverCommand:
 
         output_dir = tmp_path / "discovered"
         with patch(
-            "openjarvis.cli.skill_cmd._get_trace_store",
+            "openeidon.cli.skill_cmd._get_trace_store",
             return_value=_Store(),
         ):
             with patch(
-                "openjarvis.cli.skill_cmd._get_discovered_dir",
+                "openeidon.cli.skill_cmd._get_discovered_dir",
                 return_value=output_dir,
             ):
                 result = CliRunner().invoke(
@@ -218,7 +218,7 @@ class TestSkillShowOverlayCommand:
         from unittest.mock import patch
 
         with patch(
-            "openjarvis.cli.skill_cmd._get_overlay_dir",
+            "openeidon.cli.skill_cmd._get_overlay_dir",
             return_value=tmp_path / "no-such",
         ):
             result = CliRunner().invoke(cli, ["skill", "show-overlay", "nonexistent"])
@@ -227,7 +227,7 @@ class TestSkillShowOverlayCommand:
     def test_show_overlay_displays_optimized(self, tmp_path: Path) -> None:
         from unittest.mock import patch
 
-        from openjarvis.skills.overlay import SkillOverlay, write_overlay
+        from openeidon.skills.overlay import SkillOverlay, write_overlay
 
         write_overlay(
             SkillOverlay(
@@ -242,7 +242,7 @@ class TestSkillShowOverlayCommand:
         )
 
         with patch(
-            "openjarvis.cli.skill_cmd._get_overlay_dir",
+            "openeidon.cli.skill_cmd._get_overlay_dir",
             return_value=tmp_path,
         ):
             result = CliRunner().invoke(

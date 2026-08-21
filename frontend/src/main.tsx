@@ -7,7 +7,7 @@ import './index.css';
 
 function applyTheme() {
   try {
-    const raw = localStorage.getItem('openjarvis-settings');
+    const raw = localStorage.getItem('openeidon-settings');
     const settings = raw ? JSON.parse(raw) : {};
     const theme = settings.theme || 'system';
     if (theme === 'dark') {
@@ -31,7 +31,7 @@ async function clearServiceWorkers() {
 }
 
 // Fetch the API base URL from the Tauri backend before rendering.
-// This ensures JARVIS_PORT is defined in one place (the Rust backend).
+// This ensures EIDON_PORT is defined in one place (the Rust backend).
 // In non-Tauri environments this is a no-op.
 Promise.all([initApiBase(), clearServiceWorkers()]).finally(() => {
   createRoot(document.getElementById('root')!).render(

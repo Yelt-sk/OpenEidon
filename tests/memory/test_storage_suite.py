@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from openjarvis.core.registry import MemoryRegistry
-from openjarvis.tools.storage.sqlite import SQLiteMemory
+from openeidon.core.registry import MemoryRegistry
+from openeidon.tools.storage.sqlite import SQLiteMemory
 
 # ---------------------------------------------------------------------------
 # Backend factory helpers
@@ -20,7 +20,7 @@ def _make_sqlite(tmp_path):
 
 def _make_bm25():
     bm25_mod = pytest.importorskip(
-        "openjarvis.tools.storage.bm25",
+        "openeidon.tools.storage.bm25",
         exc_type=ImportError,
     )
     BM25Memory = bm25_mod.BM25Memory
@@ -37,19 +37,19 @@ def _make_backend(key, tmp_path):
         return _make_bm25()
     elif key == "faiss":
         mod = pytest.importorskip(
-            "openjarvis.tools.storage.faiss_backend",
+            "openeidon.tools.storage.faiss_backend",
             exc_type=ImportError,
         )
         return mod.FAISSMemory(db_path=str(tmp_path / "faiss"))
     elif key == "colbert":
         mod = pytest.importorskip(
-            "openjarvis.tools.storage.colbert_backend",
+            "openeidon.tools.storage.colbert_backend",
             exc_type=ImportError,
         )
         return mod.ColBERTMemory(db_path=str(tmp_path / "colbert"))
     elif key == "hybrid":
         mod = pytest.importorskip(
-            "openjarvis.tools.storage.hybrid",
+            "openeidon.tools.storage.hybrid",
             exc_type=ImportError,
         )
         sqlite = _make_sqlite(tmp_path)

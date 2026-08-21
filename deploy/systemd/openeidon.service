@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenEidon API Server
+After=network.target
+
+[Service]
+Type=simple
+User=openeidon
+WorkingDirectory=/opt/openeidon
+ExecStart=/opt/openeidon/.venv/bin/eidon serve --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=5
+Environment=HOME=/opt/openeidon
+
+[Install]
+WantedBy=multi-user.target

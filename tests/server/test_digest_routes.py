@@ -6,9 +6,9 @@ from datetime import datetime, timezone
 
 import pytest
 
-pytest.importorskip("fastapi", reason="openjarvis[server] not installed")
+pytest.importorskip("fastapi", reason="openeidon[server] not installed")
 
-from openjarvis.agents.digest_store import DigestArtifact, DigestStore
+from openeidon.agents.digest_store import DigestArtifact, DigestStore
 
 
 @pytest.fixture()
@@ -23,7 +23,7 @@ def store(tmp_path):
             sources_used=["gmail"],
             generated_at=datetime.now(timezone.utc),
             model_used="test",
-            voice_used="jarvis",
+            voice_used="eidon",
         )
     )
     # Write fake audio file
@@ -38,8 +38,8 @@ def _make_app(db_path: str):
 
     from fastapi import FastAPI
 
-    from openjarvis.agents.digest_store import DigestStore
-    from openjarvis.server.digest_routes import create_digest_router
+    from openeidon.agents.digest_store import DigestStore
+    from openeidon.server.digest_routes import create_digest_router
 
     # Patch get_today to fall back to get_latest — avoids timezone issues in CI
     original_get_today = DigestStore.get_today
@@ -82,7 +82,7 @@ def test_get_digest_404(tmp_path):
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
 
-    from openjarvis.server.digest_routes import create_digest_router
+    from openeidon.server.digest_routes import create_digest_router
 
     app = FastAPI()
     app.include_router(create_digest_router(db_path=str(tmp_path / "empty.db")))
@@ -101,4 +101,4 @@ def test_get_history(store, tmp_path):
     assert resp.status_code == 200
     data = resp.json()
     assert len(data) == 1
-    assert data[0]["voice_used"] == "jarvis"
+    assert data[0]["voice_used"] == "eidon"

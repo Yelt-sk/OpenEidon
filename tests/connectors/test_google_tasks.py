@@ -7,11 +7,11 @@ from unittest.mock import patch
 
 import pytest
 
-from openjarvis.core.registry import ConnectorRegistry
+from openeidon.core.registry import ConnectorRegistry
 
 
 def test_google_tasks_registered():
-    from openjarvis.connectors.google_tasks import GoogleTasksConnector
+    from openeidon.connectors.google_tasks import GoogleTasksConnector
 
     ConnectorRegistry.register_value("google_tasks", GoogleTasksConnector)
     assert ConnectorRegistry.contains("google_tasks")
@@ -50,7 +50,7 @@ _TASKS_RESPONSE = {
 
 @pytest.fixture()
 def connector(tmp_path):
-    from openjarvis.connectors.google_tasks import GoogleTasksConnector
+    from openeidon.connectors.google_tasks import GoogleTasksConnector
 
     creds = tmp_path / "google_tasks.json"
     creds.write_text('{"token": "fake-token"}', encoding="utf-8")
@@ -59,7 +59,7 @@ def connector(tmp_path):
 
 def test_sync_yields_tasks(connector):
     with patch(
-        "openjarvis.connectors.google_tasks._tasks_api_get",
+        "openeidon.connectors.google_tasks._tasks_api_get",
         side_effect=[_TASK_LISTS_RESPONSE, _TASKS_RESPONSE],
     ):
         docs = list(connector.sync(since=datetime(2026, 3, 31)))

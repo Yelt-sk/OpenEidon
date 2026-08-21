@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.agents._stubs import BaseAgent
-from openjarvis.agents.openhands import OpenHandsAgent
-from openjarvis.core.registry import AgentRegistry
+from openeidon.agents._stubs import BaseAgent
+from openeidon.agents.openhands import OpenHandsAgent
+from openeidon.core.registry import AgentRegistry
 
 
 class TestOpenHandsAgentRegistration:

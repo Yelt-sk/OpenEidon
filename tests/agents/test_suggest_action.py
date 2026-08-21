@@ -1,6 +1,6 @@
 """Tests for suggest_action helper."""
 
-from openjarvis.agents.errors import FatalError, RetryableError, suggest_action
+from openeidon.agents.errors import FatalError, RetryableError, suggest_action
 
 
 def test_suggest_action_rate_limit():

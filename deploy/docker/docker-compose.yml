@@ -1,12 +1,12 @@
 services:
-  jarvis:
+  eidon:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - OPENJARVIS_ENGINE_DEFAULT=ollama
+      - OPENEIDON_ENGINE_DEFAULT=ollama
       - OLLAMA_HOST=http://ollama:11434
     depends_on:
       ollama:

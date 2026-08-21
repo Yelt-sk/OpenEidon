@@ -57,7 +57,7 @@ site/
 # Frontend
 frontend/node_modules/
 frontend/dist/
-src/openjarvis/server/static/
+src/openeidon/server/static/
 
 # Desktop (Tauri)
 desktop/node_modules/
@@ -75,8 +75,6 @@ docs/plans/
 docs/superpowers/
 .superpowers/
 
-# Claude Code project instructions (per-developer)
-CLAUDE.md
 .claude/
 
 # Tauri auto-generated schemas
@@ -89,7 +87,7 @@ CLAUDE.md
 # Research output
 research_mining_*
 .python-version
-src/openjarvis/channels/whatsapp_baileys_bridge/node_modules/
+src/openeidon/channels/whatsapp_baileys_bridge/node_modules/
 
 # SQLite in-memory artifacts
 :memory:
@@ -104,9 +102,9 @@ node_modules/
 *.tsbuildinfo
 
 # Personal user data
-.jarvis-reminders.json
-.jarvis-checkin.json
-.jarvis-file-roots.json
+.eidon-reminders.json
+.eidon-checkin.json
+.eidon-file-roots.json
 
 # Playwright browser binaries
 .playwright-browsers/

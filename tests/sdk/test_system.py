@@ -6,20 +6,20 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from openjarvis.core.config import JarvisConfig
-from openjarvis.core.events import EventBus
-from openjarvis.system import JarvisSystem, SystemBuilder
+from openeidon.core.config import EidonConfig
+from openeidon.core.events import EventBus
+from openeidon.system import EidonSystem, SystemBuilder
 
 
-class TestJarvisSystem:
+class TestEidonSystem:
     def test_ask_direct_mode(self):
         engine = MagicMock()
         engine.generate.return_value = {
             "content": "Hello!",
             "usage": {"prompt_tokens": 5, "completion_tokens": 3},
         }
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -36,8 +36,8 @@ class TestJarvisSystem:
             "content": "OK",
             "usage": {"prompt_tokens": 10, "completion_tokens": 5},
         }
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -53,8 +53,8 @@ class TestJarvisSystem:
             "content": "Direct response",
             "usage": {},
         }
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -72,8 +72,8 @@ class TestJarvisSystem:
             "content": "Direct response",
             "usage": {},
         }
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -85,8 +85,8 @@ class TestJarvisSystem:
 
     def test_ask_with_agent_override(self):
         """Passing agent= param should use that agent even if system has a default."""
-        from openjarvis.agents._stubs import AgentResult
-        from openjarvis.core.registry import AgentRegistry
+        from openeidon.agents._stubs import AgentResult
+        from openeidon.core.registry import AgentRegistry
 
         class TestAgent:
             agent_id = "test-system-agent"
@@ -102,8 +102,8 @@ class TestJarvisSystem:
             AgentRegistry.register_value("test-system-agent", TestAgent)
 
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -116,8 +116,8 @@ class TestJarvisSystem:
     def test_ask_unknown_agent(self):
         """Unknown agent should return an error dict."""
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -130,8 +130,8 @@ class TestJarvisSystem:
     def test_ask_passes_temperature_and_max_tokens(self):
         engine = MagicMock()
         engine.generate.return_value = {"content": "OK", "usage": {}}
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -144,8 +144,8 @@ class TestJarvisSystem:
 
     def test_close(self):
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -156,8 +156,8 @@ class TestJarvisSystem:
     def test_close_with_telemetry(self):
         engine = MagicMock()
         telem = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -170,8 +170,8 @@ class TestJarvisSystem:
     def test_close_with_trace_store(self):
         engine = MagicMock()
         trace = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -183,8 +183,8 @@ class TestJarvisSystem:
 
     def test_build_tools_empty(self):
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -195,8 +195,8 @@ class TestJarvisSystem:
 
     def test_build_tools_unknown_tool(self):
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -208,61 +208,61 @@ class TestJarvisSystem:
 
 class TestSystemBuilder:
     def test_builder_fluent_api(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         result = builder.engine("ollama").model("test").agent("simple")
         assert result is builder  # fluent
 
     def test_builder_stores_config(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         assert builder._config is config
 
     def test_builder_engine_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         builder.engine("vllm")
         assert builder._engine_key == "vllm"
 
     def test_builder_model_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         builder.model("my-model")
         assert builder._model == "my-model"
 
     def test_builder_agent_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         builder.agent("orchestrator")
         assert builder._agent_name == "orchestrator"
 
     def test_builder_tools_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         builder.tools(["calculator", "think"])
         assert builder._tool_names == ["calculator", "think"]
 
     def test_builder_telemetry_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         builder.telemetry(False)
         assert builder._telemetry is False
 
     def test_builder_traces_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         builder.traces(True)
         assert builder._traces is True
 
     def test_builder_event_bus_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         bus = EventBus()
         builder.event_bus(bus)
         assert builder._bus is bus
 
     def test_builder_chaining(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = (
             SystemBuilder(config)
             .engine("ollama")
@@ -280,41 +280,41 @@ class TestSystemBuilder:
         assert builder._traces is False
 
     def test_import_works(self):
-        from openjarvis.system import JarvisSystem, SystemBuilder
+        from openeidon.system import EidonSystem, SystemBuilder
 
-        assert JarvisSystem is not None
+        assert EidonSystem is not None
         assert SystemBuilder is not None
 
     def test_builder_default_config(self):
         """SystemBuilder with no config should load defaults."""
         builder = SystemBuilder()
         assert builder._config is not None
-        assert isinstance(builder._config, JarvisConfig)
+        assert isinstance(builder._config, EidonConfig)
 
     def test_builder_build_raises_without_engine(self):
         """build() should raise RuntimeError when no engine is available."""
-        config = JarvisConfig()
+        config = EidonConfig()
         # Use a nonsense engine key to ensure no engine is found
         builder = SystemBuilder(config).engine("nonexistent_engine_xyz_123")
         with pytest.raises(RuntimeError, match="No inference engine"):
             builder.build()
 
     def test_builder_sandbox_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         result = builder.sandbox(True)
         assert result is builder  # fluent
         assert builder._sandbox is True
 
     def test_builder_scheduler_setter(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = SystemBuilder(config)
         result = builder.scheduler(True)
         assert result is builder  # fluent
         assert builder._scheduler is True
 
     def test_builder_sandbox_scheduler_chaining(self):
-        config = JarvisConfig()
+        config = EidonConfig()
         builder = (
             SystemBuilder(config)
             .engine("ollama")
@@ -327,12 +327,12 @@ class TestSystemBuilder:
         assert builder._engine_key == "ollama"
 
 
-class TestJarvisSystemClose:
+class TestEidonSystemClose:
     def test_close_with_scheduler_store(self):
         engine = MagicMock()
         sched_store = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -345,8 +345,8 @@ class TestJarvisSystemClose:
     def test_close_with_scheduler(self):
         engine = MagicMock()
         scheduler = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -359,8 +359,8 @@ class TestJarvisSystemClose:
     def test_close_with_memory_backend(self):
         engine = MagicMock()
         mem = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -373,8 +373,8 @@ class TestJarvisSystemClose:
     def test_close_with_session_store(self):
         engine = MagicMock()
         sess = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -387,8 +387,8 @@ class TestJarvisSystemClose:
     def test_close_with_workflow_engine(self):
         engine = MagicMock()
         wf = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -400,8 +400,8 @@ class TestJarvisSystemClose:
 
     def test_system_fields_default_none(self):
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -414,8 +414,8 @@ class TestJarvisSystemClose:
     def test_close_with_agent_scheduler(self):
         engine = MagicMock()
         agent_scheduler = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",
@@ -427,8 +427,8 @@ class TestJarvisSystemClose:
 
     def test_system_agent_fields_default_none(self):
         engine = MagicMock()
-        system = JarvisSystem(
-            config=JarvisConfig(),
+        system = EidonSystem(
+            config=EidonConfig(),
             bus=EventBus(),
             engine=engine,
             engine_key="mock",

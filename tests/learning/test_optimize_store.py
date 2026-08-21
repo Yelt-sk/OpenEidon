@@ -1,9 +1,9 @@
-"""Tests for openjarvis.optimize.store module."""
+"""Tests for openeidon.optimize.store module."""
 
 from __future__ import annotations
 
-from openjarvis.optimize.store import OptimizationStore
-from openjarvis.optimize.types import (
+from openeidon.optimize.store import OptimizationStore
+from openeidon.optimize.types import (
     OptimizationRun,
     SampleScore,
     SearchDimension,
