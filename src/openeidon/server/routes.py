@@ -74,6 +74,13 @@ class IntentClassifyRequest(BaseModel):
     query: str
 
 
+def _default_model(request: Request) -> str:
+    """Model for internal helper calls: configured default, else the server's."""
+    config = getattr(request.app.state, "config", None)
+    configured = getattr(getattr(config, "intelligence", None), "default_model", "")
+    return configured or getattr(request.app.state, "model", "") or ""
+
+
 def _to_messages(chat_messages) -> list[Message]:
     """Convert Pydantic ChatMessage objects to core Message objects."""
     messages = []
@@ -955,8 +962,7 @@ async def research_youtube(request_body: ResearchYouTubeRequest, request: Reques
             raise HTTPException(status_code=404, detail="No web results found")
 
         engine = request.app.state.engine
-        config = getattr(request.app.state, "config", None)
-        model = getattr(getattr(config, "intelligence", None), "default_model", "") or "qwen3.5:cloud"
+        model = _default_model(request)
         payload = await asyncio.to_thread(_build_youtube_query_with_model, engine, model, query, results)
         youtube_query = str(payload.get("youtube_query", "") or "").strip()
         answer = str(payload.get("answer", "") or "").strip()
@@ -1041,8 +1047,7 @@ async def open_local_app(request_body: LocalAppOpenRequest, request: Request):
 
     try:
         engine = request.app.state.engine
-        config = getattr(request.app.state, "config", None)
-        model = getattr(getattr(config, "intelligence", None), "default_model", "") or "qwen3.5:cloud"
+        model = _default_model(request)
 
         start_menu_apps = await asyncio.to_thread(_discover_start_menu_apps)
         selected = await asyncio.to_thread(
@@ -1084,49 +1089,18 @@ async def open_local_app(request_body: LocalAppOpenRequest, request: Request):
 
 @router.post("/v1/intent/classify")
 async def classify_intent(request_body: IntentClassifyRequest, request: Request):
+    """Classify a desktop command; see openeidon.intelligence.intent."""
     query = request_body.query.strip()
     if not query:
         raise HTTPException(status_code=400, detail="query is required")
 
-    try:
-        engine = request.app.state.engine
-        config = getattr(request.app.state, "config", None)
-        model = getattr(getattr(config, "intelligence", None), "default_model", "") or "qwen3.5:cloud"
+    from openeidon.intelligence.intent import classify_intent as _classify
 
-        response = await asyncio.to_thread(
-            engine.generate,
-            [
-                Message(
-                    role=Role.SYSTEM,
-                    content=(
-                        "You classify a user request into one of four categories and extract the subject. "
-                        'Return only JSON: {"category":"...","subject":"..."}\n'
-                        "Categories:\n"
-                        '- "app" — launch/open/turn on a desktop application (e.g. Spotify, Telegram, VS Code, notepad)\n'
-                        '- "media" — play music, video, or audio content by name/artist (e.g. ACDC, jazz, a song)\n'
-                        '- "system_cmd" — system-level command: volume up/down/mute, brightness, screen off\n'
-                        '- "chat" — conversation, question, task not fitting above\n'
-                        "Examples:\n"
-                        '{"category":"app","subject":"Spotify"} for "включи spotify"\n'
-                        '{"category":"media","subject":"ACDC"} for "включи acdc"\n'
-                        '{"category":"system_cmd","subject":"volume down"} for "включи тихо"\n'
-                        '{"category":"chat","subject":""} for "расскажи про медведей"'
-                    ),
-                ),
-                Message(role=Role.USER, content=query),
-            ],
-            model=model,
-            temperature=0,
-            max_tokens=40,
-        )
-        result = _extract_json_object(response.get("content", ""))
-        category = str(result.get("category", "chat")).strip()
-        subject = str(result.get("subject", "")).strip()
-        if category not in ("app", "media", "system_cmd", "chat"):
-            category = "chat"
-        return {"category": category, "subject": subject}
-    except Exception:
-        return {"category": "chat", "subject": ""}
+    engine = getattr(request.app.state, "engine", None)
+    intent = await asyncio.to_thread(
+        _classify, engine, query, model=_default_model(request)
+    )
+    return intent.to_dict()
 
 
 class SetReminderRequest(BaseModel):
