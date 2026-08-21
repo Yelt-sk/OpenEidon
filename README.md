@@ -110,6 +110,8 @@ uv run eidon chat
 ### Agentic and Workflow-Oriented
 
 - built-in agents for orchestration, research, monitoring, and chat
+- AGENT mode delegates coding tasks to [OpenCode](https://opencode.ai) inside
+  approved project directories, with permission prompts surfaced in the UI
 - tools, memory, and skills as composable building blocks
 - suitable base for productized AI assistants rather than isolated demos
 
@@ -126,8 +128,8 @@ OpenEidon inherits a substantial part of its technical base from OpenJarvis and 
 Core stack in this repository:
 
 - `src/openeidon/` - backend package, agents, engines, tools, learning, memory
-- `frontend/` - web UI
-- `desktop/` and `desktop-mini/` - desktop application surfaces
+- `frontend/` - web UI (the FOX interface)
+- `desktop/` - Tauri desktop shell around the same frontend
 - `rust/` - native extension and performance-critical components
 - `configs/` - presets and configuration assets
 - `docs/` - project documentation and architecture notes
@@ -152,13 +154,13 @@ In practice, that means OpenEidon is intended to feel closer to a distributable 
 
 ```text
 .
-|-- src/            Python backend and core assistant logic
-|-- frontend/       Web client
-|-- desktop/        Desktop application
-|-- desktop-mini/   Lightweight desktop surface
-|-- configs/        Presets and configuration files
-|-- docs/           Documentation and assets
-|-- tests/          Test suite
+|-- src/openeidon/  Python backend: agents, engines, tools, connectors, server
+|-- frontend/       Web UI (React + Vite) — the FOX interface
+|-- desktop/        Tauri shell wrapping the same frontend
+|-- rust/           Native extension (PyO3) and performance-critical crates
+|-- configs/        Presets, personas, configuration files
+|-- docs/           Documentation and architecture notes
+|-- tests/          Test suite (~5700 tests)
 ```
 
 ## License

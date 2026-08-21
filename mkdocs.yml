@@ -158,6 +158,7 @@ nav:
       - Intelligence: architecture/intelligence.md
       - Engine: architecture/engine.md
       - Agents: architecture/agents.md
+      - OpenCode Bridge: architecture/opencode.md
       - Tools & Memory: architecture/memory.md
       - Learning: architecture/learning.md
       - Query Flow: architecture/query-flow.md
