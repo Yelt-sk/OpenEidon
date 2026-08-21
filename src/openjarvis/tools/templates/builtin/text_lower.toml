@@ -1,0 +1,11 @@
+[tool]
+name = "text_lower"
+description = "Convert text to lowercase."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "Text to convert."
+[tool.action]
+type = "transform"
+transform = "lower"

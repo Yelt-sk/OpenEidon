@@ -1,0 +1,25 @@
+[recipe]
+name = "coding_assistant"
+description = "Code generation, review, and debugging with ReAct agent"
+version = "0.1.0"
+
+[intelligence]
+model = "qwen3:8b"
+quantization = "q4_K_M"
+
+[engine]
+key = "ollama"
+
+[agent]
+type = "native_react"
+max_turns = 10
+temperature = 0.3
+tools = ["file_read", "file_write", "code_interpreter", "think", "shell_exec"]
+system_prompt = "You are a coding assistant. Help the user write, review, and debug code. Use the available tools to read files, write code, and execute commands as needed."
+
+[learning]
+routing = "heuristic"
+agent = "none"
+
+[eval]
+suites = ["coding", "reasoning"]

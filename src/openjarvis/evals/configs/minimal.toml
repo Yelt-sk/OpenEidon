@@ -1,0 +1,7 @@
+# Minimal eval config — 1 model, 1 benchmark, all defaults.
+
+[[models]]
+name = "qwen3:8b"
+
+[[benchmarks]]
+name = "supergpqa"

@@ -1,0 +1,11 @@
+[tool]
+name = "json_transform"
+description = "Parse and pretty-print JSON data."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "JSON string to transform."
+[tool.action]
+type = "transform"
+transform = "json_pretty"

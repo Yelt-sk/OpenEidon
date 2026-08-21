@@ -1,0 +1,11 @@
+[tool]
+name = "base64_encode"
+description = "Base64-encode input text."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "Text to encode."
+[tool.action]
+type = "python"
+expression = "str(input)"

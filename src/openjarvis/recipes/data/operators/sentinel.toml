@@ -1,0 +1,14 @@
+[operator]
+name = "sentinel"
+version = "0.1.0"
+description = "Monitoring sentinel agent — watches social media, news, and web sources for changes relevant to user-defined topics and produces scored alerts"
+
+[operator.agent]
+max_turns = 15
+temperature = 0.3
+tools = ["web_search", "http_request", "memory_store", "memory_search", "kg_add_entity", "think"]
+system_prompt_path = "sentinel_prompt.md"
+
+[operator.schedule]
+type = "cron"
+value = "0 */2 * * *"

@@ -1,0 +1,19 @@
+[schedules]
+
+[schedules.daily_digest]
+type = "cron"
+value = "0 9 * * *"
+description = "Morning news and social media digest"
+script = "daily_digest.py"
+
+[schedules.code_review]
+type = "cron"
+value = "0 8 * * 1"
+description = "Weekly code review summary (Monday 8am)"
+script = "code_review.py"
+
+[schedules.gym]
+type = "cron"
+value = "0 6 * * 1,3,5"
+description = "Gym schedule check (MWF 6am)"
+script = "gym_scheduler.py"

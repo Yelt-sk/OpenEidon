@@ -1,0 +1,14 @@
+[tool]
+name = "regex_extract"
+description = "Extract text matching a regex pattern."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "Text to search."
+[tool.parameters.properties.pattern]
+type = "string"
+description = "Regex pattern."
+[tool.action]
+type = "python"
+expression = "str(input)"

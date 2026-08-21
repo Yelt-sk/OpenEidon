@@ -1,0 +1,184 @@
+site_name: OpenJarvis
+site_url: https://open-jarvis.github.io/OpenJarvis/
+site_description: Personal AI, On Personal Devices
+site_author: OpenJarvis Contributors
+repo_url: https://github.com/open-jarvis/OpenJarvis
+repo_name: open-jarvis/OpenJarvis
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; 2026 OpenJarvis Contributors
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  language: en
+  font:
+    text: Georgia
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - stylesheets/extra.css
+  - https://cdn.jsdelivr.net/npm/@docsearch/css@3
+
+plugins:
+  - search:
+      separator: '[\s\-\._]+'
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_category_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            docstring_style: numpy
+            docstring_section_style: spacy
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+            signature_crossrefs: true
+            show_if_no_docstring: false
+            inherited_members: false
+            filters:
+              - "!^_"
+              - "^__init__$"
+              - "^__all__$"
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - docs/includes/abbreviations.md
+      check_paths: false
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_javascript:
+  - javascripts/leaderboard.js
+  - https://cdn.jsdelivr.net/npm/@docsearch/js@3
+  - javascripts/docsearch-init.js
+
+extra:
+  algolia:
+    app_id: ""       # Fill after DocSearch approval
+    api_key: ""      # Search-only key
+    index_name: ""   # e.g. "openjarvis"
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/open-jarvis/OpenJarvis
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - macOS Guide: getting-started/macos.md
+      - Quick Start: getting-started/quickstart.md
+      - Code Snippets: getting-started/snippets.md
+      - Configuration: getting-started/configuration.md
+  - Tutorials:
+      - Overview: tutorials/index.md
+      - Deep Research Assistant: tutorials/deep-research.md
+      - Scheduled Personal Ops: tutorials/scheduled-ops.md
+      - Messaging Hub: tutorials/messaging-hub.md
+      - Code Companion: tutorials/code-companion.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Intelligence: architecture/intelligence.md
+      - Engine: architecture/engine.md
+      - Agents: architecture/agents.md
+      - Tools & Memory: architecture/memory.md
+      - Learning: architecture/learning.md
+      - Query Flow: architecture/query-flow.md
+      - Security: architecture/security.md
+      - Design Principles: architecture/design-principles.md
+  - API Reference: api-reference/
+  - User Guide:
+      - CLI: user-guide/cli.md
+      - Python SDK: user-guide/python-sdk.md
+      - Morning Digest: user-guide/morning-digest.md
+      - Deep Research: user-guide/deep-research.md
+      - Code Assistant: user-guide/code-assistant.md
+      - Scheduled Monitor: user-guide/scheduled-monitor.md
+      - Simple Chat: user-guide/chat-simple.md
+      - Agents: user-guide/agents.md
+      - Channels & Connectors: user-guide/channels-and-connectors.md
+      - Tools: user-guide/tools.md
+      - Memory: user-guide/memory.md
+      - External MCP Servers: user-guide/mcp-external-servers.md
+      - Scheduler: user-guide/scheduler.md
+      - Telemetry: user-guide/telemetry.md
+      - Security: user-guide/security.md
+  - Leaderboard: leaderboard.md
+  - Roadmap: development/roadmap.md

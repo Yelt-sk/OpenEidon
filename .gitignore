@@ -1,0 +1,122 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# uv
+# Note: uv.lock is intentionally tracked — it pins all transitive deps for reproducibility.
+# Uncomment the line below only if you deliberately choose not to commit the lock file.
+# uv.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+
+# Project
+*.sqlite
+*.db
+*.jsonl
+*.npz
+results/
+logs/
+traces/
+coding_task_*
+get-pip.py
+
+# MkDocs build output
+site/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+src/openjarvis/server/static/
+
+# Desktop (Tauri)
+desktop/node_modules/
+desktop/dist/
+desktop/src-tauri/target/
+
+# Worktrees
+.worktrees/
+
+# Rust
+target/
+
+# Claude plan artifacts
+docs/plans/
+docs/superpowers/
+.superpowers/
+
+# Claude Code project instructions (per-developer)
+CLAUDE.md
+.claude/
+
+# Tauri auto-generated schemas
+**/src-tauri/gen/schemas/
+
+# NFS lock artifacts
+.nfs*
+**/.nfs*
+
+# Research output
+research_mining_*
+.python-version
+src/openjarvis/channels/whatsapp_baileys_bridge/node_modules/
+
+# SQLite in-memory artifacts
+:memory:
+MagicMock/
+
+# Second Repos
+Inline/
+scratch/
+
+# Universal deps rule
+node_modules/
+*.tsbuildinfo
+
+# Personal user data
+.jarvis-reminders.json
+.jarvis-checkin.json
+.jarvis-file-roots.json
+
+# Playwright browser binaries
+.playwright-browsers/
+
+# Windows scripts
+*.bat
+
+# Local runtimes
+.uv-python/
+
+# Large binary guard: run logs / scratch audio
+.run-logs/
+*.wav

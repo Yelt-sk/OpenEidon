@@ -1,0 +1,14 @@
+[operator]
+name = "researcher"
+version = "0.1.0"
+description = "Autonomous deep research agent — searches the web, cross-references sources, builds a knowledge graph, and produces structured cited reports"
+
+[operator.agent]
+max_turns = 20
+temperature = 0.3
+tools = ["web_search", "http_request", "memory_store", "memory_search", "kg_add_entity", "kg_add_relation", "think", "file_write"]
+system_prompt_path = "researcher_prompt.md"
+
+[operator.schedule]
+type = "cron"
+value = "0 */4 * * *"

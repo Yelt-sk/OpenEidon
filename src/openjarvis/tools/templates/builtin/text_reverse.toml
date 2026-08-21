@@ -1,0 +1,11 @@
+[tool]
+name = "text_reverse"
+description = "Reverse a text string."
+[tool.parameters]
+type = "object"
+[tool.parameters.properties.input]
+type = "string"
+description = "Text to reverse."
+[tool.action]
+type = "transform"
+transform = "reverse"

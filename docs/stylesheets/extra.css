@@ -1,0 +1,534 @@
+/* ── Fonts ─────────────────────────────────────────────────────────── */
+:root {
+  --md-text-font: Georgia, "Times New Roman", serif;
+  --md-code-font: "JetBrains Mono", "Fira Code", "SF Mono", monospace;
+}
+
+/* ── Color Overrides (Light) ──────────────────────────────────────── */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #2b2b2b;
+  --md-primary-fg-color--light: #444444;
+  --md-primary-fg-color--dark: #1a1a1a;
+  --md-accent-fg-color: #3d5a80;
+  --md-accent-fg-color--transparent: rgba(61, 90, 128, 0.07);
+  --md-default-bg-color: #f8f7f4;
+  --md-default-fg-color: #2b2b2b;
+  --md-default-fg-color--light: #666666;
+  --md-typeset-a-color: #3d5a80;
+  --md-code-bg-color: #f0efeb;
+}
+
+/* ── Color Overrides (Dark) ───────────────────────────────────────── */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #1a1a1a;
+  --md-primary-fg-color--light: #2b2b2b;
+  --md-primary-fg-color--dark: #0f0f0f;
+  --md-accent-fg-color: #8da9c4;
+  --md-accent-fg-color--transparent: rgba(141, 169, 196, 0.1);
+  --md-default-bg-color: #1a1a1a;
+  --md-default-fg-color: #e8e6e1;
+  --md-default-fg-color--light: #999999;
+  --md-typeset-a-color: #8da9c4;
+  --md-code-bg-color: #222222;
+}
+
+/* ── Global Typography ───────────────────────────────────────────── */
+.md-typeset {
+  font-size: 0.92rem;
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+.md-typeset strong {
+  font-weight: 700;
+}
+
+/* Nav and UI chrome use a clean sans-serif */
+.md-header,
+.md-tabs,
+.md-nav,
+.md-footer,
+.md-search__input,
+.md-source {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.md-nav__link,
+.md-tabs__link {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Hero Section (DSPy-style: clean, italic emphasis) ───────────── */
+.md-typeset h1 {
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset h1 em {
+  font-style: italic;
+  color: var(--md-accent-fg-color);
+}
+
+.md-typeset h1 .headerlink {
+  display: none;
+}
+
+.hero-tagline {
+  font-size: 1.05rem;
+  color: var(--md-default-fg-color--light);
+  max-width: 100%;
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+/* Prominent install command (like DSPy's pip install) */
+.install-cmd {
+  display: inline-block;
+  background: var(--md-code-bg-color);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-family: var(--md-code-font);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  color: var(--md-default-fg-color);
+  margin: 1rem 0 2rem 0;
+}
+
+[data-md-color-scheme="slate"] .install-cmd {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Section Headers ──────────────────────────────────────────────── */
+.md-typeset h2 {
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: -0.015em;
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.md-typeset h2:first-child,
+.md-typeset hr + h2 {
+  border-top: none;
+  padding-top: 0;
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2 {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.md-typeset h3 {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+}
+
+.md-typeset h4 {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+/* ── Feature Cards (clean, minimal like OA/DSPy) ─────────────────── */
+.md-typeset .grid.cards > ol,
+.md-typeset .grid.cards > ul {
+  gap: 0.85rem;
+}
+
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 1.5rem 1.75rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  background: var(--md-default-bg-color);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ol > li,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #222222;
+}
+
+.md-typeset .grid.cards > ol > li:hover,
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent);
+}
+
+.md-typeset .grid.cards > ol > li > :first-child,
+.md-typeset .grid.cards > ul > li > :first-child {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+}
+
+/* ── Code Blocks ──────────────────────────────────────────────────── */
+.md-typeset code {
+  border-radius: 4px;
+  font-size: 0.82em;
+}
+
+.md-typeset pre {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.md-typeset pre > code {
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────── */
+.md-typeset .tabbed-labels > label {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Buttons (clean, bordered like OA) ───────────────────────────── */
+.md-typeset .md-button {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  padding: 0.55rem 1.5rem;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.md-typeset .md-button--primary {
+  background: var(--md-default-fg-color);
+  border-color: var(--md-default-fg-color);
+  color: var(--md-default-bg-color);
+}
+
+.md-typeset .md-button--primary:hover {
+  background: var(--md-accent-fg-color);
+  border-color: var(--md-accent-fg-color);
+}
+
+/* ── Navigation ───────────────────────────────────────────────────── */
+.md-tabs {
+  background: var(--md-primary-fg-color);
+}
+
+.md-header {
+  box-shadow: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Admonitions ──────────────────────────────────────────────────── */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 6px;
+  border-width: 1px;
+  border-left-width: 4px;
+  box-shadow: none;
+  font-size: 0.88rem;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────── */
+.md-footer {
+  background: var(--md-primary-fg-color--dark);
+}
+
+/* ── Pill Badges ─────────────────────────────────────────────────── */
+.pill {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 100px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-fg-color);
+  margin-bottom: 1rem;
+}
+
+/* ── Divider ──────────────────────────────────────────────────────── */
+.md-typeset hr {
+  border-color: rgba(0, 0, 0, 0.08);
+  margin: 3rem 0;
+}
+
+[data-md-color-scheme="slate"] .md-typeset hr {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Inline Code ─────────────────────────────────────────────────── */
+.md-typeset :not(pre) > code {
+  transition: background 0.15s ease;
+  font-size: 0.8em;
+  padding: 0.15em 0.4em;
+}
+
+/* ── Links ───────────────────────────────────────────────────────── */
+.md-typeset a {
+  transition: color 0.15s ease;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.md-typeset a:hover {
+  text-decoration: underline;
+}
+
+/* ── Content Width ───────────────────────────────────────────────── */
+.md-content__inner {
+  max-width: 48rem;
+  padding-top: 2rem;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────── */
+.md-typeset table:not([class]) {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 0.83rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.md-typeset table:not([class]) th {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Quick Start Tabs ─────────────────────────────────────────────── */
+.md-typeset .tabbed-set {
+  margin-top: 1.5rem;
+}
+
+.md-typeset .tabbed-content {
+  padding-top: 0.75rem;
+}
+
+/* ── Lists (more breathing room) ──────────────────────────────────── */
+.md-typeset ol,
+.md-typeset ul {
+  line-height: 1.85;
+}
+
+.md-typeset li + li {
+  margin-top: 0.35rem;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .md-typeset h1 {
+    font-size: 1.7rem;
+  }
+  .hero-tagline {
+    font-size: 0.95rem;
+  }
+  .install-cmd {
+    font-size: 0.78rem;
+  }
+}
+
+/* ── Leaderboard ─────────────────────────────────────────────────── */
+.lb-stat-card {
+  background: var(--md-code-bg-color, #f5f5f5);
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);
+}
+.lb-stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+.lb-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-feature-settings: "tnum";
+}
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-feature-settings: "tnum";
+}
+.lb-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--md-default-fg-color--lightest, #e0e0e0);
+  opacity: 0.6;
+}
+.lb-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest, #e0e0e0);
+}
+.lb-table tbody tr:hover {
+  background: var(--md-code-bg-color, #f5f5f5);
+}
+.lb-rank {
+  font-weight: 700;
+  font-size: 16px;
+}
+.lb-rank-1 { color: #ffd700; }
+.lb-rank-2 { color: #c0c0c0; }
+.lb-rank-3 { color: #cd7f32; }
+.lb-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.lb-number {
+  text-align: right;
+  font-family: var(--md-code-font-family, monospace);
+  font-size: 13px;
+}
+
+/* ── DocSearch ───────────────────────────────────────────────────────── */
+#docsearch {
+  display: flex;
+  align-items: center;
+  margin-right: 0.4rem;
+}
+
+.DocSearch-Button {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 0.82rem !important;
+  padding: 0 0.8rem !important;
+  height: 2rem !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.DocSearch-Button:hover {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: none !important;
+}
+
+.DocSearch-Button .DocSearch-Search-Icon {
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.DocSearch-Button-Keys {
+  display: flex !important;
+}
+
+/* Light theme modal */
+[data-md-color-scheme="default"] {
+  --docsearch-primary-color: #3d5a80;
+  --docsearch-text-color: #2b2b2b;
+  --docsearch-muted-color: #666666;
+  --docsearch-container-background: rgba(43, 43, 43, 0.6);
+  --docsearch-modal-background: #f8f7f4;
+  --docsearch-modal-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  --docsearch-searchbox-background: #f0efeb;
+  --docsearch-searchbox-focus-background: #ffffff;
+  --docsearch-searchbox-shadow: inset 0 0 0 2px #3d5a80;
+  --docsearch-hit-background: #ffffff;
+  --docsearch-hit-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --docsearch-hit-color: #2b2b2b;
+  --docsearch-highlight-color: #3d5a80;
+  --docsearch-logo-color: #666666;
+  --docsearch-footer-background: #f0efeb;
+  --docsearch-footer-shadow: 0 -1px 0 rgba(0, 0, 0, 0.08);
+  --docsearch-key-gradient: linear-gradient(-26.5deg, #e8e6e1, #f8f7f4);
+  --docsearch-key-shadow: inset 0 -2px 0 0 #d6d4cf, inset 0 0 1px 1px #ffffff,
+    0 1px 2px 1px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark theme modal */
+[data-md-color-scheme="slate"] {
+  --docsearch-primary-color: #8da9c4;
+  --docsearch-text-color: #e8e6e1;
+  --docsearch-muted-color: #999999;
+  --docsearch-container-background: rgba(0, 0, 0, 0.7);
+  --docsearch-modal-background: #1a1a1a;
+  --docsearch-modal-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  --docsearch-searchbox-background: #222222;
+  --docsearch-searchbox-focus-background: #2b2b2b;
+  --docsearch-searchbox-shadow: inset 0 0 0 2px #8da9c4;
+  --docsearch-hit-background: #222222;
+  --docsearch-hit-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --docsearch-hit-color: #e8e6e1;
+  --docsearch-highlight-color: #8da9c4;
+  --docsearch-logo-color: #999999;
+  --docsearch-footer-background: #222222;
+  --docsearch-footer-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08);
+  --docsearch-key-gradient: linear-gradient(-26.5deg, #2b2b2b, #333333);
+  --docsearch-key-shadow: inset 0 -2px 0 0 #1a1a1a, inset 0 0 1px 1px #444444,
+    0 1px 2px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Leaderboard pagination */
+.lb-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 20px 0 8px;
+}
+
+.lb-page-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--md-default-fg-color--lighter, #ccc);
+  background: var(--md-code-bg-color, #f5f5f5);
+  color: var(--md-default-fg-color, #333);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.lb-page-btn:hover:not([disabled]) {
+  opacity: 0.8;
+}
+
+.lb-page-btn[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.lb-page-info {
+  font-size: 13px;
+  color: var(--md-default-fg-color--light, #666);
+}
+
+/* Responsive: hide placeholder on mobile */
+@media (max-width: 768px) {
+  .DocSearch-Button-Placeholder {
+    display: none !important;
+  }
+}

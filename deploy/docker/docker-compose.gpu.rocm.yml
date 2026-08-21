@@ -1,0 +1,15 @@
+# ROCm GPU override — use with:
+#   docker compose -f deploy/docker/docker-compose.yml -f deploy/docker/docker-compose.gpu.rocm.yml up
+version: "3.9"
+
+services:
+  jarvis:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.gpu.rocm
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+      - render

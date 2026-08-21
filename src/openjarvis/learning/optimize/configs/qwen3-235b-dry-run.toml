@@ -1,0 +1,90 @@
+# Dry run: Joint multi-benchmark optimization for Qwen3-235B
+# Small samples to validate pipeline
+
+[optimize]
+max_trials = 2
+optimizer_model = "claude-opus-4-6"
+output_dir = "results/optimize/qwen3-235b-dry/"
+early_stop_patience = 5
+
+[[optimize.objectives]]
+metric = "accuracy"
+direction = "maximize"
+weight = 0.5
+
+[[optimize.objectives]]
+metric = "mean_latency_seconds"
+direction = "minimize"
+weight = 0.25
+
+[[optimize.objectives]]
+metric = "total_energy_joules"
+direction = "minimize"
+weight = 0.25
+
+[[optimize.benchmarks]]
+name = "terminalbench-native"
+max_samples = 5
+weight = 0.4
+
+[[optimize.benchmarks]]
+name = "gaia"
+max_samples = 5
+weight = 0.4
+
+[[optimize.benchmarks]]
+name = "hle"
+max_samples = 5
+weight = 0.2
+
+[optimize.fixed]
+"intelligence.model" = "Qwen/Qwen3-235B-A22B-Instruct-2507-FP8"
+"engine.backend" = "vllm"
+"intelligence.top_p" = 1.0
+
+[[optimize.search]]
+name = "agent.type"
+type = "categorical"
+values = ["orchestrator", "native_react", "native_openhands"]
+description = "Agent architecture for tool-calling"
+
+[[optimize.search]]
+name = "agent.max_turns"
+type = "integer"
+low = 1
+high = 30
+description = "Max reasoning/tool-calling turns"
+
+[[optimize.search]]
+name = "intelligence.temperature"
+type = "continuous"
+low = 0.0
+high = 1.0
+description = "Generation temperature"
+
+[[optimize.search]]
+name = "intelligence.max_tokens"
+type = "integer"
+low = 4096
+high = 32768
+description = "Max tokens per generation"
+
+[[optimize.search]]
+name = "intelligence.system_prompt"
+type = "text"
+description = "System prompt guiding model behavior, reasoning style, and tool usage"
+
+[[optimize.search]]
+name = "tools.tool_set"
+type = "subset"
+values = ["calculator", "think", "file_read", "file_write", "web_search", "code_interpreter", "shell_exec", "http_request"]
+description = "Tools available to the agent"
+
+[optimize.constraints]
+rules = [
+    "Use an agent type that accepts tools (all three options do)",
+    "agent.max_turns should be >= 5 for agentic benchmarks (GAIA, terminalbench-native)",
+    "The think tool is essential for HLE (reasoning-heavy)",
+    "code_interpreter and web_search are important for GAIA and terminalbench-native",
+    "System prompt should instruct the model to use tools strategically and reason step-by-step",
+]
