@@ -45,9 +45,9 @@ Thumbs.db
 *.db
 *.jsonl
 *.npz
-results/
-logs/
-traces/
+/results/
+/logs/
+/traces/
 coding_task_*
 get-pip.py
 
