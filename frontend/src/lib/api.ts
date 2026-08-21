@@ -1824,3 +1824,59 @@ export async function saveMemoryFact(
 export async function deleteMemoryFact(factId: string): Promise<void> {
   await apiJsonRequest('DELETE', `/v1/memory/facts/${encodeURIComponent(factId)}`);
 }
+
+// ---------------------------------------------------------------------------
+// Workflows (/v1/workflows) — persisted server-side so the scheduler owns them
+// ---------------------------------------------------------------------------
+
+export interface ServerWorkflow {
+  id: string;
+  name: string;
+  time: string;
+  regularity: 'once' | 'daily' | 'weekdays' | 'weekly' | 'monthly';
+  weekdays: number[];
+  tools: string[];
+  instructions: string;
+  autonomy: number;
+  enabled: boolean;
+  lastRun?: number;
+  nextRun?: string | null;
+}
+
+export async function listServerWorkflows(): Promise<ServerWorkflow[]> {
+  const data = await apiJsonRequest<{ workflows: ServerWorkflow[] }>(
+    'GET',
+    '/v1/workflows',
+  );
+  return data.workflows;
+}
+
+export async function saveServerWorkflow(
+  workflow: Omit<ServerWorkflow, 'nextRun' | 'lastRun'>,
+): Promise<ServerWorkflow> {
+  return apiJsonRequest('POST', '/v1/workflows', {
+    id: workflow.id,
+    name: workflow.name,
+    time: workflow.time,
+    regularity: workflow.regularity,
+    weekdays: workflow.weekdays,
+    tools: workflow.tools,
+    instructions: workflow.instructions,
+    autonomy: workflow.autonomy,
+    enabled: workflow.enabled,
+  });
+}
+
+export async function setServerWorkflowEnabled(
+  workflowId: string,
+  enabled: boolean,
+): Promise<void> {
+  await apiJsonRequest(
+    'POST',
+    `/v1/workflows/${encodeURIComponent(workflowId)}/enabled?enabled=${enabled}`,
+  );
+}
+
+export async function deleteServerWorkflow(workflowId: string): Promise<void> {
+  await apiJsonRequest('DELETE', `/v1/workflows/${encodeURIComponent(workflowId)}`);
+}

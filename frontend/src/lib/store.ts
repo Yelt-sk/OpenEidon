@@ -279,6 +279,7 @@ interface AppState {
   deleteWorkflow: (id: string) => void;
   updateWorkflow: (id: string, patch: Partial<Workflow>) => void;
   markWorkflowRan: (id: string) => void;
+  replaceWorkflows: (list: Workflow[]) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => {
@@ -560,16 +561,31 @@ export const useAppStore = create<AppState>((set, get) => {
       const next = [...get().workflows, w];
       localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(next));
       set({ workflows: next });
+      // Persist server-side so the scheduler runs it without the UI open.
+      // localStorage stays as the offline mirror.
+      void pushWorkflow(w).then((saved) => {
+        if (!saved || saved.id === w.id) return;
+        const remapped = get().workflows.map((x) => (x.id === w.id ? { ...x, id: saved.id } : x));
+        localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(remapped));
+        set({ workflows: remapped });
+      });
     },
     deleteWorkflow: (id) => {
       const next = get().workflows.filter(w => w.id !== id);
       localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(next));
       set({ workflows: next });
+      void dropWorkflow(id);
     },
     updateWorkflow: (id, patch) => {
       const next = get().workflows.map(w => w.id === id ? { ...w, ...patch } : w);
       localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(next));
       set({ workflows: next });
+      const updated = next.find((w) => w.id === id);
+      if (updated && 'enabled' in patch) void toggleWorkflow(id, updated.enabled);
+    },
+    replaceWorkflows: (list) => {
+      localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(list));
+      set({ workflows: list });
     },
     markWorkflowRan: (id) => {
       const next = get().workflows.map(w => w.id === id ? { ...w, lastRun: Date.now() } : w);
@@ -578,6 +594,32 @@ export const useAppStore = create<AppState>((set, get) => {
     },
   };
 });
+
+
+// Server-side workflow sync. Failures are non-fatal: the localStorage copy
+// keeps the UI working while the backend is unreachable.
+async function pushWorkflow(w: Workflow) {
+  try {
+    const { saveServerWorkflow } = await import('./api');
+    return await saveServerWorkflow(w);
+  } catch {
+    return null;
+  }
+}
+
+async function dropWorkflow(id: string) {
+  try {
+    const { deleteServerWorkflow } = await import('./api');
+    await deleteServerWorkflow(id);
+  } catch { /* offline */ }
+}
+
+async function toggleWorkflow(id: string, enabled: boolean) {
+  try {
+    const { setServerWorkflowEnabled } = await import('./api');
+    await setServerWorkflowEnabled(id, enabled);
+  } catch { /* offline */ }
+}
 
 const sync = getSyncChannel();
 if (sync) {

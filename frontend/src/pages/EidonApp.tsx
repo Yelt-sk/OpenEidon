@@ -9,7 +9,7 @@ import { ToolCallCard } from '../components/Chat/ToolCallCard';
 import { InputArea } from '../components/Chat/InputArea';
 import { NewWorkflowModal } from '../components/Workflow/NewWorkflowModal';
 import { useAppStore, type ThemeMode } from '../lib/store';
-import { listMemoryFacts, saveMemoryFact, deleteMemoryFact, type MemoryFact, type MemoryFactCounts, checkHealth, fetchSpeechHealth, buildAgentPlan, getUserPreferences, fetchInstalledApps, playYouTubeQuery, openLocalApp, openLocalAppDirect, openExternalTarget, webSearch, fetchChatCompletion, setReminder, getFileRoots, setFileRoots } from '../lib/api';
+import { listServerWorkflows, listMemoryFacts, saveMemoryFact, deleteMemoryFact, type MemoryFact, type MemoryFactCounts, checkHealth, fetchSpeechHealth, buildAgentPlan, getUserPreferences, fetchInstalledApps, playYouTubeQuery, openLocalApp, openLocalAppDirect, openExternalTarget, webSearch, fetchChatCompletion, setReminder, getFileRoots, setFileRoots } from '../lib/api';
 import type { Workflow } from '../lib/store';
 import { useSpeechOutput } from '../hooks/useSpeechOutput';
 
@@ -443,6 +443,30 @@ export function EidonApp() {
   }, []);
 
   useEffect(() => { refreshMemory(); }, [refreshMemory]);
+
+  // Hydrate workflows from the backend (they live in the scheduler now, so
+  // they keep running with the UI closed); localStorage is the offline copy.
+  const replaceWorkflows = useAppStore((s) => s.replaceWorkflows);
+  useEffect(() => {
+    listServerWorkflows()
+      .then((remote) => {
+        if (remote.length > 0) {
+          replaceWorkflows(remote.map((w) => ({
+            id: w.id,
+            name: w.name,
+            time: w.time,
+            regularity: w.regularity,
+            weekdays: w.weekdays,
+            tools: w.tools,
+            instructions: w.instructions,
+            autonomy: (w.autonomy as 1 | 2 | 3 | 4) || 2,
+            enabled: w.enabled,
+            lastRun: w.lastRun,
+          })));
+        }
+      })
+      .catch(() => { /* backend offline — keep the local copy */ });
+  }, [replaceWorkflows]);
 
   const openMemoryKind = useCallback((kind: 'person' | 'project' | 'preference') => {
     setMemoryKind((current) => {

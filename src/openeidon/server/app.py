@@ -231,9 +231,11 @@ def create_app(
     app.include_router(router)
     from openeidon.server.code_routes import code_router
     from openeidon.server.memory_routes import memory_router
+    from openeidon.server.workflow_routes import workflow_router
 
     app.include_router(code_router)
     app.include_router(memory_router)
+    app.include_router(workflow_router)
     app.include_router(dashboard_router)
     app.include_router(comparison_router)
     app.include_router(create_connectors_router())
