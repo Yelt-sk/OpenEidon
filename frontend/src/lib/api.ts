@@ -529,14 +529,63 @@ export async function setReminder(text: string, delay_seconds?: number, due_at?:
   return apiJsonRequest('POST', '/v1/reminders/set', { text, delay_seconds, due_at });
 }
 
+/**
+ * Match a reminder the user described in words rather than by id.
+ *
+ * The model repeats the user's phrasing ("напоминание про воду") while the
+ * reminder reads "выпить воды", so comparing whole strings never matches.
+ * Comparing word stems handles both the extra words and Russian inflection,
+ * where "воду" and "воды" are the same word.
+ */
+export function matchReminderByText<T extends { id: string; text: string }>(
+  reminders: T[],
+  query: string,
+): T | undefined {
+  // Three characters, compared as a shared prefix rather than a fixed stem:
+  // "воду" and "воды" differ at the fourth character, so a 4-character stem
+  // treats the same word as two.
+  const MIN_PREFIX = 3;
+  const words = (value: string) =>
+    value
+      .toLowerCase()
+      .split(/[^\p{L}\p{N}]+/u)
+      .filter((w) => w.length >= MIN_PREFIX);
+
+  const shareRoot = (a: string, b: string) => {
+    const limit = Math.min(a.length, b.length);
+    let common = 0;
+    while (common < limit && a[common] === b[common]) common += 1;
+    return common >= MIN_PREFIX;
+  };
+
+  const wanted = words(query);
+  if (wanted.length === 0) return undefined;
+
+  let best: { item: T; score: number } | undefined;
+  for (const reminder of reminders) {
+    const have = words(reminder.text);
+    const score = wanted.filter((w) => have.some((h) => shareRoot(w, h))).length;
+    if (score > 0 && (!best || score > best.score)) {
+      best = { item: reminder, score };
+    }
+  }
+  return best?.item;
+}
+
 export async function cancelReminder(reminderId: string): Promise<void> {
   await apiJsonRequest('POST', '/v1/reminders/cancel', { reminder_id: reminderId });
 }
 
+/**
+ * Reminders that are still scheduled.
+ *
+ * Not /v1/reminders/alerts — that returns only the ones that already fired,
+ * so "какие у меня напоминания" answered "нет" for anything due later.
+ */
 export async function fetchReminders(): Promise<Array<{ id: string; text: string; due_at: string; status: string }>> {
   try {
-    const data = await apiJsonRequest<{ alerts: Array<{ id: string; text: string; due_at: string; status: string }> }>('GET', '/v1/reminders/alerts');
-    return data.alerts || [];
+    const data = await apiJsonRequest<{ reminders: Array<{ id: string; text: string; due_at: string; status: string }> }>('GET', '/v1/reminders?status=active');
+    return data.reminders || [];
   } catch {
     return [];
   }

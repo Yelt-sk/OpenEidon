@@ -1202,6 +1202,21 @@ async def get_reminder_alerts(request: Request):
     return {"alerts": [item.to_dict() for item in manager.get_pending_alerts()]}
 
 
+@router.get("/v1/reminders")
+async def list_reminders(request: Request, status: str = "active"):
+    """List reminders by status, "" for all.
+
+    /v1/reminders/alerts returns only reminders that have already fired, so
+    asking "какие у меня напоминания" about something scheduled for later
+    answered "нет" while it sat in the queue.
+    """
+    manager = getattr(request.app.state, "reminder_manager", None)
+    if manager is None:
+        return {"reminders": []}
+    items = manager.list_reminders(status=status or None)
+    return {"reminders": [item.to_dict() for item in items]}
+
+
 @router.post("/v1/reminders/ack")
 async def acknowledge_reminder(request_body: ReminderAckRequest, request: Request):
     manager = getattr(request.app.state, "reminder_manager", None)

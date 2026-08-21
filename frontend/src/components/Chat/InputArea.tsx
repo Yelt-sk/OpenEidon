@@ -27,6 +27,7 @@ import {
   setReminder,
   fetchReminders,
   cancelReminder,
+  matchReminderByText,
   getUserPreferences,
   setUserPreferences,
   openLocalApp,
@@ -639,9 +640,10 @@ Allow?`);
                     // The model may name a reminder instead of its id; match
                     // on the text so "отмени напоминание про воду" works.
                     const reminders = await fetchReminders();
-                    const wanted = (action.reminder_id || action.text || '').toLowerCase();
+                    const described = [action.reminder_id, action.text, action.value, content]
+                      .filter(Boolean).join(' ');
                     const target = reminders.find(r => r.id === action.reminder_id)
-                      || reminders.find(r => wanted && r.text.toLowerCase().includes(wanted));
+                      || matchReminderByText(reminders, described);
                     if (!target) {
                       accumulatedContent = reminders.length === 0
                         ? 'Активных напоминаний нет.'

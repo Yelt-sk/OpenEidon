@@ -34,4 +34,5 @@ jobs:
 
       - run: npm ci
       - run: npx tsc --noEmit
+      - run: npm test
       - run: npm run build
