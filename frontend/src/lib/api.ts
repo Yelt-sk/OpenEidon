@@ -1726,3 +1726,54 @@ export async function submitSavings(data: SavingsSubmission): Promise<boolean> {
     return false;
   }
 }
+
+// ---------------------------------------------------------------------------
+// OpenCode coding agent (/v1/code/*)
+// ---------------------------------------------------------------------------
+
+export interface CodeSessionState {
+  session_id: string;
+  status: Record<string, unknown>;
+  reply: string;
+  tool_activity: { tool: string; status: string; title: string }[];
+  pending_permissions: Record<string, unknown>[];
+  diff: { file?: string }[] | unknown;
+}
+
+export async function codeHealth(): Promise<{ installed: boolean; running: boolean }> {
+  return apiJsonRequest('GET', '/v1/code/health');
+}
+
+export async function runCodeTask(
+  task: string,
+  directory: string,
+  model?: string,
+  sessionId?: string,
+): Promise<{ ok: boolean; session_id: string; directory: string }> {
+  return apiJsonRequest('POST', '/v1/code/task', {
+    task,
+    directory,
+    model: model || '',
+    session_id: sessionId || '',
+  });
+}
+
+export async function getCodeSession(sessionId: string): Promise<CodeSessionState> {
+  return apiJsonRequest('GET', `/v1/code/sessions/${encodeURIComponent(sessionId)}`);
+}
+
+export async function respondCodePermission(
+  sessionId: string,
+  permissionId: string,
+  response: 'once' | 'always' | 'reject',
+): Promise<void> {
+  await apiJsonRequest('POST', '/v1/code/permission', {
+    session_id: sessionId,
+    permission_id: permissionId,
+    response,
+  });
+}
+
+export async function abortCodeSession(sessionId: string): Promise<void> {
+  await apiJsonRequest('POST', `/v1/code/sessions/${encodeURIComponent(sessionId)}/abort`);
+}

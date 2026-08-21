@@ -1439,12 +1439,11 @@ async def reload_cloud_engine(request: Request):
 # File tools
 # ---------------------------------------------------------------------------
 
-FILE_ROOTS_CONFIG = Path(r"D:\projects\eidon\.eidon-file-roots.json")
+FILE_ROOTS_CONFIG = Path.home() / ".openeidon" / "file-roots.json"
 
 _DEFAULT_ROOTS = [
     Path.home() / "Desktop",
     Path.home() / "Documents",
-    Path(r"D:\projects\eidon"),
 ]
 
 

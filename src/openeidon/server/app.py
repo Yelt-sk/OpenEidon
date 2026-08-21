@@ -229,6 +229,9 @@ def create_app(
         pass  # traces are optional; don't block server startup
 
     app.include_router(router)
+    from openeidon.server.code_routes import code_router
+
+    app.include_router(code_router)
     app.include_router(dashboard_router)
     app.include_router(comparison_router)
     app.include_router(create_connectors_router())

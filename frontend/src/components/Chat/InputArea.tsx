@@ -42,6 +42,10 @@ import {
   listFiles,
   findAndOpenFile,
   getFileRoots,
+  runCodeTask,
+  getCodeSession,
+  respondCodePermission,
+  abortCodeSession,
 } from '../../lib/api';
 import type { AgentAction } from '../../lib/api';
 import { MicButton } from './MicButton';
@@ -187,6 +191,88 @@ export function InputArea({ mode = 'chat' }: { mode?: 'chat' | 'cmd' | 'voice' |
       category: 'chat',
       message: `Request: "${content.slice(0, 80)}${content.length > 80 ? '...' : ''}" -> ${selectedModel}`,
     });
+
+    // ----- AGENT mode: delegate to the OpenCode coding agent -----
+    if (mode === 'agent') {
+      setStreamState({ phase: 'OpenCode: starting...' });
+      try {
+        let directory = localStorage.getItem('eidon-agent-dir') || '';
+        if (!directory) {
+          const rootsData = await getFileRoots();
+          directory = rootsData.roots[0] || '';
+        }
+        if (!directory) throw new Error('No project directory configured (set one in file roots).');
+
+        const sesKey = `eidon-opencode-ses-${convId}`;
+        const priorSession = localStorage.getItem(sesKey) || undefined;
+        const started = await runCodeTask(content, directory, undefined, priorSession);
+        localStorage.setItem(sesKey, started.session_id);
+        appendActivity(`OpenCode session ${started.session_id.slice(0, 12)} @ ${started.directory}`);
+
+        const codeToolCall: ToolCallInfo = {
+          id: generateId(),
+          tool: 'opencode',
+          arguments: content.slice(0, 200),
+          status: 'running',
+        };
+        toolCalls.push(codeToolCall);
+        setStreamState({ activeToolCalls: [...toolCalls], phase: 'OpenCode: working...' });
+
+        const answeredPermissions = new Set<string>();
+        let lastActivityCount = 0;
+        let finalReply = '';
+        for (;;) {
+          if (controller.signal.aborted) {
+            await abortCodeSession(started.session_id).catch(() => {});
+            throw new Error('aborted');
+          }
+          await new Promise((r) => setTimeout(r, 2500));
+          const state = await getCodeSession(started.session_id);
+
+          for (const act of state.tool_activity.slice(lastActivityCount)) {
+            appendActivity(`${act.tool}: ${act.title || act.status}`);
+          }
+          lastActivityCount = state.tool_activity.length;
+
+          for (const perm of state.pending_permissions) {
+            const permId = String((perm as { id?: string }).id || '');
+            if (!permId || answeredPermissions.has(permId)) continue;
+            answeredPermissions.add(permId);
+            const title = String((perm as { title?: string }).title || 'perform an action');
+            const approved = window.confirm(`OpenCode requests permission to: ${title}
+
+Allow?`);
+            await respondCodePermission(started.session_id, permId, approved ? 'once' : 'reject').catch(() => {});
+            appendActivity(`Permission ${approved ? 'granted' : 'rejected'}: ${title}`);
+          }
+
+          const working = Object.keys(state.status || {}).length > 0
+            && (state.status as { type?: string }).type !== 'idle';
+          if (state.reply) finalReply = state.reply;
+          if (!working && finalReply) break;
+          if (!working && lastActivityCount > 0) {
+            // finished without a text reply
+            break;
+          }
+        }
+
+        codeToolCall.status = 'success';
+        accumulatedContent = finalReply || 'OpenCode finished (no text reply).';
+        setStreamState({ activeToolCalls: [...toolCalls], phase: 'Done', content: accumulatedContent });
+        updateLastAssistant(convId, accumulatedContent, [...toolCalls]);
+      } catch (codeErr: unknown) {
+        const msg = codeErr instanceof Error ? codeErr.message : String(codeErr);
+        accumulatedContent = msg === 'aborted' ? 'OpenCode task aborted.' : `OpenCode failed: ${msg}`;
+        updateLastAssistant(convId, accumulatedContent, toolCalls.length > 0 ? [...toolCalls] : undefined);
+      } finally {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        resetStream();
+      }
+      return;
+    }
 
     try {
       // ----- Open all saved work apps -----

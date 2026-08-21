@@ -13,6 +13,11 @@ except ImportError:
     pass
 
 try:
+    import openeidon.tools.code_agent  # noqa: F401
+except ImportError:
+    pass
+
+try:
     import openeidon.tools.think  # noqa: F401
 except ImportError:
     pass
