@@ -8,6 +8,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Routing and latency
+
+Measured on a GTX 1650 (4 GB) with a locally installed Qwen3 model, routing
+the same set of requests: **9/14 correct at 4578 ms before, 14/14 at 835 ms
+after**.
+
+#### Changed
+
+- The request router now uses **native tool calling** instead of asking the
+  model to write a JSON plan inside its reply. The JSON approach could fail
+  in a way tool calling cannot — one installed model returned prose the
+  parser could not read at 14/14 unparseable. The prompt path remains as a
+  fallback for models that do not emit tool calls reliably.
+- Tool definitions moved to `frontend/src/lib/routing-tools.json` so the
+  frontend and the routing eval read the same source.
+- `show_message` is no longer offered to the model: the executor only logs
+  it, so choosing it produced nothing the user could see.
+- Ollama `keep_alive` is now set (30m by default, `EIDON_KEEP_ALIVE`
+  overrides). Ollama's own 5-minute default meant an assistant used in
+  bursts paid a ~10 s model load on most interactions.
+- `num_ctx` is sized from detected VRAM instead of a fixed 8192, which on a
+  4 GB card pushed models onto the CPU: 16009 ms against 1031 ms for the
+  same call.
+
+#### Fixed
+
+- The chat endpoint ignored the `tools` parameter whenever an agent was
+  configured, so a client asking the model to route a command received a
+  plain refusal instead of a tool call.
+- `max_tokens` was advisory: a complexity heuristic raised it and the agent
+  path ignored it entirely. An explicit value is now a hard cap.
+- Five handlers rewrote deliberate HTTPExceptions into a generic
+  "Internal server error", making a missing search result and a real crash
+  look identical.
+- `open_site` rejected the domain people actually say ("youtube"), so
+  "открой ютуб" errored. Targets are normalised server-side; a bare word
+  becomes a search rather than a guessed domain, and the scheme check that
+  blocks `file://` and UNC paths still runs first.
+- "запомни ..." wrote only to a preferences file nothing displays, so the
+  MEMORY sidebar never changed.
+- `cancel_reminder` was offered to the model with no endpoint and no
+  executor behind it. Both added.
+- Model sizes travel to the UI: three engine wrappers dropped the metadata.
+
+#### Added
+
+- Model weight is shown wherever a model is chosen, and the top-bar model
+  chip is a working picker.
+- OpenCode sessions take their own model, defaulting to the lightest one
+  installed.
+- `tests/intelligence/test_routing_live.py` scores the router over 27
+  phrases; schema checks run everywhere, accuracy needs a live model.
+
 ---
 
 ## [0.2.0] — 2026-08-21
