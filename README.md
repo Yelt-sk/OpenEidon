@@ -105,6 +105,8 @@ uv run eidon chat
 - hardware-aware setup flow
 - pluggable inference engines
 - local-by-default architecture with optional cloud fallback
+- local speech: `faster-whisper` for transcription, Piper for synthesis
+  (Russian voices included)
 - support for practical on-device assistant workflows
 
 ### Agentic and Workflow-Oriented
@@ -112,6 +114,9 @@ uv run eidon chat
 - built-in agents for orchestration, research, monitoring, and chat
 - AGENT mode delegates coding tasks to [OpenCode](https://opencode.ai) inside
   approved project directories, with permission prompts surfaced in the UI
+- scheduled workflows persisted server-side, so they run whether or not the
+  UI is open
+- structured long-term memory of people, projects, and preferences
 - tools, memory, and skills as composable building blocks
 - suitable base for productized AI assistants rather than isolated demos
 

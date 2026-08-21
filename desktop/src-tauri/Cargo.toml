@@ -1,6 +1,6 @@
 [package]
 name = "openeidon-desktop"
-version = "0.1.0"
+version = "0.2.0"
 description = "OpenEidon Desktop — Native AI assistant with energy monitoring, trace debugging, and learning visualization"
 edition = "2021"
 license = "MIT"

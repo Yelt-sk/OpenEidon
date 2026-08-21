@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### OpenEidon fork — 2026-08-21
+---
+
+## [0.2.0] — 2026-08-21
+
+First OpenEidon release.
 
 #### Added
 
@@ -31,6 +35,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository flattened** — code moved from `OpenJarvis-main/` to the root,
   which also activated the GitHub Actions workflows.
 
+- **Piper TTS** — local neural speech synthesis registered as the `piper`
+  backend, with Russian voices by default (`speech-piper` extra).
+- **Structured memory** — `openeidon.memory` stores people, projects, and
+  preferences in SQLite; exposed as the `memory_facts` tool for agents, as
+  `/v1/memory/facts`, and as the now-functional MEMORY sidebar section.
+- **Server-side workflows** — `/v1/workflows` persists workflows as scheduler
+  tasks, so a workflow scheduled for 09:00 fires without a browser tab open.
+  The UI syncs through to it and keeps localStorage as an offline mirror.
+- **Intent classification** moved into `openeidon.intelligence.intent`: a
+  deterministic rule pass handles volume/brightness/screen commands and
+  question openers without a model call; the model handles only ambiguous
+  cases. Failures now log instead of vanishing into a bare except.
+
 #### Performance
 
 - CLI cold start 715 ms → 160 ms (lazy SDK import + Click LazyGroup).
@@ -45,6 +62,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `traces/` ignore rule, breaking 25 test modules at collection.
 - Hardcoded `D:\projects\eidon` file-roots path replaced with
   `~/.openeidon/file-roots.json`.
+- Removed the hardcoded `qwen3.5:cloud` fallback model from three server
+  helpers — a cloud model on a local-first product; they now use the
+  configured default and then the server's own model.
+
+#### Release
+
+- Versions unified at 0.2.0 across the Python package, frontend, desktop
+  shell, and Tauri bundle.
+- Desktop installers are now built only for `desktop-v*` tags and manual
+  runs instead of on every push touching the frontend.
 
 ---
 
