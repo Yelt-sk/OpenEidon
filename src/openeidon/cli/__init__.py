@@ -1,46 +1,84 @@
-"""Command-line interface for OpenEidon (Click-based)."""
+"""Command-line interface for OpenEidon (Click-based).
+
+Subcommands are loaded lazily so ``eidon <cmd>`` only imports the module it
+needs; eager imports here previously dominated CLI cold-start time.
+"""
 
 from __future__ import annotations
+
+import importlib
 
 import click
 
 import openeidon
-from openeidon.cli.add_cmd import add
-from openeidon.cli.agent_cmd import agent
-from openeidon.cli.ask import ask
-from openeidon.cli.bench_cmd import bench
-from openeidon.cli.channel_cmd import channel
-from openeidon.cli.channels_cmd import channels
-from openeidon.cli.chat_cmd import chat
-from openeidon.cli.compose_cmd import compose
-from openeidon.cli.config_cmd import config
-from openeidon.cli.connect_cmd import connect
-from openeidon.cli.daemon_cmd import restart, start, status, stop
-from openeidon.cli.deep_research_setup_cmd import deep_research_setup
-from openeidon.cli.digest_cmd import digest
-from openeidon.cli.doctor_cmd import doctor
-from openeidon.cli.eval_cmd import eval_group
-from openeidon.cli.feedback_cmd import feedback_group
-from openeidon.cli.gateway_cmd import gateway
-from openeidon.cli.host_cmd import host
-from openeidon.cli.init_cmd import init
-from openeidon.cli.memory_cmd import memory
-from openeidon.cli.model import model
-from openeidon.cli.operators_cmd import operators
-from openeidon.cli.optimize_cmd import optimize_group
-from openeidon.cli.quickstart_cmd import quickstart
-from openeidon.cli.registry_cmd import registry
-from openeidon.cli.scan_cmd import scan
-from openeidon.cli.scheduler_cmd import scheduler
-from openeidon.cli.serve import serve
-from openeidon.cli.skill_cmd import skill
-from openeidon.cli.telemetry_cmd import telemetry
-from openeidon.cli.tool_cmd import tool
-from openeidon.cli.vault_cmd import vault
-from openeidon.cli.workflow_cmd import workflow
+
+#: command name -> "module:attr" — imported on first use
+_LAZY_COMMANDS: dict[str, str] = {
+    "init": "openeidon.cli.init_cmd:init",
+    "ask": "openeidon.cli.ask:ask",
+    "chat": "openeidon.cli.chat_cmd:chat",
+    "serve": "openeidon.cli.serve:serve",
+    "model": "openeidon.cli.model:model",
+    "memory": "openeidon.cli.memory_cmd:memory",
+    "telemetry": "openeidon.cli.telemetry_cmd:telemetry",
+    "bench": "openeidon.cli.bench_cmd:bench",
+    "channel": "openeidon.cli.channel_cmd:channel",
+    "channels": "openeidon.cli.channels_cmd:channels",
+    "scheduler": "openeidon.cli.scheduler_cmd:scheduler",
+    "doctor": "openeidon.cli.doctor_cmd:doctor",
+    "agents": "openeidon.cli.agent_cmd:agent",
+    "workflow": "openeidon.cli.workflow_cmd:workflow",
+    "skill": "openeidon.cli.skill_cmd:skill",
+    "start": "openeidon.cli.daemon_cmd:start",
+    "stop": "openeidon.cli.daemon_cmd:stop",
+    "restart": "openeidon.cli.daemon_cmd:restart",
+    "status": "openeidon.cli.daemon_cmd:status",
+    "vault": "openeidon.cli.vault_cmd:vault",
+    "add": "openeidon.cli.add_cmd:add",
+    "operators": "openeidon.cli.operators_cmd:operators",
+    "eval": "openeidon.cli.eval_cmd:eval_group",
+    "host": "openeidon.cli.host_cmd:host",
+    "quickstart": "openeidon.cli.quickstart_cmd:quickstart",
+    "optimize": "openeidon.cli.optimize_cmd:optimize_group",
+    "feedback": "openeidon.cli.feedback_cmd:feedback_group",
+    "compose": "openeidon.cli.compose_cmd:compose",
+    "gateway": "openeidon.cli.gateway_cmd:gateway",
+    "tool": "openeidon.cli.tool_cmd:tool",
+    "registry": "openeidon.cli.registry_cmd:registry",
+    "config": "openeidon.cli.config_cmd:config",
+    "scan": "openeidon.cli.scan_cmd:scan",
+    "connect": "openeidon.cli.connect_cmd:connect",
+    "digest": "openeidon.cli.digest_cmd:digest",
+    "deep-research-setup": "openeidon.cli.deep_research_setup_cmd:deep_research_setup",
+    "research": "openeidon.cli.deep_research_setup_cmd:deep_research_setup",
+    # Gateway commands whose deps (starlette, …) may be uninstalled
+    "auth": "openeidon.cli.auth_cmd:auth",
+    "tunnel": "openeidon.cli.tunnel_cmd:tunnel",
+}
+
+#: commands silently hidden when their optional dependencies are missing
+_OPTIONAL_COMMANDS = {"auth", "tunnel"}
 
 
-@click.group(help="OpenEidon — modular AI assistant backend")
+class _LazyGroup(click.Group):
+    def list_commands(self, ctx: click.Context) -> list[str]:
+        return sorted(set(super().list_commands(ctx)) | set(_LAZY_COMMANDS))
+
+    def get_command(self, ctx: click.Context, name: str):
+        target = _LAZY_COMMANDS.get(name)
+        if target is None:
+            return super().get_command(ctx, name)
+        module_name, attr = target.split(":")
+        try:
+            module = importlib.import_module(module_name)
+        except ImportError:
+            if name in _OPTIONAL_COMMANDS:
+                return None
+            raise
+        return getattr(module, attr)
+
+
+@click.group(cls=_LazyGroup, help="OpenEidon — modular AI assistant backend")
 @click.version_option(version=openeidon.__version__, prog_name="eidon")
 @click.option("--verbose", is_flag=True, default=False, help="Enable debug logging")
 @click.option("--quiet", is_flag=True, default=False, help="Suppress non-error output")
@@ -59,60 +97,6 @@ def cli(ctx: click.Context, verbose: bool, quiet: bool) -> None:
         from openeidon.cli._version_check import check_for_updates
 
         check_for_updates(ctx.invoked_subcommand)
-
-
-cli.add_command(init, "init")
-cli.add_command(ask, "ask")
-cli.add_command(chat, "chat")
-cli.add_command(serve, "serve")
-cli.add_command(model, "model")
-cli.add_command(memory, "memory")
-cli.add_command(telemetry, "telemetry")
-cli.add_command(bench, "bench")
-cli.add_command(channel, "channel")
-cli.add_command(channels, "channels")
-cli.add_command(scheduler, "scheduler")
-cli.add_command(doctor, "doctor")
-cli.add_command(agent, "agents")
-cli.add_command(workflow, "workflow")
-cli.add_command(skill, "skill")
-cli.add_command(start, "start")
-cli.add_command(stop, "stop")
-cli.add_command(restart, "restart")
-cli.add_command(status, "status")
-cli.add_command(vault, "vault")
-cli.add_command(add, "add")
-cli.add_command(operators, "operators")
-cli.add_command(eval_group, "eval")
-cli.add_command(host, "host")
-cli.add_command(quickstart, "quickstart")
-cli.add_command(optimize_group, "optimize")
-cli.add_command(feedback_group, "feedback")
-cli.add_command(compose, "compose")
-cli.add_command(gateway, "gateway")
-cli.add_command(tool, "tool")
-cli.add_command(registry, "registry")
-cli.add_command(config, "config")
-cli.add_command(scan, "scan")
-cli.add_command(connect, "connect")
-cli.add_command(digest, "digest")
-cli.add_command(deep_research_setup, "deep-research-setup")
-cli.add_command(deep_research_setup, "research")
-
-# Gateway CLI commands (lazy import to avoid pulling starlette)
-try:
-    from openeidon.cli.auth_cmd import auth
-
-    cli.add_command(auth, "auth")
-except ImportError:
-    pass
-
-try:
-    from openeidon.cli.tunnel_cmd import tunnel
-
-    cli.add_command(tunnel, "tunnel")
-except ImportError:
-    pass
 
 
 def main() -> None:
