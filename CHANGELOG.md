@@ -1,12 +1,52 @@
 # Changelog
 
-All notable changes to OpenJarvis are documented in this file.
+All notable changes to OpenEidon are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
 ## [Unreleased]
+
+### OpenEidon fork — 2026-08-21
+
+#### Added
+
+- **OpenCode integration** — AGENT mode delegates coding tasks to a headless
+  `opencode serve` instance. `connectors/opencode.py` (process + session API),
+  `tools/code_agent.py` (registry tool), `server/code_routes.py` (`/v1/code/*`).
+  Project directories are checked against the file-roots allowlist and
+  permission requests are surfaced to the user, never auto-approved.
+  See `docs/architecture/opencode.md`.
+- `CLAUDE.md` and `scripts/dev-setup.ps1` for reproducible environment setup.
+
+#### Changed
+
+- **Rebranded to OpenEidon**: package `openeidon`, CLI `eidon`, config dir
+  `~/.openeidon`, env vars `OPENEIDON_*`, Tauri id `com.openeidon.desktop`.
+  Attribution to OpenJarvis retained in NOTICE and README.
+- **FOX is the only UI**: `EidonApp` renders by default (previously behind
+  `?eidon=1`). The legacy router pages, Layout, CommandPalette, OptInModal and
+  24 orphaned modules were removed; `desktop-mini` (Electron) deleted.
+- **Repository flattened** — code moved from `OpenJarvis-main/` to the root,
+  which also activated the GitHub Actions workflows.
+
+#### Performance
+
+- CLI cold start 715 ms → 160 ms (lazy SDK import + Click LazyGroup).
+- Frontend entry bundle 630 kB → 359 kB (gzip 190 → 108 kB) by lazy-loading
+  the markdown/katex renderer; dropped unused `recharts` and `react-router`.
+
+#### Fixed
+
+- `server/routes.py` referenced an undefined `logger`, raising `NameError` on
+  every error path instead of returning the intended 500.
+- `src/openeidon/traces` was excluded from the repository by an overbroad
+  `traces/` ignore rule, breaking 25 test modules at collection.
+- Hardcoded `D:\projects\eidon` file-roots path replaced with
+  `~/.openeidon/file-roots.json`.
+
+---
 
 ### Added
 
