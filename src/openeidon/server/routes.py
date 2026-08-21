@@ -469,12 +469,47 @@ def _resolve_youtube_first_video(query: str) -> tuple[str, str | None]:
 
 
 
+def normalize_web_target(target: str) -> str:
+    """Turn what a caller asked to open into an http(s) URL.
+
+    Callers name sites the way people do — "youtube", "youtube.com",
+    "https://youtube.com" — and a model asked to open a site does the same.
+    Only the last form used to work; the others were rejected as an unsafe
+    scheme, which is how "открой ютуб" ended in an error.
+
+    A bare word becomes a web search rather than a guessed domain: guessing
+    "<word>.com" silently sends the user somewhere nobody named.
+    """
+    value = " ".join(target.strip().split())
+    if not value:
+        return ""
+
+    parsed = urlparse(value)
+    if parsed.scheme:
+        # Explicit scheme: the caller's choice, validated by the caller below.
+        return value
+    if value.lower().startswith("www."):
+        return f"https://{value}"
+
+    host = value.split("/", 1)[0]
+    looks_like_domain = (
+        "." in host
+        and " " not in host
+        and not host.endswith(".")
+        and all(part for part in host.split("."))
+    )
+    if looks_like_domain:
+        return f"https://{value}"
+    return f"https://duckduckgo.com/?q={quote_plus(value)}"
+
+
 def _safe_open_url(url: str) -> None:
     """Open a URL only if its scheme is http or https (prevents RCE via file:// or UNC paths)."""
     scheme = urlparse(url).scheme.lower()
     if scheme not in {"http", "https"}:
         raise ValueError(f"Blocked unsafe URL scheme: {scheme!r}")
     os.startfile(url)
+
 
 @router.post("/v1/chat/completions")
 async def chat_completions(request_body: ChatCompletionRequest, request: Request):
@@ -933,7 +968,7 @@ async def play_youtube(request_body: YouTubePlaybackRequest):
 
 @router.post("/v1/browser/open-external")
 async def open_external(request_body: ExternalOpenRequest):
-    target = request_body.target.strip()
+    target = normalize_web_target(request_body.target)
     if not target:
         raise HTTPException(status_code=400, detail="target is required")
 

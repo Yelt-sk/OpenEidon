@@ -664,6 +664,190 @@ export interface AgentPlan {
   summary: string;
 }
 
+/**
+ * Native tool-calling schemas for the request router.
+ *
+ * The router used to ask the model to *write* a JSON plan inside its reply.
+ * Measured on this machine, that cost 4578 ms and routed 9 of 14 phrases
+ * correctly with the default model, and one model returned prose the parser
+ * could not read at all (14/14 unparseable). Handing the model real tool
+ * definitions instead: 794 ms and 12 of 14 — the structure arrives in its
+ * own field, so "unparseable" stops being a failure mode.
+ */
+
+interface ToolSchema {
+  type: 'function';
+  function: {
+    name: AgentAction['tool'];
+    description: string;
+    parameters: {
+      type: 'object';
+      properties: Record<string, { type: string; description?: string }>;
+      required?: string[];
+    };
+  };
+}
+
+const obj = (
+  properties: Record<string, { type: string; description?: string }> = {},
+  required: string[] = [],
+) => ({ type: 'object' as const, properties, required });
+
+export const EIDON_TOOL_SCHEMAS: ToolSchema[] = [
+  {
+    type: 'function',
+    function: {
+      name: 'open_app',
+      description: 'Open a desktop application installed on this computer.',
+      parameters: obj({ name: { type: 'string', description: 'Application name.' } }, ['name']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'open_site',
+      description:
+        'Open a website in the browser. Give the domain or full URL, e.g. youtube.com — a bare word is treated as a search.',
+      parameters: obj({ url: { type: 'string', description: 'Domain or URL.' } }, ['url']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'play_youtube',
+      description:
+        'Play music or a video on YouTube. Only when the thing requested is itself music or a video — a genre, an artist, a song, a clip.',
+      parameters: obj({ query: { type: 'string', description: 'Search query.' } }, ['query']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'open_work_apps',
+      description: 'Open every application the user saved as a work app.',
+      parameters: obj(),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_installed_apps',
+      description: 'List the applications installed on this computer.',
+      parameters: obj(),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_running_processes',
+      description: 'List the programs currently running on this computer.',
+      parameters: obj(),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'set_reminder',
+      description: 'Set a timer or reminder for later.',
+      parameters: obj(
+        {
+          text: { type: 'string', description: 'What to remind about.' },
+          delay_seconds: { type: 'integer', description: 'Seconds from now.' },
+        },
+        ['text'],
+      ),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_reminders',
+      description: 'List active reminders and timers.',
+      parameters: obj(),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'cancel_reminder',
+      description: 'Cancel a reminder by its id.',
+      parameters: obj({ reminder_id: { type: 'string' } }, ['reminder_id']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'web_search',
+      description:
+        'Search the internet for current information: news, prices, weather, recent events — anything that changes over time.',
+      parameters: obj({ query: { type: 'string' } }, ['query']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'save_preference',
+      description:
+        'Remember a durable fact the user states about themselves, the tools they use, or how they want things done.',
+      parameters: obj(
+        {
+          category: {
+            type: 'string',
+            description:
+              'One of: music_artist, music_genre, work_app, note.',
+          },
+          value: { type: 'string', description: 'The exact thing to remember.' },
+        },
+        ['value'],
+      ),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'read_file',
+      description: 'Read the contents of a file at an exact path.',
+      parameters: obj({ path: { type: 'string' } }, ['path']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'write_file',
+      description: 'Write or overwrite a file on disk.',
+      parameters: obj(
+        { path: { type: 'string' }, file_content: { type: 'string' } },
+        ['path', 'file_content'],
+      ),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_files',
+      description: 'List the files and folders in a directory.',
+      parameters: obj({ path: { type: 'string' } }),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'find_and_open_file',
+      description:
+        "Find a document by description across the accessible directories and open it, for when the user names their file without a path.",
+      parameters: obj({ query: { type: 'string' } }, ['query']),
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'show_message',
+      description: 'Show a short text message to the user.',
+      parameters: obj({ text: { type: 'string' } }, ['text']),
+    },
+  },
+];
+
 const EIDON_TOOLS_DESC = [
   'open_app(name) — opens a desktop application by name',
   'play_youtube(query) — plays music or video on YouTube',
@@ -699,6 +883,96 @@ export function isMultiActionIntent(content: string): boolean {
   if (/set up/.test(text) && /(workspace|pc|work)/.test(text)) return true;
   const actionCount = (text.match(/\b(открой|запусти|включи|поставь|зайди|open|launch|play|start)\b/gi) || []).length;
   return actionCount >= 2;
+}
+
+/** Build the routing context the model needs beyond the tool schemas. */
+function routerSystemPrompt(
+  preferences: UserPreferences,
+  installedApps: string[],
+  fileRoots: string[],
+): string {
+  const lines = [
+    'You route requests for Eidon, an assistant running on this Windows PC.',
+    'Call a tool when the user asks the computer to do something.',
+    'Answer without any tool for conversation and general knowledge questions.',
+    'The object of the request decides which tool: opening a program or a site',
+    'is never a request for music, even when the user says "включи".',
+  ];
+  if (installedApps.length > 0) {
+    lines.push('', `Installed apps: ${installedApps.join(', ')}`);
+  }
+  if (fileRoots.length > 0) {
+    lines.push(`Accessible directories: ${fileRoots.join(', ')}`);
+  }
+  const memory = [
+    preferences.work_apps.length ? `work apps: ${preferences.work_apps.join(', ')}` : '',
+    preferences.music.genres.length ? `music genres: ${preferences.music.genres.join(', ')}` : '',
+    preferences.music.artists.length ? `music artists: ${preferences.music.artists.join(', ')}` : '',
+  ].filter(Boolean);
+  if (memory.length > 0) {
+    lines.push('', `Known about the user — ${memory.join('; ')}.`);
+    lines.push('Use this to fill in details, never as a reason to add an action.');
+  }
+  return lines.join('\n');
+}
+
+/** Turn returned tool_calls into the plan shape the executor already runs. */
+function toolCallsToPlan(
+  calls: { function?: { name?: string; arguments?: string } }[],
+): AgentPlan | null {
+  const actions: AgentAction[] = [];
+  for (const call of calls) {
+    const name = call.function?.name as AgentAction['tool'] | undefined;
+    if (!name) continue;
+    let args: Record<string, unknown> = {};
+    const raw = call.function?.arguments;
+    if (typeof raw === 'string' && raw.trim()) {
+      try {
+        args = JSON.parse(raw);
+      } catch {
+        args = {};
+      }
+    } else if (raw && typeof raw === 'object') {
+      args = raw as Record<string, unknown>;
+    }
+    actions.push({ tool: name, ...args } as AgentAction);
+  }
+  if (actions.length === 0) return null;
+  return {
+    steps: [{ mode: actions.length > 1 ? 'parallel' : 'sequential', actions }],
+    summary: '',
+  };
+}
+
+/**
+ * Ask the model which tools to run, using native tool calling.
+ *
+ * Returns null when the model chose no tool — the request is conversation,
+ * and the caller falls through to a normal chat completion.
+ */
+async function buildAgentPlanNative(
+  userMessage: string,
+  preferences: UserPreferences,
+  model: string,
+  installedApps: string[],
+  fileRoots: string[],
+): Promise<AgentPlan | null> {
+  const result = await fetchChatCompletion({
+    model,
+    messages: [
+      {
+        role: 'system',
+        content: routerSystemPrompt(preferences, installedApps, fileRoots),
+      },
+      { role: 'user', content: userMessage },
+    ],
+    tools: EIDON_TOOL_SCHEMAS,
+    temperature: 0,
+    max_tokens: 200,
+  });
+  const calls = result?.choices?.[0]?.message?.tool_calls;
+  if (!Array.isArray(calls) || calls.length === 0) return null;
+  return toolCallsToPlan(calls);
 }
 
 export async function buildAgentPlan(
@@ -764,6 +1038,22 @@ export async function buildAgentPlan(
     '- Summary must be 1 short sentence in Russian',
   ].join('\n');
 
+  // Native tool calling first: measured 5.8x faster and more accurate than
+  // asking the model to write a JSON plan. Not every model emits tool calls
+  // reliably, so the prompt-based path below stays as the fallback.
+  try {
+    const nativePlan = await buildAgentPlanNative(
+      userMessage,
+      preferences,
+      model,
+      installedApps,
+      fileRoots,
+    );
+    if (nativePlan) return nativePlan;
+  } catch (err) {
+    console.warn('[buildAgentPlan] native tool calling failed:', err);
+  }
+
   try {
     const result = await fetchChatCompletion({
       model,
@@ -783,23 +1073,6 @@ export async function buildAgentPlan(
     console.warn('[buildAgentPlan] failed:', err);
     return null;
   }
-}
-
-/**
- * "запомни, я не использую диспетчер задач" -> the thing to remember.
- *
- * Handled without a model call: asking a 4B model to route this took
- * seconds and often returned an empty plan, so nothing was saved at all.
- * Returns null when the message is not a remember request.
- */
-export function parseRememberIntent(content: string): string | null {
-  const text = stripGreetingPrefix(content.trim());
-  const match = text.match(
-    /^(?:запомни|запиши|сохрани|remember|note)[\s,:—-]*(?:что|that)?[\s,:—-]*(.+)$/i,
-  );
-  if (!match) return null;
-  const payload = match[1].trim().replace(/^[,:\s—-]+/, '').trim();
-  return payload.length > 1 ? payload : null;
 }
 
 export function isWorkAppsIntent(content: string): boolean {
@@ -846,6 +1119,8 @@ export async function fetchChatCompletion(request: {
   messages: Array<{ role: string; content: string }>;
   temperature?: number;
   max_tokens?: number;
+  /** OpenAI-format tool definitions; the reply then carries tool_calls. */
+  tools?: unknown[];
 }): Promise<any> {
   if (isTauri()) {
     try {

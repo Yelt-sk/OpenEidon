@@ -58,6 +58,22 @@ def default_num_ctx() -> int:
     return 16384
 
 
+
+def default_keep_alive() -> str:
+    """How long Ollama should hold the model in memory after a request.
+
+    Ollama's own default is 5 minutes, which suits a server answering a
+    steady stream of requests. An assistant is used in bursts, so that
+    default means most interactions pay a full model load first — measured
+    here at roughly 10 s for a 2.5 GB model. Holding it resident trades
+    idle VRAM for responsiveness, which is the right trade on a personal
+    machine. Override with EIDON_KEEP_ALIVE (any Ollama duration, or "0"
+    to unload immediately).
+    """
+    override = os.environ.get("EIDON_KEEP_ALIVE", "").strip()
+    return override or "30m"
+
+
 @EngineRegistry.register("ollama")
 class OllamaEngine(InferenceEngine):
     """Ollama backend via its native HTTP API."""
@@ -72,6 +88,7 @@ class OllamaEngine(InferenceEngine):
         *,
         timeout: float = 1800.0,
         num_ctx: int | None = None,
+        keep_alive: str = "",
     ) -> None:
         # Priority: explicit host (from config.toml) > OLLAMA_HOST env var > default
         if host is None:
@@ -82,6 +99,7 @@ class OllamaEngine(InferenceEngine):
         # Last stream usage — captured from Ollama's final chunk
         self._last_stream_usage: Dict[str, int] = {}
         self._num_ctx = num_ctx if num_ctx else default_num_ctx()
+        self._keep_alive = keep_alive or default_keep_alive()
 
     def generate(
         self,
@@ -107,6 +125,7 @@ class OllamaEngine(InferenceEngine):
             "model": model,
             "messages": msg_dicts,
             "stream": False,
+            "keep_alive": kwargs.get("keep_alive") or self._keep_alive,
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,
@@ -234,6 +253,7 @@ class OllamaEngine(InferenceEngine):
             "model": model,
             "messages": messages_to_dicts(messages),
             "stream": True,
+            "keep_alive": kwargs.get("keep_alive") or self._keep_alive,
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,

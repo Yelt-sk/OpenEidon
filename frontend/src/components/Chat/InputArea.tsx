@@ -42,7 +42,6 @@ import {
   listFiles,
   findAndOpenFile,
   getFileRoots,
-  parseRememberIntent,
   saveMemoryFact,
   runCodeTask,
   getCodeSession,
@@ -278,36 +277,6 @@ Allow?`);
     }
 
     try {
-      // ----- Remember something (no model call) -----
-      // Routing this through the planner cost seconds and frequently came
-      // back with an empty plan, so nothing was saved.
-      const remembered = parseRememberIntent(content);
-      if (remembered) {
-        setStreamState({ phase: 'Запоминаю...' });
-        try {
-          const prefs = await getUserPreferences();
-          await setUserPreferences('custom', {
-            ...prefs.custom,
-            [Date.now().toString()]: remembered,
-          });
-          await saveMemoryFact('preference', remembered.slice(0, 120), '');
-          useAppStore.getState().bumpMemoryVersion();
-          accumulatedContent = `Запомнил: ${remembered}`;
-          appendActivity(`Remembered: ${remembered.slice(0, 60)}`);
-        } catch (rememberErr: unknown) {
-          const msg = rememberErr instanceof Error ? rememberErr.message : String(rememberErr);
-          accumulatedContent = `Не удалось запомнить: ${msg}`;
-        }
-        updateLastAssistant(convId, accumulatedContent);
-        setStreamState({ content: accumulatedContent, phase: 'Done' });
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-        }
-        resetStream();
-        return;
-      }
-
       // ----- Open all saved work apps -----
       try {
         if (!accumulatedContent && isWorkAppsIntent(content)) {
