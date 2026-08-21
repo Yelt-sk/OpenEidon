@@ -86,7 +86,34 @@ def resolve_model_for_app(app_state: Any, explicit: str = "") -> str:
     )
 
 
-__all__ = ["resolve_model", "resolve_model_for_app"]
+def lightest_model(engine: Any) -> str:
+    """Return the smallest installed model by on-disk size, or ``""``.
+
+    Used as the default for delegated coding sessions: those run many turns,
+    so the cheapest model that works is the right starting point, and the
+    user can pick a heavier one explicitly.
+    """
+    if engine is None:
+        return ""
+    try:
+        detailed = engine.list_models_detailed()
+    except Exception as exc:
+        logger.debug("Could not list detailed models: %s", exc)
+        return ""
+
+    sized = [
+        (entry.get("size_bytes") or 0, entry.get("id", ""))
+        for entry in detailed
+        if entry.get("id") and entry.get("size_bytes")
+    ]
+    if not sized:
+        # No sizes reported — fall back to whatever the engine lists first.
+        return resolve_model(engine)
+    sized.sort()
+    return sized[0][1]
+
+
+__all__ = ["lightest_model", "resolve_model", "resolve_model_for_app"]
 
 
 def resolve_model_or(default: str, **kwargs: Any) -> str:

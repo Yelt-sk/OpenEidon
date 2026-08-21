@@ -309,6 +309,14 @@ class GuardrailsEngine(InferenceEngine):
         """Delegate to wrapped engine."""
         return self._engine.list_models()
 
+    def list_models_detailed(self) -> List[Dict[str, Any]]:
+        """Delegate to wrapped engine.
+
+        Inheriting the base implementation here would quietly strip the model
+        size metadata the UI displays.
+        """
+        return self._engine.list_models_detailed()
+
     def health(self) -> bool:
         """Delegate to wrapped engine."""
         return self._engine.health()

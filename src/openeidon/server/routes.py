@@ -557,7 +557,7 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
                 suggested_max_tokens=suggested,
             )
             # Bump max_tokens when complexity suggests more than what
-            # the client requested вЂ” never reduce below the request value.
+            # the client requested — never reduce below the request value.
             if suggested > request_body.max_tokens:
                 request_body.max_tokens = suggested
         except Exception:
@@ -743,7 +743,7 @@ async def _handle_stream(
     messages = _to_messages(req.messages)
     chunk_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
 
-    # Route directly to the right backend вЂ” bypasses engine routing entirely
+    # Route directly to the right backend — bypasses engine routing entirely
     # so broken MultiEngine state can never misdirect requests.
     use_cloud = is_cloud_model(model)
 
@@ -775,7 +775,7 @@ async def _handle_stream(
                 # Use engine.stream() by default (preserves mock-engine
                 # compatibility in tests).  Only fall back to stream_local()
                 # when a real MultiEngine would mis-route the local model to a
-                # cloud backend вЂ” detected via isinstance so mocks are not
+                # cloud backend — detected via isinstance so mocks are not
                 # accidentally matched.
                 _use_local_fallback = False
                 try:
@@ -1261,7 +1261,7 @@ async def generate_project(request_body: ProjectGenerateRequest, request: Reques
 async def list_models(request: Request) -> ModelListResponse:
     """List locally installed models (Ollama).
 
-    Cloud models are not included here вЂ” they live in the Cloud Models tab
+    Cloud models are not included here — they live in the Cloud Models tab
     of the UI and are selected there, not from this endpoint.
     """
     from openeidon.server.cloud_router import is_cloud_model, list_local_models
@@ -1275,8 +1275,27 @@ async def list_models(request: Request) -> ModelListResponse:
     if not model_ids:
         model_ids = await list_local_models()
 
+    # Attach size/quantization when the engine can report it, so the UI can
+    # show how heavy each model is before the user picks one.
+    detail_by_id: dict[str, dict[str, Any]] = {}
+    try:
+        for entry in engine.list_models_detailed():
+            model_id = entry.get("id")
+            if model_id:
+                detail_by_id[model_id] = entry
+    except Exception:  # engines are not required to implement this
+        logger.debug("Engine does not provide detailed model info", exc_info=True)
+
     return ModelListResponse(
-        data=[ModelObject(id=mid) for mid in model_ids],
+        data=[
+            ModelObject(
+                id=mid,
+                size_bytes=detail_by_id.get(mid, {}).get("size_bytes"),
+                parameter_size=detail_by_id.get(mid, {}).get("parameter_size", ""),
+                quantization=detail_by_id.get(mid, {}).get("quantization", ""),
+            )
+            for mid in model_ids
+        ],
     )
 
 
@@ -1620,7 +1639,7 @@ async def savings(request: Request):
     agg = TelemetryAggregator(db_path)
     try:
         summary = agg.summary(since=session_start)
-        # Exclude cloud model tokens from savings вЂ” only local
+        # Exclude cloud model tokens from savings — only local
         # inference counts toward cost savings.
         _cloud_prefixes = (
             "gpt-",
@@ -1654,7 +1673,7 @@ async def savings(request: Request):
 async def reset_telemetry():
     """Clear all stored telemetry records.
 
-    Useful after updating token-counting methodology вЂ” clears
+    Useful after updating token-counting methodology — clears
     historical records that were computed under the old rules so
     that the savings dashboard and leaderboard submissions start
     fresh with corrected values.

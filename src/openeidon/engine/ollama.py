@@ -266,6 +266,34 @@ class OllamaEngine(InferenceEngine):
         data = resp.json()
         return [m["name"] for m in data.get("models", [])]
 
+    def list_models_detailed(self) -> List[Dict[str, Any]]:
+        """Model ids with on-disk size and quantization from ``/api/tags``."""
+        try:
+            resp = self._client.get("/api/tags")
+            resp.raise_for_status()
+        except (
+            httpx.ConnectError,
+            httpx.TimeoutException,
+            httpx.HTTPStatusError,
+        ) as exc:
+            logger.warning(
+                "Failed to list models from Ollama at %s: %s", self._host, exc
+            )
+            return []
+
+        detailed: List[Dict[str, Any]] = []
+        for entry in resp.json().get("models", []):
+            details = entry.get("details") or {}
+            detailed.append(
+                {
+                    "id": entry.get("name", ""),
+                    "size_bytes": entry.get("size"),
+                    "parameter_size": details.get("parameter_size", ""),
+                    "quantization": details.get("quantization_level", ""),
+                }
+            )
+        return [m for m in detailed if m["id"]]
+
     def health(self) -> bool:
         try:
             resp = self._client.get("/api/tags", timeout=2.0)

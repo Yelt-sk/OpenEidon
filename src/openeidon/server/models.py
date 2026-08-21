@@ -108,6 +108,12 @@ class ModelObject(BaseModel):
     object: str = "model"
     created: int = Field(default_factory=lambda: int(time.time()))
     owned_by: str = "openeidon"
+    #: On-disk size in bytes, when the engine reports it. Extra fields are
+    #: ignored by OpenAI-compatible clients; the UI uses this to show the
+    #: weight of each model in the picker.
+    size_bytes: Optional[int] = None
+    parameter_size: str = ""
+    quantization: str = ""
 
 
 class ModelListResponse(BaseModel):

@@ -36,6 +36,7 @@ export interface Workflow {
 
 const CONVERSATIONS_KEY = 'openeidon-conversations';
 const WORKFLOWS_KEY = 'openeidon-workflows';
+const AGENT_MODEL_KEY = 'openeidon-agent-model';
 const SETTINGS_KEY = 'openeidon-settings';
 const DESKTOP_SPEECH_BOOTSTRAP_KEY = 'openeidon-desktop-speech-bootstrap-v1';
 const OPTIN_KEY = 'openeidon-optin';
@@ -280,6 +281,11 @@ interface AppState {
   updateWorkflow: (id: string, patch: Partial<Workflow>) => void;
   markWorkflowRan: (id: string) => void;
   replaceWorkflows: (list: Workflow[]) => void;
+
+  // Model used for delegated coding sessions (OpenCode). Empty means
+  // "let the backend pick the lightest installed model".
+  agentModel: string;
+  setAgentModel: (model: string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => {
@@ -586,6 +592,12 @@ export const useAppStore = create<AppState>((set, get) => {
     replaceWorkflows: (list) => {
       localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(list));
       set({ workflows: list });
+    },
+
+    agentModel: localStorage.getItem(AGENT_MODEL_KEY) || '',
+    setAgentModel: (model) => {
+      localStorage.setItem(AGENT_MODEL_KEY, model);
+      set({ agentModel: model });
     },
     markWorkflowRan: (id) => {
       const next = get().workflows.map(w => w.id === id ? { ...w, lastRun: Date.now() } : w);

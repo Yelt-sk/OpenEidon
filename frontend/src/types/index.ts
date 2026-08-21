@@ -105,6 +105,10 @@ export interface ModelInfo {
   object: string;
   created: number;
   owned_by: string;
+  /** On-disk size in bytes when the engine reports it. */
+  size_bytes?: number | null;
+  parameter_size?: string;
+  quantization?: string;
 }
 
 export interface ProviderSavings {

@@ -109,6 +109,16 @@ class InferenceEngine(ABC):
     def list_models(self) -> List[str]:
         """Return identifiers of models available on this engine."""
 
+    def list_models_detailed(self) -> List[Dict[str, Any]]:
+        """Return per-model metadata: ``id`` plus whatever the engine knows.
+
+        Engines that can report on-disk size, parameter count, or quantization
+        should override this; the UI shows the size next to each model so the
+        user can tell a 1.4 GB model from a 4.7 GB one before selecting it.
+        The default keeps every engine working by reporting ids only.
+        """
+        return [{"id": model_id} for model_id in self.list_models()]
+
     @abstractmethod
     def health(self) -> bool:
         """Return ``True`` when the engine is reachable and healthy."""

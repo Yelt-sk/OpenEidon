@@ -1,7 +1,7 @@
 ﻿import type { ModelInfo, SavingsData, ServerInfo } from '../types';
 
 // ---------------------------------------------------------------------------
-// Supabase config вЂ” safe to embed (RLS protects writes)
+// Supabase config — safe to embed (RLS protects writes)
 // ---------------------------------------------------------------------------
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
@@ -27,7 +27,7 @@ export const isTauri = () => {
 };
 
 // Cached API base URL fetched from the Tauri backend at startup.
-// This avoids hardcoding the port вЂ” the Rust backend is the single
+// This avoids hardcoding the port — the Rust backend is the single
 // source of truth for EIDON_PORT.
 let _tauriApiBase: string | null = null;
 
@@ -1740,7 +1740,15 @@ export interface CodeSessionState {
   diff: { file?: string }[] | unknown;
 }
 
-export async function codeHealth(): Promise<{ installed: boolean; running: boolean }> {
+export interface CodeHealth {
+  installed: boolean;
+  running: boolean;
+  /** Model the backend would use by default (lightest installed). */
+  model: string;
+  available_models: { id: string; size_bytes?: number | null; parameter_size?: string }[];
+}
+
+export async function codeHealth(): Promise<CodeHealth> {
   return apiJsonRequest('GET', '/v1/code/health');
 }
 

@@ -12,7 +12,7 @@ import asyncio
 import logging
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from openeidon.connectors.opencode import (
@@ -20,6 +20,7 @@ from openeidon.connectors.opencode import (
     extract_text_reply,
     get_manager,
 )
+from openeidon.intelligence.model_resolver import lightest_model
 
 logger = logging.getLogger(__name__)
 
@@ -64,17 +65,47 @@ def _check_directory(raw: str) -> Path:
     )
 
 
+def _default_code_model(request: Request) -> str:
+    """Model for delegated coding sessions.
+
+    Explicitly configured value wins; otherwise the lightest installed model,
+    since a coding session runs many turns and the cheapest capable model is
+    the sensible starting point.
+    """
+    config = getattr(request.app.state, "config", None)
+    configured = getattr(getattr(config, "opencode", None), "model", "")
+    if configured:
+        return configured
+    return lightest_model(getattr(request.app.state, "engine", None))
+
+
 @code_router.get("/v1/code/health")
-async def code_health():
+async def code_health(request: Request):
     manager = get_manager()
+    engine = getattr(request.app.state, "engine", None)
+    try:
+        available = await asyncio.to_thread(
+            lambda: engine.list_models_detailed() if engine else []
+        )
+    except Exception:
+        available = []
     return {
         "installed": manager.available(),
         "running": await asyncio.to_thread(manager.is_running),
+        "model": _default_code_model(request),
+        "available_models": [
+            {
+                "id": m.get("id", ""),
+                "size_bytes": m.get("size_bytes"),
+                "parameter_size": m.get("parameter_size", ""),
+            }
+            for m in available
+        ],
     }
 
 
 @code_router.post("/v1/code/task")
-async def run_code_task(body: CodeTaskRequest):
+async def run_code_task(body: CodeTaskRequest, request: Request):
     """Start a coding task; returns session_id immediately (task runs async)."""
     task = body.task.strip()
     if not task:
@@ -94,7 +125,7 @@ async def run_code_task(body: CodeTaskRequest):
                 session_id,
                 task,
                 directory=directory,
-                model=body.model or None,
+                model=body.model or _default_code_model(request) or None,
                 wait=False,
             )
         )

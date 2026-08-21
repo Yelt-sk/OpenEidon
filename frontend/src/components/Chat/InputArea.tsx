@@ -205,7 +205,8 @@ export function InputArea({ mode = 'chat' }: { mode?: 'chat' | 'cmd' | 'voice' |
 
         const sesKey = `eidon-opencode-ses-${convId}`;
         const priorSession = localStorage.getItem(sesKey) || undefined;
-        const started = await runCodeTask(content, directory, undefined, priorSession);
+        const agentModel = useAppStore.getState().agentModel;
+        const started = await runCodeTask(content, directory, agentModel || undefined, priorSession);
         localStorage.setItem(sesKey, started.session_id);
         appendActivity(`OpenCode session ${started.session_id.slice(0, 12)} @ ${started.directory}`);
 

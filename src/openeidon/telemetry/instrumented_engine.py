@@ -495,6 +495,11 @@ class InstrumentedEngine(InferenceEngine):
     def list_models(self) -> List[str]:
         return self._inner.list_models()
 
+    def list_models_detailed(self) -> List[Dict[str, Any]]:
+        # Forward rather than inherit: the base implementation would report
+        # ids only, dropping the size the UI shows for each model.
+        return self._inner.list_models_detailed()
+
     def health(self) -> bool:
         return self._inner.health()
 

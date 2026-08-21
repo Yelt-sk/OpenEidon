@@ -9,6 +9,7 @@ import { ToolCallCard } from '../components/Chat/ToolCallCard';
 import { InputArea } from '../components/Chat/InputArea';
 import { NewWorkflowModal } from '../components/Workflow/NewWorkflowModal';
 import { useAppStore, type ThemeMode } from '../lib/store';
+import { formatModelSize, modelLabelWithSize } from '../lib/format';
 import { listServerWorkflows, listMemoryFacts, saveMemoryFact, deleteMemoryFact, type MemoryFact, type MemoryFactCounts, checkHealth, fetchSpeechHealth, buildAgentPlan, getUserPreferences, fetchInstalledApps, playYouTubeQuery, openLocalApp, openLocalAppDirect, openExternalTarget, webSearch, fetchChatCompletion, setReminder, getFileRoots, setFileRoots } from '../lib/api';
 import type { Workflow } from '../lib/store';
 import { useSpeechOutput } from '../hooks/useSpeechOutput';
@@ -200,6 +201,8 @@ function SettingsPanel() {
   const updateSettings = useAppStore((s) => s.updateSettings);
   const conversations = useAppStore((s) => s.conversations);
   const models = useAppStore((s) => s.models);
+  const agentModel = useAppStore((s) => s.agentModel);
+  const setAgentModel = useAppStore((s) => s.setAgentModel);
   const [healthy, setHealthy] = useState<boolean | null>(null);
   const [speechOk, setSpeechOk] = useState<boolean | null>(null);
   const [saved, setSaved] = useState(false);
@@ -305,12 +308,32 @@ function SettingsPanel() {
           ? <div style={{ fontSize: 11, color: textTert }}>Нет загруженных моделей</div>
           : <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {models.slice(0, 8).map((m) => (
-              <span key={m.id} style={{ padding: '2px 8px', borderRadius: 4, fontSize: 10, background: accentFaint, color: textSec, border: cardBorder }}>
+              <span key={m.id} title={m.parameter_size ? `${m.parameter_size} ${m.quantization || ''}`.trim() : undefined}
+                style={{ padding: '2px 8px', borderRadius: 4, fontSize: 10, background: accentFaint, color: textSec, border: cardBorder }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#6ef08c', display: 'inline-block', marginRight: 4 }} />
                 {m.id}
+                {formatModelSize(m.size_bytes) && (
+                  <span style={{ color: textTert, marginLeft: 5 }}>{formatModelSize(m.size_bytes)}</span>
+                )}
               </span>
             ))}
           </div>}
+      </Panel>
+
+      <Panel style={{ background: cardBg1 }}>
+        <Label>Модель агента (OpenCode)</Label>
+        <Row label="Кодинг-агент" desc="По умолчанию — самая лёгкая установленная модель">
+          <select
+            value={agentModel}
+            onChange={(e) => setAgentModel(e.target.value)}
+            style={{ fontSize: 11, padding: '4px 8px', borderRadius: 8, outline: 'none', width: 200, background: inputBg, color: textMain, border: cardBorder }}
+          >
+            <option value="">Авто (самая лёгкая)</option>
+            {models.map((m) => (
+              <option key={m.id} value={m.id}>{modelLabelWithSize(m.id, m.size_bytes)}</option>
+            ))}
+          </select>
+        </Row>
       </Panel>
 
       <Panel style={{ background: cardBg2 }}>
@@ -393,6 +416,8 @@ export function EidonApp() {
   const messages = useAppStore((s) => s.messages);
   const streamState = useAppStore((s) => s.streamState);
   const selectedModel = useAppStore((s) => s.selectedModel);
+  const setSelectedModel = useAppStore((s) => s.setSelectedModel);
+  const models = useAppStore((s) => s.models);
   const serverInfo = useAppStore((s) => s.serverInfo);
   const conversations = useAppStore((s) => s.conversations);
   const activeId = useAppStore((s) => s.activeId);
@@ -410,6 +435,7 @@ export function EidonApp() {
   const [showNewWorkflow, setShowNewWorkflow] = useState(false);
   const [mode, setMode] = useState<'chat' | 'cmd' | 'voice' | 'agent'>('chat');
   const [trailTab, setTrailTab] = useState<'now' | 'timeline' | 'tools'>('now');
+  const [modelPickerOpen, setModelPickerOpen] = useState(false);
   const [trailVisible, setTrailVisible] = useState(true);
   const [online, setOnline] = useState<boolean | null>(null);
   const [convSearch, setConvSearch] = useState('');
@@ -642,6 +668,9 @@ export function EidonApp() {
   }, [messages.length, createConversation, selectedModel]);
 
   const modelLabel = selectedModel || serverInfo?.model || '—';
+  const selectedModelSize = formatModelSize(
+    models.find((m) => m.id === (selectedModel || serverInfo?.model))?.size_bytes,
+  );
 
   return (
     <>
@@ -678,10 +707,46 @@ export function EidonApp() {
               <span className={`tb-ping ${online === false ? 'offline' : ''}`} />
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10 }}>ON-DEVICE</span>
             </div>
-            <div className="tb-model">
+            <div className="tb-model" style={{ position: 'relative', cursor: 'pointer' }}
+              onClick={() => setModelPickerOpen((v) => !v)}
+              title="Выбрать модель">
               <span style={{ color: 'var(--fox)' }}>◆</span>
               <span>{modelLabel}</span>
+              {selectedModelSize && (
+                <span style={{ color: 'var(--ink-ghost)', marginLeft: 4 }}>{selectedModelSize}</span>
+              )}
               <span style={{ color: 'var(--ink-ghost)' }}>▾</span>
+              {modelPickerOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: 'absolute', top: '110%', right: 0, zIndex: 50,
+                    minWidth: 240, maxHeight: 320, overflowY: 'auto',
+                    background: 'var(--panel, #17140f)', border: '1px solid var(--line, #2a241b)',
+                    borderRadius: 8, padding: 4, boxShadow: '0 8px 24px rgba(0,0,0,.45)',
+                  }}
+                >
+                  {models.length === 0 && (
+                    <div style={{ padding: '6px 8px', fontSize: 11, opacity: 0.6 }}>Нет моделей</div>
+                  )}
+                  {models.map((m) => (
+                    <div
+                      key={m.id}
+                      onClick={() => { setSelectedModel(m.id); setModelPickerOpen(false); }}
+                      style={{
+                        padding: '5px 8px', fontSize: 11, borderRadius: 5,
+                        display: 'flex', justifyContent: 'space-between', gap: 10,
+                        background: m.id === selectedModel ? 'var(--fox-faint, rgba(255,140,40,.12))' : 'transparent',
+                      }}
+                    >
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.id}</span>
+                      <span style={{ opacity: 0.55, whiteSpace: 'nowrap' }}>
+                        {formatModelSize(m.size_bytes) || m.parameter_size || ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

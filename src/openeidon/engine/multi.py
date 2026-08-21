@@ -116,6 +116,28 @@ class MultiEngine(InferenceEngine):
         self._refresh_map()
         return list(self._model_map.keys())
 
+    def list_models_detailed(self) -> List[Dict[str, Any]]:
+        """Merge per-model metadata from every wrapped engine.
+
+        Without this the base implementation would report ids only, and the
+        size the UI shows next to each model would silently disappear behind
+        the wrapper.
+        """
+        merged: Dict[str, Dict[str, Any]] = {}
+        for _key, engine in self._engines:
+            try:
+                entries = engine.list_models_detailed()
+            except Exception as exc:
+                logger.debug("Engine %s has no detailed model info: %s", _key, exc)
+                continue
+            for entry in entries:
+                model_id = entry.get("id")
+                if model_id and model_id not in merged:
+                    merged[model_id] = entry
+        # Keep list_models() ordering, and never drop a model just because
+        # its engine reported no detail for it.
+        return [merged.get(mid, {"id": mid}) for mid in self.list_models()]
+
     def health(self) -> bool:
         return any(engine.health() for _key, engine in self._engines)
 
