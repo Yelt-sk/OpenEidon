@@ -42,6 +42,8 @@ import {
   listFiles,
   findAndOpenFile,
   getFileRoots,
+  parseRememberIntent,
+  saveMemoryFact,
   runCodeTask,
   getCodeSession,
   respondCodePermission,
@@ -276,6 +278,36 @@ Allow?`);
     }
 
     try {
+      // ----- Remember something (no model call) -----
+      // Routing this through the planner cost seconds and frequently came
+      // back with an empty plan, so nothing was saved.
+      const remembered = parseRememberIntent(content);
+      if (remembered) {
+        setStreamState({ phase: 'Запоминаю...' });
+        try {
+          const prefs = await getUserPreferences();
+          await setUserPreferences('custom', {
+            ...prefs.custom,
+            [Date.now().toString()]: remembered,
+          });
+          await saveMemoryFact('preference', remembered.slice(0, 120), '');
+          useAppStore.getState().bumpMemoryVersion();
+          accumulatedContent = `Запомнил: ${remembered}`;
+          appendActivity(`Remembered: ${remembered.slice(0, 60)}`);
+        } catch (rememberErr: unknown) {
+          const msg = rememberErr instanceof Error ? rememberErr.message : String(rememberErr);
+          accumulatedContent = `Не удалось запомнить: ${msg}`;
+        }
+        updateLastAssistant(convId, accumulatedContent);
+        setStreamState({ content: accumulatedContent, phase: 'Done' });
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        resetStream();
+        return;
+      }
+
       // ----- Open all saved work apps -----
       try {
         if (!accumulatedContent && isWorkAppsIntent(content)) {
@@ -660,19 +692,31 @@ Allow?`);
                     const cat = action.category || 'note';
                     const val = action.value || '';
                     const currentPrefs = await getUserPreferences();
+                    // What the planner reads back on the next turn.
+                    let factDetail = '';
                     if (cat === 'music_artist') {
                       await setUserPreferences('music', { genres: currentPrefs.music.genres, artists: [...new Set([...currentPrefs.music.artists, val])] });
+                      factDetail = 'исполнитель';
                       accumulatedContent = `Запомнил: исполнитель **${val}**`;
                     } else if (cat === 'music_genre') {
                       await setUserPreferences('music', { genres: [...new Set([...currentPrefs.music.genres, val])], artists: currentPrefs.music.artists });
+                      factDetail = 'жанр';
                       accumulatedContent = `Запомнил: жанр **${val}**`;
                     } else if (cat === 'work_app') {
                       await setUserPreferences('work_apps', { apps: [...new Set([...currentPrefs.work_apps, val])] });
+                      factDetail = 'рабочая программа';
                       accumulatedContent = `Запомнил: рабочая программа **${val}**`;
                     } else {
                       await setUserPreferences('custom', { ...currentPrefs.custom, [Date.now().toString()]: val });
                       accumulatedContent = `Запомнил: ${val}`;
                     }
+                    // Mirror into structured memory so the MEMORY sidebar
+                    // actually shows what was remembered — the preferences
+                    // JSON above is invisible to the user.
+                    try {
+                      await saveMemoryFact('preference', val.slice(0, 120), factDetail);
+                      useAppStore.getState().bumpMemoryVersion();
+                    } catch { /* structured memory unavailable — preference is still saved */ }
                     appendActivity(`Saved: ${cat} = ${val}`);
                     break;
                   }
@@ -692,7 +736,9 @@ Allow?`);
                     break;
                   }
                   case 'list_files': {
-                    const dir = action.path || 'D:\\projects\\eidon';
+                    // No hardcoded path: fall back to the first allowed root
+                    // so this works on any machine.
+                    const dir = action.path || (await getFileRoots()).roots[0] || '.';
                     appendActivity(`Listing: ${dir}`);
                     const listResult = await listFiles(dir);
                     const lines = listResult.entries.map(e =>

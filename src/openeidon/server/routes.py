@@ -37,6 +37,10 @@ from openeidon.server.models import (
 
 logger = logging.getLogger(__name__)
 
+#: Budget used when the client sends no max_tokens and complexity scoring
+#: produced nothing. Matches the previous request-model default.
+_DEFAULT_MAX_TOKENS = 1024
+
 router = APIRouter()
 
 
@@ -556,15 +560,22 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
                 tier=cr.tier,
                 suggested_max_tokens=suggested,
             )
-            # Bump max_tokens when complexity suggests more than what
-            # the client requested — never reduce below the request value.
-            if suggested > request_body.max_tokens:
+            # Size the budget from complexity only when the client did not
+            # specify one. An explicit max_tokens is the caller's latency
+            # budget: raising it silently made short calls (intent routing,
+            # classification) generate several times what they asked for.
+            if request_body.max_tokens is None:
                 request_body.max_tokens = suggested
         except Exception:
             logging.getLogger("openeidon.server").debug(
                 "Complexity analysis failed",
                 exc_info=True,
             )
+
+    # Complexity scoring may not have run (no user text, or it failed), so
+    # settle on a budget before anything downstream reads it.
+    if request_body.max_tokens is None:
+        request_body.max_tokens = _DEFAULT_MAX_TOKENS
 
     if request_body.stream:
         bus = getattr(request.app.state, "bus", None)
@@ -576,8 +587,12 @@ async def chat_completions(request_body: ChatCompletionRequest, request: Request
             return await _handle_agent_stream(agent, bus, model, request_body)
         return await _handle_stream(engine, model, request_body, complexity_info)
 
-    # Non-streaming: use agent if available, otherwise direct engine call
-    if agent is not None:
+    # Non-streaming: use agent if available, otherwise direct engine call.
+    # A caller that supplies its own tools wants OpenAI semantics — the model
+    # returns tool_calls and the caller executes them. The agent path runs its
+    # own registry tools and drops request tools entirely, so a client asking
+    # for routing got a plain refusal instead of a tool call.
+    if agent is not None and not request_body.tools:
         return _handle_agent(agent, model, request_body, complexity_info)
 
     bus = getattr(request.app.state, "bus", None)
@@ -677,14 +692,26 @@ def _handle_agent(
     # Last message is the input
     input_text = req.messages[-1].content if req.messages else ""
 
-    # Override agent model for this request if the caller specified one
+    # Apply per-request generation settings, restoring them afterwards.
+    # Without this the agent silently used its construction-time defaults, so
+    # a caller asking for max_tokens=40 (intent routing) still paid for 1024.
     original_model = agent._model
+    original_max_tokens = getattr(agent, "_max_tokens", None)
+    original_temperature = getattr(agent, "_temperature", None)
     if model:
         agent._model = model
+    if req.max_tokens is not None and hasattr(agent, "_max_tokens"):
+        agent._max_tokens = req.max_tokens
+    if req.temperature is not None and hasattr(agent, "_temperature"):
+        agent._temperature = req.temperature
     try:
         result = agent.run(input_text, context=ctx)
     finally:
         agent._model = original_model
+        if original_max_tokens is not None:
+            agent._max_tokens = original_max_tokens
+        if original_temperature is not None:
+            agent._temperature = original_temperature
 
     usage = UsageInfo(
         prompt_tokens=result.metadata.get("prompt_tokens", 0),
@@ -897,6 +924,8 @@ async def play_youtube(request_body: YouTubePlaybackRequest):
             }
 
         raise HTTPException(status_code=500, detail=f"No YouTube video result found for '{query}'")
+    except HTTPException:
+        raise  # keep the specific status and message
     except Exception as exc:
         logger.exception("Request failed")
         raise HTTPException(status_code=500, detail="Internal server error") from exc
@@ -912,6 +941,8 @@ async def open_external(request_body: ExternalOpenRequest):
         _safe_open_url(target)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except HTTPException:
+        raise  # keep the specific status and message
     except Exception as exc:
         logger.exception("open_external failed")
         raise HTTPException(status_code=500, detail="Internal server error") from exc
@@ -945,6 +976,8 @@ async def open_search_sites(request_body: SearchOpenRequest):
         }
     except HTTPException:
         raise
+    except HTTPException:
+        raise  # keep the specific status and message
     except Exception as exc:
         logger.exception("Request failed")
         raise HTTPException(status_code=500, detail="Internal server error") from exc
@@ -982,6 +1015,8 @@ async def research_youtube(request_body: ResearchYouTubeRequest, request: Reques
         }
     except HTTPException:
         raise
+    except HTTPException:
+        raise  # keep the specific status and message
     except Exception as exc:
         logger.exception("Request failed")
         raise HTTPException(status_code=500, detail="Internal server error") from exc
@@ -1082,6 +1117,8 @@ async def open_local_app(request_body: LocalAppOpenRequest, request: Request):
             "opened": ", ".join(opened_labels),
             "query": query,
         }
+    except HTTPException:
+        raise  # keep the specific status and message
     except Exception as exc:
         logger.exception("Request failed")
         raise HTTPException(status_code=500, detail="Internal server error") from exc

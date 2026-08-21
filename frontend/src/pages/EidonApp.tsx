@@ -468,7 +468,11 @@ export function EidonApp() {
     }
   }, []);
 
-  useEffect(() => { refreshMemory(); }, [refreshMemory]);
+  // Reload when a fact is written from the chat, not just on mount.
+  const memoryVersion = useAppStore((s) => s.memoryVersion);
+  useEffect(() => {
+    refreshMemory(memoryKind);
+  }, [refreshMemory, memoryVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hydrate workflows from the backend (they live in the scheduler now, so
   // they keep running with the UI closed); localStorage is the offline copy.

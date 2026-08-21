@@ -25,7 +25,9 @@ class ChatCompletionRequest(BaseModel):
     model: str
     messages: List[ChatMessage]
     temperature: float = 0.7
-    max_tokens: int = 1024
+    #: None means "unspecified" — the server may then size the budget
+    #: from request complexity. An explicit value is a hard cap.
+    max_tokens: Optional[int] = None
     stream: bool = False
     tools: Optional[List[Dict[str, Any]]] = None
 

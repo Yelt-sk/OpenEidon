@@ -286,6 +286,11 @@ interface AppState {
   // "let the backend pick the lightest installed model".
   agentModel: string;
   setAgentModel: (model: string) => void;
+
+  // Bumped whenever a fact is written, so the MEMORY sidebar reloads
+  // instead of showing stale counters until the next page load.
+  memoryVersion: number;
+  bumpMemoryVersion: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => {
@@ -593,6 +598,9 @@ export const useAppStore = create<AppState>((set, get) => {
       localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(list));
       set({ workflows: list });
     },
+
+    memoryVersion: 0,
+    bumpMemoryVersion: () => set((state) => ({ memoryVersion: state.memoryVersion + 1 })),
 
     agentModel: localStorage.getItem(AGENT_MODEL_KEY) || '',
     setAgentModel: (model) => {

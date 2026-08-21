@@ -752,9 +752,9 @@ export async function buildAgentPlan(
     '- Choose apps from context/mood: вайб → Spotify/Discord, игры → Steam/Discord, работа → VS Code/Figma, праздник → Spotify/браузер',
     '- For play_youtube: write a query matching the mood. Use saved preferences if they fit; adapt them otherwise (rock → "rock party mix" for праздник, "gaming rock" for игры)',
     '- NEVER copy the user\'s message as a play_youtube query',
-    '- Use user preferences (saved work apps, music genres, artists) to make decisions — if the user has saved work apps, open them for work setup; if the user has saved music genres/artists, include play_youtube with their taste when context is about setting up environment, mood, or work session',
+    '- Use user preferences (saved work apps, music genres, artists) to make decisions — if the user has saved work apps, open them for work setup. Saved music taste only shapes the QUERY when music was already requested; it is never a reason to add music',
     '- For music query: use saved genres/artists as the base, adapt to the mood (e.g. rock → "rock focus playlist" for work, "rock gaming mix" for gaming)',
-    '- Add play_youtube only if music is relevant to the context (setup, mood, vibe, explicit request) — do not add it for purely functional requests (open app, set reminder, search)',
+    '- Add play_youtube ONLY when the object of the request is music or a video (a genre, an artist, a song, a clip). The verb alone never implies music: "включи"/"turn on" followed by an application, a website, or a category of programs means open them. Opening an app, a site, setting a reminder, searching, or setting up a work environment must not add music',
     '- ALWAYS use save_preference when user says запомни/remember/запиши/note that/сохрани. Choose category: "music_artist" for band/singer names, "music_genre" for genres, "work_app" for apps, "note" for anything else. Value = the exact thing to remember.',
     '- ALWAYS use web_search when user asks for current news, latest info, internet search, recent events, weather, prices, or any real-time data (поищи, найди в интернете, последние новости, что нового, загугли, что сейчас, search the web)',
     '- ALWAYS use find_and_open_file when user says open/find MY document/file without specifying exact path (открой мою курсовую, открой мой диплом, открой мой отчёт, найди мой файл, open my report, find my thesis). Use a short descriptive query like "курсовая", "диплом", "отчёт".',
@@ -783,6 +783,23 @@ export async function buildAgentPlan(
     console.warn('[buildAgentPlan] failed:', err);
     return null;
   }
+}
+
+/**
+ * "запомни, я не использую диспетчер задач" -> the thing to remember.
+ *
+ * Handled without a model call: asking a 4B model to route this took
+ * seconds and often returned an empty plan, so nothing was saved at all.
+ * Returns null when the message is not a remember request.
+ */
+export function parseRememberIntent(content: string): string | null {
+  const text = stripGreetingPrefix(content.trim());
+  const match = text.match(
+    /^(?:запомни|запиши|сохрани|remember|note)[\s,:—-]*(?:что|that)?[\s,:—-]*(.+)$/i,
+  );
+  if (!match) return null;
+  const payload = match[1].trim().replace(/^[,:\s—-]+/, '').trim();
+  return payload.length > 1 ? payload : null;
 }
 
 export function isWorkAppsIntent(content: string): boolean {

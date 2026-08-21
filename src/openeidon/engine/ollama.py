@@ -24,6 +24,40 @@ logger = logging.getLogger(__name__)
 _RETRYABLE_STATUS_CODES = {502, 503, 504}
 
 
+def default_num_ctx() -> int:
+    """Context window sized to the machine, not a fixed constant.
+
+    The KV cache scales with this value, so a window the card cannot hold
+    pushes layers onto the CPU: on a 4 GB GPU a 4B model measured 8.9 s per
+    routing call at 8192 and 1.0 s at 4096. Overridable per engine via
+    config, or with EIDON_NUM_CTX.
+    """
+    override = os.environ.get("EIDON_NUM_CTX", "").strip()
+    if override.isdigit() and int(override) > 0:
+        return int(override)
+
+    try:
+        from openeidon.core.config import detect_hardware
+
+        hw = detect_hardware()
+        gpu = getattr(hw, "gpu", None)
+        vram_gb = (getattr(gpu, "vram_gb", 0.0) or 0.0) * max(
+            getattr(gpu, "count", 1) or 1, 1
+        )
+    except Exception:  # hardware detection is best-effort
+        return 4096
+
+    if vram_gb <= 0:
+        # CPU inference: RAM is plentiful compared to VRAM, so keep the
+        # larger window.
+        return 8192
+    if vram_gb < 6:
+        return 4096
+    if vram_gb < 12:
+        return 8192
+    return 16384
+
+
 @EngineRegistry.register("ollama")
 class OllamaEngine(InferenceEngine):
     """Ollama backend via its native HTTP API."""
@@ -37,6 +71,7 @@ class OllamaEngine(InferenceEngine):
         host: str | None = None,
         *,
         timeout: float = 1800.0,
+        num_ctx: int | None = None,
     ) -> None:
         # Priority: explicit host (from config.toml) > OLLAMA_HOST env var > default
         if host is None:
@@ -46,6 +81,7 @@ class OllamaEngine(InferenceEngine):
         self._client = httpx.Client(base_url=self._host, timeout=timeout)
         # Last stream usage — captured from Ollama's final chunk
         self._last_stream_usage: Dict[str, int] = {}
+        self._num_ctx = num_ctx if num_ctx else default_num_ctx()
 
     def generate(
         self,
@@ -74,7 +110,7 @@ class OllamaEngine(InferenceEngine):
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,
-                "num_ctx": kwargs.get("num_ctx", 8192),
+                "num_ctx": kwargs.get("num_ctx") or self._num_ctx,
             },
         }
         # Disable extended thinking by default (Qwen3.5 etc.).
@@ -201,7 +237,7 @@ class OllamaEngine(InferenceEngine):
             "options": {
                 "temperature": temperature,
                 "num_predict": max_tokens,
-                "num_ctx": kwargs.get("num_ctx", 8192),
+                "num_ctx": kwargs.get("num_ctx") or self._num_ctx,
             },
         }
         last_http_error: httpx.HTTPStatusError | None = None
