@@ -716,7 +716,7 @@ export const EIDON_TOOL_SCHEMAS: ToolSchema[] = [
     function: {
       name: 'play_youtube',
       description:
-        'Play music or a video on YouTube. Only when the thing requested is itself music or a video — a genre, an artist, a song, a clip.',
+        'Play music or a video on YouTube — a genre, an artist, a song, or just music in general. Use it whenever the thing requested is music or video, and never for a request to open a program or a website.',
       parameters: obj({ query: { type: 'string', description: 'Search query.' } }, ['query']),
     },
   },
@@ -834,16 +834,8 @@ export const EIDON_TOOL_SCHEMAS: ToolSchema[] = [
     function: {
       name: 'find_and_open_file',
       description:
-        "Find a document by description across the accessible directories and open it, for when the user names their file without a path.",
+        "Find a document stored on THIS computer by description and open it, for when the user names their own file without a path. Never use it to look something up on the internet.",
       parameters: obj({ query: { type: 'string' } }, ['query']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'show_message',
-      description: 'Show a short text message to the user.',
-      parameters: obj({ text: { type: 'string' } }, ['text']),
     },
   },
 ];
@@ -911,7 +903,11 @@ function routerSystemPrompt(
   ].filter(Boolean);
   if (memory.length > 0) {
     lines.push('', `Known about the user — ${memory.join('; ')}.`);
-    lines.push('Use this to fill in details, never as a reason to add an action.');
+    lines.push(
+      'When a saved preference supplies a detail the request left out, use it',
+      'and act; do not ask the user to repeat something already remembered.',
+      'It fills in details only — it is never a reason to add an extra action.',
+    );
   }
   return lines.join('\n');
 }
