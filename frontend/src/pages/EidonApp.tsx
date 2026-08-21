@@ -9,7 +9,7 @@ import { ToolCallCard } from '../components/Chat/ToolCallCard';
 import { InputArea } from '../components/Chat/InputArea';
 import { NewWorkflowModal } from '../components/Workflow/NewWorkflowModal';
 import { useAppStore, type ThemeMode } from '../lib/store';
-import { checkHealth, fetchSpeechHealth, buildAgentPlan, getUserPreferences, fetchInstalledApps, playYouTubeQuery, openLocalApp, openLocalAppDirect, openExternalTarget, webSearch, fetchChatCompletion, setReminder, getFileRoots, setFileRoots } from '../lib/api';
+import { listMemoryFacts, saveMemoryFact, deleteMemoryFact, type MemoryFact, type MemoryFactCounts, checkHealth, fetchSpeechHealth, buildAgentPlan, getUserPreferences, fetchInstalledApps, playYouTubeQuery, openLocalApp, openLocalAppDirect, openExternalTarget, webSearch, fetchChatCompletion, setReminder, getFileRoots, setFileRoots } from '../lib/api';
 import type { Workflow } from '../lib/store';
 import { useSpeechOutput } from '../hooks/useSpeechOutput';
 
@@ -426,6 +426,44 @@ export function EidonApp() {
     checkHealth().then(setOnline).catch(() => setOnline(false));
   }, []);
 
+  // Structured memory (People / Projects / Preferences)
+  const [memoryCounts, setMemoryCounts] = useState<MemoryFactCounts>({ person: 0, project: 0, preference: 0 });
+  const [memoryKind, setMemoryKind] = useState<'person' | 'project' | 'preference' | null>(null);
+  const [memoryFacts, setMemoryFacts] = useState<MemoryFact[]>([]);
+  const [memoryDraft, setMemoryDraft] = useState({ name: '', detail: '' });
+
+  const refreshMemory = useCallback(async (kind?: 'person' | 'project' | 'preference' | null) => {
+    try {
+      const data = await listMemoryFacts(kind || undefined);
+      setMemoryCounts(data.counts);
+      if (kind) setMemoryFacts(data.facts);
+    } catch {
+      /* backend offline — leave counts as they are */
+    }
+  }, []);
+
+  useEffect(() => { refreshMemory(); }, [refreshMemory]);
+
+  const openMemoryKind = useCallback((kind: 'person' | 'project' | 'preference') => {
+    setMemoryKind((current) => {
+      const next = current === kind ? null : kind;
+      if (next) refreshMemory(next);
+      return next;
+    });
+  }, [refreshMemory]);
+
+  const addMemoryFact = useCallback(async () => {
+    if (!memoryKind || !memoryDraft.name.trim()) return;
+    await saveMemoryFact(memoryKind, memoryDraft.name.trim(), memoryDraft.detail.trim());
+    setMemoryDraft({ name: '', detail: '' });
+    refreshMemory(memoryKind);
+  }, [memoryKind, memoryDraft, refreshMemory]);
+
+  const removeMemoryFact = useCallback(async (factId: string) => {
+    await deleteMemoryFact(factId);
+    refreshMemory(memoryKind);
+  }, [memoryKind, refreshMemory]);
+
   // Workflow scheduler
   useEffect(() => {
     const runWorkflow = async (wf: Workflow) => {
@@ -734,9 +772,49 @@ export function EidonApp() {
                 <button className="sb-add">⌕</button>
               </div>
               <div className="sb-list">
-                <div className="sb-item"><span className="sb-ico">◈</span><span className="sb-label">People · 0</span></div>
-                <div className="sb-item"><span className="sb-ico">◈</span><span className="sb-label">Projects · 0</span></div>
-                <div className="sb-item"><span className="sb-ico">◈</span><span className="sb-label">Preferences · 0</span></div>
+                {([
+                  ['person', 'People', memoryCounts.person],
+                  ['project', 'Projects', memoryCounts.project],
+                  ['preference', 'Preferences', memoryCounts.preference],
+                ] as const).map(([kind, label, count]) => (
+                  <div key={kind}>
+                    <div
+                      className={`sb-item${memoryKind === kind ? ' active' : ''}`}
+                      onClick={() => openMemoryKind(kind)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className="sb-ico">◈</span>
+                      <span className="sb-label">{label} · {count}</span>
+                    </div>
+                    {memoryKind === kind && (
+                      <div style={{ padding: '4px 0 8px 18px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {memoryFacts.map((fact) => (
+                          <div key={fact.id} className="sb-item" style={{ alignItems: 'flex-start' }}>
+                            <span className="sb-label" style={{ flex: 1 }} title={fact.detail}>
+                              {fact.name}
+                              {fact.detail ? <span style={{ opacity: 0.6 }}> — {fact.detail}</span> : null}
+                            </span>
+                            <button className="sb-add" title="Forget" onClick={(e) => { e.stopPropagation(); removeMemoryFact(fact.id); }}>×</button>
+                          </div>
+                        ))}
+                        <input
+                          className="sb-search"
+                          placeholder="name"
+                          value={memoryDraft.name}
+                          onChange={(e) => setMemoryDraft((d) => ({ ...d, name: e.target.value }))}
+                          onKeyDown={(e) => { if (e.key === 'Enter') addMemoryFact(); }}
+                        />
+                        <input
+                          className="sb-search"
+                          placeholder="detail (optional)"
+                          value={memoryDraft.detail}
+                          onChange={(e) => setMemoryDraft((d) => ({ ...d, detail: e.target.value }))}
+                          onKeyDown={(e) => { if (e.key === 'Enter') addMemoryFact(); }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 

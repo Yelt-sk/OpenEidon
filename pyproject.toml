@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "openeidon"
 version = "0.1.1"
-description = "OpenEidon — local-first AI assistant platform built on OpenEidon"
+description = "OpenEidon — local-first AI assistant platform built on OpenJarvis"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
@@ -115,6 +115,7 @@ sandbox-docker = ["docker>=7.0"]
 dashboard = ["textual>=0.80"]
 speech = ["faster-whisper>=1.0"]
 speech-deepgram = ["deepgram-sdk>=3.0"]
+speech-piper = ["piper-tts>=1.3"]  # local neural TTS incl. Russian voices
 eval-wandb = ["wandb>=0.17"]
 eval-sheets = ["gspread>=6.0", "google-auth>=2.0"]
 docs = [

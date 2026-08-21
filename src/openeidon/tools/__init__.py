@@ -18,6 +18,11 @@ except ImportError:
     pass
 
 try:
+    import openeidon.tools.memory_facts_tool  # noqa: F401
+except ImportError:
+    pass
+
+try:
     import openeidon.tools.think  # noqa: F401
 except ImportError:
     pass

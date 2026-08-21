@@ -1777,3 +1777,50 @@ export async function respondCodePermission(
 export async function abortCodeSession(sessionId: string): Promise<void> {
   await apiJsonRequest('POST', `/v1/code/sessions/${encodeURIComponent(sessionId)}/abort`);
 }
+
+// ---------------------------------------------------------------------------
+// Structured memory facts (/v1/memory/facts)
+// ---------------------------------------------------------------------------
+
+export interface MemoryFact {
+  id: string;
+  kind: 'person' | 'project' | 'preference';
+  name: string;
+  detail: string;
+  tags: string[];
+  created_at: number;
+  updated_at: number;
+}
+
+export interface MemoryFactCounts {
+  person: number;
+  project: number;
+  preference: number;
+}
+
+export async function listMemoryFacts(
+  kind?: string,
+  query?: string,
+): Promise<{ facts: MemoryFact[]; counts: MemoryFactCounts }> {
+  const params = new URLSearchParams();
+  if (kind) params.set('kind', kind);
+  if (query) params.set('query', query);
+  const suffix = params.toString() ? `?${params.toString()}` : '';
+  return apiJsonRequest('GET', `/v1/memory/facts${suffix}`);
+}
+
+export async function getMemoryFactCounts(): Promise<MemoryFactCounts> {
+  return apiJsonRequest('GET', '/v1/memory/facts/counts');
+}
+
+export async function saveMemoryFact(
+  kind: string,
+  name: string,
+  detail = '',
+): Promise<MemoryFact> {
+  return apiJsonRequest('POST', '/v1/memory/facts', { kind, name, detail, tags: [] });
+}
+
+export async function deleteMemoryFact(factId: string): Promise<void> {
+  await apiJsonRequest('DELETE', `/v1/memory/facts/${encodeURIComponent(factId)}`);
+}
