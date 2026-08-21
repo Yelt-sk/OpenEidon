@@ -69,7 +69,7 @@ git clone https://github.com/Yelt-sk/OpenEidon.git
 cd OpenEidon
 uv sync
 uv sync --extra server
-uv run maturin develop -m rust/crates/openjarvis-python/Cargo.toml
+uv run maturin develop -m rust/crates/openeidon-python/Cargo.toml
 ```
 
 If you use Python 3.14+, set `PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1` before the `maturin` step.
@@ -77,18 +77,18 @@ If you use Python 3.14+, set `PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1` before the 
 ### First Run
 
 ```bash
-uv run jarvis init
+uv run eidon init
 ollama serve
 ollama pull qwen3:8b
-uv run jarvis ask "What is the capital of France?"
+uv run eidon ask "What is the capital of France?"
 ```
 
 Useful follow-ups:
 
 ```bash
-uv run jarvis doctor
-uv run jarvis serve --port 8000
-uv run jarvis chat
+uv run eidon doctor
+uv run eidon serve --port 8000
+uv run eidon chat
 ```
 
 ## Key Capabilities
@@ -125,7 +125,7 @@ OpenEidon inherits a substantial part of its technical base from OpenJarvis and 
 
 Core stack in this repository:
 
-- `src/openjarvis/` - backend package, agents, engines, tools, learning, memory
+- `src/openeidon/` - backend package, agents, engines, tools, learning, memory
 - `frontend/` - web UI
 - `desktop/` and `desktop-mini/` - desktop application surfaces
 - `rust/` - native extension and performance-critical components
