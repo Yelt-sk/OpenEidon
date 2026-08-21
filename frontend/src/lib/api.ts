@@ -1,4 +1,5 @@
 ﻿import type { ModelInfo, SavingsData, ServerInfo } from '../types';
+import routingTools from './routing-tools.json';
 
 // ---------------------------------------------------------------------------
 // Supabase config — safe to embed (RLS protects writes)
@@ -528,6 +529,10 @@ export async function setReminder(text: string, delay_seconds?: number, due_at?:
   return apiJsonRequest('POST', '/v1/reminders/set', { text, delay_seconds, due_at });
 }
 
+export async function cancelReminder(reminderId: string): Promise<void> {
+  await apiJsonRequest('POST', '/v1/reminders/cancel', { reminder_id: reminderId });
+}
+
 export async function fetchReminders(): Promise<Array<{ id: string; text: string; due_at: string; status: string }>> {
   try {
     const data = await apiJsonRequest<{ alerts: Array<{ id: string; text: string; due_at: string; status: string }> }>('GET', '/v1/reminders/alerts');
@@ -675,170 +680,21 @@ export interface AgentPlan {
  * own field, so "unparseable" stops being a failure mode.
  */
 
-interface ToolSchema {
+/**
+ * Tool definitions the router offers the model.
+ *
+ * Kept as JSON rather than a TypeScript literal so the same definitions can
+ * be read outside the bundle — the routing eval in tests/ scores exactly the
+ * schemas the app sends, instead of a copy that can drift from them.
+ */
+export const EIDON_TOOL_SCHEMAS = routingTools as {
   type: 'function';
   function: {
     name: AgentAction['tool'];
     description: string;
-    parameters: {
-      type: 'object';
-      properties: Record<string, { type: string; description?: string }>;
-      required?: string[];
-    };
+    parameters: Record<string, unknown>;
   };
-}
-
-const obj = (
-  properties: Record<string, { type: string; description?: string }> = {},
-  required: string[] = [],
-) => ({ type: 'object' as const, properties, required });
-
-export const EIDON_TOOL_SCHEMAS: ToolSchema[] = [
-  {
-    type: 'function',
-    function: {
-      name: 'open_app',
-      description: 'Open a desktop application installed on this computer.',
-      parameters: obj({ name: { type: 'string', description: 'Application name.' } }, ['name']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'open_site',
-      description:
-        'Open a website in the browser. Give the domain or full URL, e.g. youtube.com — a bare word is treated as a search.',
-      parameters: obj({ url: { type: 'string', description: 'Domain or URL.' } }, ['url']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'play_youtube',
-      description:
-        'Play music or a video on YouTube — a genre, an artist, a song, or just music in general. Use it whenever the thing requested is music or video, and never for a request to open a program or a website.',
-      parameters: obj({ query: { type: 'string', description: 'Search query.' } }, ['query']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'open_work_apps',
-      description: 'Open every application the user saved as a work app.',
-      parameters: obj(),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'list_installed_apps',
-      description: 'List the applications installed on this computer.',
-      parameters: obj(),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'list_running_processes',
-      description: 'List the programs currently running on this computer.',
-      parameters: obj(),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'set_reminder',
-      description: 'Set a timer or reminder for later.',
-      parameters: obj(
-        {
-          text: { type: 'string', description: 'What to remind about.' },
-          delay_seconds: { type: 'integer', description: 'Seconds from now.' },
-        },
-        ['text'],
-      ),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'list_reminders',
-      description: 'List active reminders and timers.',
-      parameters: obj(),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'cancel_reminder',
-      description: 'Cancel a reminder by its id.',
-      parameters: obj({ reminder_id: { type: 'string' } }, ['reminder_id']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'web_search',
-      description:
-        'Search the internet for current information: news, prices, weather, recent events — anything that changes over time.',
-      parameters: obj({ query: { type: 'string' } }, ['query']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'save_preference',
-      description:
-        'Remember a durable fact the user states about themselves, the tools they use, or how they want things done.',
-      parameters: obj(
-        {
-          category: {
-            type: 'string',
-            description:
-              'One of: music_artist, music_genre, work_app, note.',
-          },
-          value: { type: 'string', description: 'The exact thing to remember.' },
-        },
-        ['value'],
-      ),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'read_file',
-      description: 'Read the contents of a file at an exact path.',
-      parameters: obj({ path: { type: 'string' } }, ['path']),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'write_file',
-      description: 'Write or overwrite a file on disk.',
-      parameters: obj(
-        { path: { type: 'string' }, file_content: { type: 'string' } },
-        ['path', 'file_content'],
-      ),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'list_files',
-      description: 'List the files and folders in a directory.',
-      parameters: obj({ path: { type: 'string' } }),
-    },
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'find_and_open_file',
-      description:
-        "Find a document stored on THIS computer by description and open it, for when the user names their own file without a path. Never use it to look something up on the internet.",
-      parameters: obj({ query: { type: 'string' } }, ['query']),
-    },
-  },
-];
+}[];
 
 const EIDON_TOOLS_DESC = [
   'open_app(name) — opens a desktop application by name',

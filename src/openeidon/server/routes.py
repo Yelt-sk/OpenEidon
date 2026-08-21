@@ -1214,6 +1214,20 @@ async def acknowledge_reminder(request_body: ReminderAckRequest, request: Reques
         raise HTTPException(status_code=404, detail="Reminder not found") from exc
 
 
+@router.post("/v1/reminders/cancel")
+async def cancel_reminder(request_body: ReminderAckRequest, request: Request):
+    """Cancel a reminder. The manager could already do this; nothing exposed it,
+    so the assistant offered a cancel action that had nowhere to go."""
+    manager = getattr(request.app.state, "reminder_manager", None)
+    if manager is None:
+        raise HTTPException(status_code=503, detail="Reminder manager not available")
+    try:
+        reminder = manager.cancel_reminder(request_body.reminder_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Reminder not found") from exc
+    return {"ok": True, "reminder": reminder.to_dict()}
+
+
 @router.get("/v1/user/preferences")
 async def get_user_preferences():
     """Return current user preferences."""

@@ -1,0 +1,263 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "open_app",
+      "description": "Open a desktop application installed on this computer.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Application name."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "open_site",
+      "description": "Open a website in the browser. Give the domain or full URL, e.g. youtube.com — a bare word is treated as a search.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Domain or URL."
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "play_youtube",
+      "description": "Play music or a video on YouTube — a genre, an artist, a song, or just music in general. Use it whenever the thing requested is music or video, and never for a request to open a program or a website.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "open_work_apps",
+      "description": "Open every application the user saved as a work app.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_installed_apps",
+      "description": "List the applications installed on this computer.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_running_processes",
+      "description": "List the programs currently running on this computer.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "set_reminder",
+      "description": "Set a timer or reminder for later.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "What to remind about."
+          },
+          "delay_seconds": {
+            "type": "integer",
+            "description": "Seconds from now."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_reminders",
+      "description": "List active reminders and timers.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "cancel_reminder",
+      "description": "Cancel a reminder by its id.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reminder_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reminder_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "web_search",
+      "description": "Search the internet for current information: news, prices, weather, recent events — anything that changes over time.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "save_preference",
+      "description": "Remember a durable fact the user states about themselves, the tools they use, or how they want things done.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "One of: music_artist, music_genre, work_app, note."
+          },
+          "value": {
+            "type": "string",
+            "description": "The exact thing to remember."
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "read_file",
+      "description": "Read the contents of a file at an exact path.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "write_file",
+      "description": "Write or overwrite a file on disk.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "file_content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "file_content"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_files",
+      "description": "List the files and folders in a directory.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "find_and_open_file",
+      "description": "Find a document stored on THIS computer by description and open it, for when the user names their own file without a path. Never use it to look something up on the internet.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ]
+      }
+    }
+  }
+]

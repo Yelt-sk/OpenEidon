@@ -26,6 +26,7 @@ import {
   openLocalAppDirect,
   setReminder,
   fetchReminders,
+  cancelReminder,
   getUserPreferences,
   setUserPreferences,
   openLocalApp,
@@ -632,6 +633,24 @@ Allow?`);
                       accumulatedContent = `Активные напоминания (${reminders.length}):\n\n` +
                         reminders.map(r => `• **${r.text}** — ${new Date(r.due_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`).join('\n');
                     }
+                    break;
+                  }
+                  case 'cancel_reminder': {
+                    // The model may name a reminder instead of its id; match
+                    // on the text so "отмени напоминание про воду" works.
+                    const reminders = await fetchReminders();
+                    const wanted = (action.reminder_id || action.text || '').toLowerCase();
+                    const target = reminders.find(r => r.id === action.reminder_id)
+                      || reminders.find(r => wanted && r.text.toLowerCase().includes(wanted));
+                    if (!target) {
+                      accumulatedContent = reminders.length === 0
+                        ? 'Активных напоминаний нет.'
+                        : 'Не нашёл такое напоминание. Активные: ' + reminders.map(r => r.text).join(', ');
+                      break;
+                    }
+                    await cancelReminder(target.id);
+                    accumulatedContent = `Отменил напоминание: **${target.text}**`;
+                    appendActivity(`Cancelled reminder: ${target.text}`);
                     break;
                   }
                   case 'web_search': {
