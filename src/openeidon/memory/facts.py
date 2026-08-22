@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import time
+import unicodedata
 import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -21,6 +22,16 @@ from typing import Any, Dict, Iterable, List, Optional
 
 #: The three fact kinds surfaced in the sidebar.
 KINDS = ("person", "project", "preference")
+
+
+def _name_key(name: str) -> str:
+    """Normalised form used for uniqueness and lookup.
+
+    ``str.casefold()`` folds Unicode, which SQLite's NOCASE collation does
+    not: it only maps ASCII A-Z, so Cyrillic names differing in case were
+    stored as separate facts.
+    """
+    return unicodedata.normalize("NFKC", name.strip()).casefold()
 
 
 def default_db_path() -> Path:
@@ -63,6 +74,9 @@ class FactStore:
                 id TEXT PRIMARY KEY,
                 kind TEXT NOT NULL,
                 name TEXT NOT NULL,
+                -- Case-folded name. SQLite's NOCASE collation only folds
+                -- ASCII, so "Аня" and "аня" were two different people.
+                name_key TEXT NOT NULL DEFAULT '',
                 detail TEXT NOT NULL DEFAULT '',
                 tags TEXT NOT NULL DEFAULT '[]',
                 metadata TEXT NOT NULL DEFAULT '{}',
@@ -70,10 +84,48 @@ class FactStore:
                 updated_at REAL NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_facts_kind ON facts(kind);
-            CREATE UNIQUE INDEX IF NOT EXISTS idx_facts_kind_name
-                ON facts(kind, name COLLATE NOCASE);
             """
         )
+        self._migrate_name_key()
+        self._conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_facts_kind_name_key"
+            " ON facts(kind, name_key)"
+        )
+        self._conn.commit()
+
+    def _migrate_name_key(self) -> None:
+        """Add and backfill ``name_key`` on databases created before it.
+
+        Existing rows carry an empty key, which would collide the moment a
+        second one is written, so they are filled in before the unique index
+        is created. Rows that were duplicates under the old ASCII-only
+        collation (``Аня`` and ``аня``) are merged: the oldest wins, since it
+        holds the detail the user gave first.
+        """
+        columns = {
+            row["name"] for row in self._conn.execute("PRAGMA table_info(facts)")
+        }
+        if "name_key" not in columns:
+            self._conn.execute(
+                "ALTER TABLE facts ADD COLUMN name_key TEXT NOT NULL DEFAULT ''"
+            )
+
+        rows = self._conn.execute(
+            "SELECT id, kind, name, name_key, created_at FROM facts"
+            " ORDER BY created_at"
+        ).fetchall()
+        seen: dict[tuple[str, str], str] = {}
+        for row in rows:
+            key = _name_key(row["name"])
+            identity = (row["kind"], key)
+            if identity in seen:
+                self._conn.execute("DELETE FROM facts WHERE id=?", (row["id"],))
+                continue
+            seen[identity] = row["id"]
+            if row["name_key"] != key:
+                self._conn.execute(
+                    "UPDATE facts SET name_key=? WHERE id=?", (key, row["id"])
+                )
         self._conn.commit()
 
     # ------------------------------------------------------------------
@@ -135,12 +187,14 @@ class FactStore:
 
         fact_id = f"fact_{uuid.uuid4().hex[:16]}"
         self._conn.execute(
-            "INSERT INTO facts (id, kind, name, detail, tags, metadata,"
-            " created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO facts (id, kind, name, name_key, detail, tags,"
+            " metadata, created_at, updated_at)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 fact_id,
                 kind,
                 name,
+                _name_key(name),
                 detail,
                 json.dumps(tag_list, ensure_ascii=False),
                 json.dumps(metadata or {}, ensure_ascii=False),
@@ -159,8 +213,8 @@ class FactStore:
 
     def find(self, kind: str, name: str) -> Optional[Fact]:
         row = self._conn.execute(
-            "SELECT * FROM facts WHERE kind=? AND name=? COLLATE NOCASE",
-            (self._validate_kind(kind), name.strip()),
+            "SELECT * FROM facts WHERE kind=? AND name_key=?",
+            (self._validate_kind(kind), _name_key(name)),
         ).fetchone()
         return self._row_to_fact(row) if row else None
 
@@ -177,13 +231,25 @@ class FactStore:
         return [self._row_to_fact(r) for r in rows]
 
     def search(self, query: str, *, limit: int = 50) -> List[Fact]:
-        pattern = f"%{query.strip()}%"
+        """Case-insensitive substring search over names and details.
+
+        Filtering happens in Python rather than with SQL ``LIKE``: SQLite
+        only case-folds ASCII, so searching "аня" found nothing while "Аня"
+        did. The table holds a curated handful of facts, so scanning it is
+        cheaper than maintaining a folded copy of every field.
+        """
+        needle = _name_key(query)
+        if not needle:
+            return []
         rows = self._conn.execute(
-            "SELECT * FROM facts WHERE name LIKE ? OR detail LIKE ?"
-            " ORDER BY updated_at DESC LIMIT ?",
-            (pattern, pattern, limit),
+            "SELECT * FROM facts ORDER BY updated_at DESC"
         ).fetchall()
-        return [self._row_to_fact(r) for r in rows]
+        matches = [
+            row
+            for row in rows
+            if needle in _name_key(row["name"]) or needle in _name_key(row["detail"])
+        ]
+        return [self._row_to_fact(r) for r in matches[:limit]]
 
     def delete(self, fact_id: str) -> bool:
         cur = self._conn.execute("DELETE FROM facts WHERE id=?", (fact_id,))

@@ -447,9 +447,27 @@ export function EidonApp() {
   const listRef = useRef<HTMLDivElement>(null);
   const autoScroll = useRef(true);
 
-  // health check on mount
+  // Health is polled, not checked once: a single check on mount left the
+  // indicator stuck on "offline" whenever the page loaded before the backend
+  // was ready, or a request happened to fail, until someone reloaded.
   useEffect(() => {
-    checkHealth().then(setOnline).catch(() => setOnline(false));
+    let cancelled = false;
+    const probe = () => {
+      checkHealth()
+        .then((ok) => { if (!cancelled) setOnline(ok); })
+        .catch(() => { if (!cancelled) setOnline(false); });
+    };
+    probe();
+    const interval = setInterval(probe, 10000);
+    // Recheck immediately when the window regains focus or the machine wakes.
+    window.addEventListener('focus', probe);
+    window.addEventListener('online', probe);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener('focus', probe);
+      window.removeEventListener('online', probe);
+    };
   }, []);
 
   // Structured memory (People / Projects / Preferences)

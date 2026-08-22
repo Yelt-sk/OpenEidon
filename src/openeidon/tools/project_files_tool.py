@@ -1,4 +1,6 @@
-"""Project file tools stored in the workspace-level ``His-projects`` folder."""
+"""Project file tools, writing under the projects directory.
+
+See :mod:`openeidon.core.paths` for where that resolves to."""
 
 from __future__ import annotations
 
@@ -14,12 +16,15 @@ _ALLOWED_EXTENSIONS = {".html", ".css", ".js", ".py", ".ts"}
 
 
 def _projects_dir() -> Path:
-    return Path(__file__).resolve().parents[4] / "His-projects"
+    from openeidon.core.paths import projects_dir
+
+    return projects_dir()
 
 
 def _safe_project_name(value: str) -> str:
-    cleaned = "".join(ch for ch in value.strip() if ch not in '<>:"/\\|?*').strip().rstrip(".")
-    return cleaned or "project"
+    from openeidon.core.paths import safe_directory_name
+
+    return safe_directory_name(value)
 
 
 def _resolve_project_path(project_name: str, filename: str) -> tuple[Path | None, str | None]:
@@ -82,15 +87,15 @@ class CreateProjectFileTool(BaseTool):
         return ToolSpec(
             name="create_project_file",
             description=(
-                "Create or overwrite a code file inside the Eidon/His-projects folder. "
+                "Create or overwrite a code file inside the Eidon projects folder. "
                 "Supported file types: html, css, js, py, ts."
             ),
             parameters={
                 "type": "object",
                 "properties": {
-                    "project_name": {"type": "string", "description": "Project folder name inside Eidon/His-projects."},
+                    "project_name": {"type": "string", "description": "Project folder name."},
                     "filename": {"type": "string", "description": "Code filename, for example index.html or main.py."},
-                    "path": {"type": "string", "description": "Absolute path inside D:\\projects\\Eidon\\His-projects."},
+                    "path": {"type": "string", "description": "Absolute path inside the projects folder."},
                     "content": {"type": "string", "description": "Full file content to write."},
                 },
                 "required": ["content"],
@@ -126,7 +131,7 @@ class ListProjectFilesTool(BaseTool):
     def spec(self) -> ToolSpec:
         return ToolSpec(
             name="list_project_files",
-            description="List projects or files stored in the Eidon/His-projects folder.",
+            description="List projects, or the files inside one.",
             parameters={
                 "type": "object",
                 "properties": {
@@ -170,13 +175,13 @@ class ReadProjectFileTool(BaseTool):
     def spec(self) -> ToolSpec:
         return ToolSpec(
             name="read_project_file",
-            description="Read a project code file from Eidon/His-projects.",
+            description="Read a code file from a project.",
             parameters={
                 "type": "object",
                 "properties": {
                     "project_name": {"type": "string", "description": "Project folder name."},
                     "filename": {"type": "string", "description": "Code filename to read."},
-                    "path": {"type": "string", "description": "Absolute path inside D:\\projects\\Eidon\\His-projects."},
+                    "path": {"type": "string", "description": "Absolute path inside the projects folder."},
                 },
             },
             category="filesystem",
@@ -208,15 +213,15 @@ class OpenProjectFileTool(BaseTool):
         return ToolSpec(
             name="open_project_file",
             description=(
-                "Open a project file from Eidon/His-projects using the system default application. "
-                "Uses the exact real path from D:\\projects\\Eidon\\His-projects."
+                "Open a project file with the system default application. "
+                "Takes the exact path reported when the file was created or listed."
             ),
             parameters={
                 "type": "object",
                 "properties": {
                     "project_name": {"type": "string", "description": "Project folder name."},
                     "filename": {"type": "string", "description": "Code file to open."},
-                    "path": {"type": "string", "description": "Absolute path inside D:\\projects\\Eidon\\His-projects."},
+                    "path": {"type": "string", "description": "Absolute path inside the projects folder."},
                 },
             },
             category="filesystem",

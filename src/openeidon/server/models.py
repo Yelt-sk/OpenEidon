@@ -23,11 +23,13 @@ class ChatMessage(BaseModel):
 
 class ChatCompletionRequest(BaseModel):
     model: str
-    messages: List[ChatMessage]
-    temperature: float = 0.7
+    #: At least one message: an empty conversation reached the engine and
+    #: surfaced as a 500 rather than a rejected request.
+    messages: List[ChatMessage] = Field(..., min_length=1)
+    temperature: float = Field(0.7, ge=0.0, le=2.0)
     #: None means "unspecified" — the server may then size the budget
     #: from request complexity. An explicit value is a hard cap.
-    max_tokens: Optional[int] = None
+    max_tokens: Optional[int] = Field(None, gt=0)
     stream: bool = False
     tools: Optional[List[Dict[str, Any]]] = None
 

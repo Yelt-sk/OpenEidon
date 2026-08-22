@@ -102,12 +102,15 @@ def _to_messages(chat_messages) -> list[Message]:
 
 
 def _safe_project_name(value: str) -> str:
-    cleaned = "".join(ch for ch in value.strip() if ch not in '<>:"/\\|?*').strip().rstrip(".")
-    return cleaned or "project"
+    from openeidon.core.paths import safe_directory_name
+
+    return safe_directory_name(value)
 
 
 def _projects_dir() -> Path:
-    return Path(__file__).resolve().parents[4] / "His-projects"
+    from openeidon.core.paths import projects_dir
+
+    return projects_dir()
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:
@@ -1177,12 +1180,20 @@ async def classify_intent(request_body: IntentClassifyRequest, request: Request)
 
 class SetReminderRequest(BaseModel):
     text: str
+    #: Must be in the future. A negative delay used to be accepted, creating
+    #: a reminder already past due.
     delay_seconds: Optional[int] = None
     due_at: Optional[str] = None
 
 
 @router.post("/v1/reminders/set")
 async def set_reminder_direct(request_body: SetReminderRequest, request: Request):
+    if not request_body.text.strip():
+        raise HTTPException(status_code=400, detail="text is required")
+    if request_body.delay_seconds is not None and request_body.delay_seconds <= 0:
+        raise HTTPException(
+            status_code=400, detail="delay_seconds must be a positive number"
+        )
     manager = getattr(request.app.state, "reminder_manager", None)
     if manager is None:
         raise HTTPException(status_code=503, detail="Reminder manager not available")
@@ -1945,7 +1956,14 @@ async def tts_synthesize(req: TTSRequest):
 # Check-in settings
 # ──────────────────────────────────────────────
 
-CHECKIN_SETTINGS_FILE = Path(r"D:\projects\Eidon\.eidon-checkin.json")
+def _checkin_settings_file() -> Path:
+    """Check-in settings, in the config directory rather than an absolute
+    path to one developer's machine."""
+    from openeidon.core.paths import config_dir
+
+    path = config_dir() / "checkin.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 class CheckInSettings(BaseModel):
@@ -1955,9 +1973,9 @@ class CheckInSettings(BaseModel):
 
 @router.get("/v1/checkin/settings")
 async def get_checkin_settings():
-    if CHECKIN_SETTINGS_FILE.exists():
+    if _checkin_settings_file().exists():
         try:
-            return json.loads(CHECKIN_SETTINGS_FILE.read_text(encoding="utf-8"))
+            return json.loads(_checkin_settings_file().read_text(encoding="utf-8"))
         except Exception:
             pass
     return {"enabled": True, "interval_minutes": 30}
@@ -1965,7 +1983,7 @@ async def get_checkin_settings():
 
 @router.post("/v1/checkin/settings")
 async def set_checkin_settings(body: CheckInSettings):
-    CHECKIN_SETTINGS_FILE.write_text(
+    _checkin_settings_file().write_text(
         json.dumps({"enabled": body.enabled, "interval_minutes": body.interval_minutes}),
         encoding="utf-8",
     )

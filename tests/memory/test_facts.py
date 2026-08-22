@@ -136,3 +136,104 @@ class TestMemoryFactsTool:
         sys.modules.pop("openeidon.tools.memory_facts_tool", None)
         importlib.reload(tools_pkg)
         assert ToolRegistry.contains("memory_facts")
+
+class TestUnicodeNames:
+    """SQLite's NOCASE collation folds ASCII only, so a Cyrillic name in a
+    different case used to become a second person."""
+
+    def test_cyrillic_case_is_the_same_fact(self, store):
+        first = store.upsert("person", "Аня", detail="дизайнер")
+        second = store.upsert("person", "аня", detail="")
+        assert first.id == second.id
+        assert store.counts()["person"] == 1
+        assert second.detail == "дизайнер"
+
+    def test_uppercase_cyrillic_finds_the_fact(self, store):
+        store.upsert("person", "Аня")
+        assert store.find("person", "АНЯ") is not None
+
+    def test_ascii_case_still_folds(self, store):
+        store.upsert("project", "Eidon")
+        assert store.find("project", "EIDON") is not None
+
+    def test_composed_and_decomposed_forms_match(self, store):
+        # "й" as one code point vs "и" + combining breve.
+        store.upsert("person", "Йелт")
+        assert store.find("person", "Йелт".replace("И", "И")) is not None
+
+    def test_different_names_stay_separate(self, store):
+        store.upsert("person", "Аня")
+        store.upsert("person", "Ася")
+        assert store.counts()["person"] == 2
+
+
+class TestMigration:
+    def test_database_without_name_key_is_upgraded(self, tmp_path):
+        """A store created before name_key existed must keep working."""
+        import sqlite3
+
+        path = tmp_path / "old.db"
+        conn = sqlite3.connect(path)
+        conn.executescript(
+            """
+            CREATE TABLE facts (
+                id TEXT PRIMARY KEY,
+                kind TEXT NOT NULL,
+                name TEXT NOT NULL,
+                detail TEXT NOT NULL DEFAULT '',
+                tags TEXT NOT NULL DEFAULT '[]',
+                metadata TEXT NOT NULL DEFAULT '{}',
+                created_at REAL NOT NULL,
+                updated_at REAL NOT NULL
+            );
+            """
+        )
+        conn.executemany(
+            "INSERT INTO facts (id, kind, name, detail, created_at, updated_at)"
+            " VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                ("1", "person", "Аня", "первая", 1.0, 1.0),
+                ("2", "person", "аня", "вторая", 2.0, 2.0),
+                ("3", "project", "Eidon", "", 3.0, 3.0),
+            ],
+        )
+        conn.commit()
+        conn.close()
+
+        store = FactStore(path)
+        try:
+            # The duplicate pair collapses, oldest wins; the unrelated row stays.
+            assert store.counts() == {"person": 1, "project": 1, "preference": 0}
+            assert store.find("person", "АНЯ").detail == "первая"
+            # And the upgraded store still enforces uniqueness.
+            store.upsert("person", "аня", detail="третья")
+            assert store.counts()["person"] == 1
+        finally:
+            store.close()
+
+class TestSearchCaseFolding:
+    """SQL LIKE folds ASCII only, so searching one's own memory in the wrong
+    case returned nothing."""
+
+    def test_finds_a_cyrillic_name_in_any_case(self, store):
+        store.upsert("person", "Аня", detail="дизайнер")
+        for query in ("Аня", "аня", "АНЯ", "ан"):
+            assert [f.name for f in store.search(query)] == ["Аня"], query
+
+    def test_searches_the_detail_too(self, store):
+        store.upsert("person", "Аня", detail="Дизайнер")
+        assert store.search("дизайн")[0].name == "Аня"
+
+    def test_ascii_still_works(self, store):
+        store.upsert("project", "Eidon", detail="Assistant")
+        assert store.search("eidon")[0].name == "Eidon"
+        assert store.search("ASSISTANT")[0].name == "Eidon"
+
+    def test_blank_query_returns_nothing(self, store):
+        store.upsert("person", "Аня")
+        assert store.search("   ") == []
+
+    def test_respects_the_limit(self, store):
+        for i in range(5):
+            store.upsert("person", f"Человек{i}", detail="общий")
+        assert len(store.search("общий", limit=2)) == 2

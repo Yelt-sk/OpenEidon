@@ -9,12 +9,32 @@ from pathlib import Path
 from typing import Any
 
 
-def _workspace_root() -> Path:
-    return Path(__file__).resolve().parents[4]
-
-
 def _store_path() -> Path:
-    return _workspace_root() / ".eidon-reminders.json"
+    """Where reminders live.
+
+    Previously ``Path(__file__).parents[4]``, which resolved to the root of
+    whatever drive the checkout sat on — and, once installed as a wheel, to
+    a directory inside the Python installation. A reminder set on one machine
+    could not be found on another install of the same package.
+    """
+    from openeidon.core.paths import config_dir
+
+    path = config_dir() / "reminders.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not path.exists():
+        _migrate_legacy_store(path)
+    return path
+
+
+def _migrate_legacy_store(destination: Path) -> None:
+    """Move reminders written by an earlier version into the new location."""
+    legacy = Path(__file__).resolve().parents[4] / ".eidon-reminders.json"
+    try:
+        if legacy.is_file():
+            destination.write_bytes(legacy.read_bytes())
+            legacy.rename(legacy.with_suffix(".json.migrated"))
+    except OSError:
+        pass  # the reminder list is not worth failing startup over
 
 
 def _utc_now() -> datetime:
